@@ -8,14 +8,10 @@ add_library(raptor_lib INTERFACE)
 find_package(yaml-cpp CONFIG REQUIRED)
 
 target_link_libraries(raptor_lib INTERFACE
-# comm_lib
+comm_lib
 yaml-cpp
-)
-
-target_sources(raptor_lib INTERFACE
-    ./include/Entity.h
 )
 
 add_subdirectory(include)
 add_subdirectory(src)
-# add_subdirectory(communication_lib)
+add_subdirectory(communication_lib)
