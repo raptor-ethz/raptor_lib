@@ -8,6 +8,7 @@ target_sources(raptor_lib PRIVATE
     src/Participant.cpp
     src/Quad.cpp
     src/Item.cpp
+    src/Gripper.cpp
 )
 
 # requirements
