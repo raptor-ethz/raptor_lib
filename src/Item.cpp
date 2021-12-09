@@ -9,3 +9,7 @@ Item::Item( std::unique_ptr<DefaultParticipant> dp,
     mocap_sub->init();
     
 };
+
+Item::~Item () {
+    delete mocap_sub;
+}

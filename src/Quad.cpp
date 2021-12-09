@@ -14,3 +14,8 @@ Quad::Quad( std::unique_ptr<DefaultParticipant> dp,
 
     position_pub->init();
 };
+
+Quad::~Quad () {
+    delete mocap_sub;
+    delete position_pub;
+}

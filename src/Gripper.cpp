@@ -14,3 +14,8 @@ Gripper::Gripper(   std::unique_ptr<DefaultParticipant> dp,
 
     position_pub->init();
 };
+
+Gripper::~Gripper () {
+    delete mocap_sub;
+    delete position_pub;
+}
