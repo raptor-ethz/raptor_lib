@@ -1,7 +1,10 @@
 #include "Item.h"
 
-Item::Item( std::unique_ptr<DefaultParticipant> dp, 
-            std::string sub_topic_name) {
+Item::Item( std::string &raptor_participant_id,
+            std::unique_ptr<DefaultParticipant> &dp, 
+            std::string &sub_topic_name) {
+
+    id = raptor_participant_id;
 
     mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
                                      "mocap_srl_quad", dp->participant());
