@@ -5,8 +5,8 @@
 class Item : public raptor::Participant{
     public:
 
-    Item(   std::string &raptor_participant_id, 
+    Item(   const std::string &raptor_participant_id, 
             std::unique_ptr<DefaultParticipant> &dp, 
-            std::string &sub_topic_name);
+            const std::string &sub_topic_name);
     ~Item();
 };

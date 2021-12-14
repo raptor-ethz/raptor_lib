@@ -1,8 +1,8 @@
 #include "Item.h"
 
-Item::Item( std::string &raptor_participant_id,
+Item::Item( const std::string &raptor_participant_id,
             std::unique_ptr<DefaultParticipant> &dp, 
-            std::string &sub_topic_name) {
+            const std::string &sub_topic_name) {
 
     id = raptor_participant_id;
 
