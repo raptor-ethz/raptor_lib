@@ -1,24 +1,21 @@
 #include "Gripper.h"
 
-Gripper::Gripper(   std::string &raptor_participant_id,
-                    std::unique_ptr<DefaultParticipant> &dp, 
-                    std::string &sub_topic_name,
-                    std::string &pub_topic_name) {
-
-    id = raptor_participant_id;
-
-    mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
-                                     sub_topic_name, dp->participant());
-
-    mocap_sub->init();
-    
-    position_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
-                                    pub_topic_name, dp->participant());
-
-    position_pub->init();
+Gripper::Gripper(std::string &raptor_participant_id,
+                 std::unique_ptr<DefaultParticipant> &dp,
+                 std::string &pub_topic_name) {
+  id = raptor_participant_id;
+  grip_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
+                              pub_topic_name, dp->participant());
+  grip_pub->init();
 };
+Gripper::~Gripper() { delete grip_pub; }
 
-Gripper::~Gripper () {
-    delete mocap_sub;
-    delete position_pub;
+void Gripper::open() {
+  grip_cmd.position.x = 1;
+  grip_pub->publish(grip_cmd);
+}
+
+void Gripper::close() {
+  grip_cmd.position.x = 0;
+  grip_pub->publish(grip_cmd);
 }
