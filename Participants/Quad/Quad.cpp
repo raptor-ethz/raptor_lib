@@ -2,8 +2,8 @@
 
 Quad::Quad( const std::string &raptor_participant_id,
             std::unique_ptr<DefaultParticipant> &dp, 
-            std::string &sub_topic_name,
-            std::string &pub_topic_name) {
+            const std::string &sub_topic_name,
+            const std::string &pub_topic_name) {
     
     id = raptor_participant_id;
 
