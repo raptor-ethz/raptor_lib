@@ -1,8 +1,11 @@
 #include "Gripper.h"
 
-Gripper::Gripper(   std::unique_ptr<DefaultParticipant> dp, 
-                    std::string sub_topic_name,
-                    std::string pub_topic_name) {
+Gripper::Gripper(   std::string &raptor_participant_id,
+                    std::unique_ptr<DefaultParticipant> &dp, 
+                    std::string &sub_topic_name,
+                    std::string &pub_topic_name) {
+
+    id = raptor_participant_id;
 
     mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
                                      sub_topic_name, dp->participant());

@@ -5,9 +5,10 @@
 class Gripper : public raptor::Participant{
     public:
 
-    Gripper(std::unique_ptr<DefaultParticipant> dp, 
-            std::string sub_topic_name,
-            std::string pub_topic_name);
+    Gripper(std::string &raptor_participant_id,
+            std::unique_ptr<DefaultParticipant> &dp, 
+            std::string &sub_topic_name,
+            std::string &pub_topic_name);
     ~Gripper();
 
     DDSPublisher *position_pub;
