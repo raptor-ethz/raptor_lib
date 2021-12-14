@@ -15,3 +15,4 @@ yaml-cpp
 
 add_subdirectory(communication_lib)
 add_subdirectory(Participants)
+add_subdirectory(test)
