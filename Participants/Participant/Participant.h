@@ -24,7 +24,7 @@ namespace raptor{
             virtual bool check_for_data();
 
         protected:
-            std::string id;
+            std::string id = "kA";
             cpp_msg::Mocap pose_{};
     };
 
