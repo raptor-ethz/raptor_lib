@@ -1,3 +1,5 @@
+Add yaml parameters
+
 reference velocity & threshold for go_to_pos
 
 MM integration
