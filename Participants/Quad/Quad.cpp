@@ -1,8 +1,11 @@
 #include "Quad.h"
 
-Quad::Quad( std::unique_ptr<DefaultParticipant> dp, 
-            std::string sub_topic_name,
-            std::string pub_topic_name) {
+Quad::Quad( std::string &raptor_participant_id,
+            std::unique_ptr<DefaultParticipant> &dp, 
+            std::string &sub_topic_name,
+            std::string &pub_topic_name) {
+    
+    id = raptor_participant_id;
 
     mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
                                      sub_topic_name, dp->participant());
