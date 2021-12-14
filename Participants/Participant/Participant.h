@@ -17,13 +17,14 @@ namespace raptor{
 
             /**
              * Reads 30 datapoints from the subscriber and 
-             * checks if the last entry is non-zero.
+             * checks for a non-zero last datapoint.
              * 
              * @returns if (position.x != 0.0)
             **/
             virtual bool check_for_data();
 
         protected:
+            std::string id;
             cpp_msg::Mocap pose_{};
     };
 
