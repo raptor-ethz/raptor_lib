@@ -39,3 +39,17 @@ class Quad : public raptor::Participant{
     private:
     cpp_msg::QuadPositionCmd pos_cmd{};
 };
+
+inline bool check_reached_pos_1d(   const float &actual_pos, 
+                                    const float &reference_pos, 
+                                    const float &threshold);
+
+inline bool check_reached_pos_3d(   const float &x_actual, 
+                                    const float &x_ref, 
+                                    const float &x_thresh,
+                                    const float &y_actual, 
+                                    const float &y_ref, 
+                                    const float &y_thresh,
+                                    const float &z_actual, 
+                                    const float &z_ref, 
+                                    const float &z_thresh);
