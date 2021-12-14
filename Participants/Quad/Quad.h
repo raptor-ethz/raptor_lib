@@ -22,7 +22,8 @@ class Quad : public raptor::Participant{
      * @param [in] x_thresh : maximal accepted deviation from x_ref
      * @param [in] y_thresh : maximal accepted deviation from y_ref
      * @param [in] z_thresh : maximal accepted deviation from z_ref
-     * @param [in] max_time : The time after which the function latest ends, 
+     * @param [in] delay_time : [ms] delay between commands
+     * @param [in] max_time : [ms] The time after which the function latest ends, 
      * even if the position wasn't reached
      * @param [in] reached_pos_flag : Flag if the function should end once
      * the position was reached. If false, the function always waits for 
@@ -30,10 +31,10 @@ class Quad : public raptor::Participant{
      * @returns If the position has been reached when the function ends
      * 
     **/
-    bool go_to_pos( const float x_ref, const float y_ref, const float z_ref, 
-                    const float x_thresh, const float y_thresh, 
-                    const float z_thresh, const float max_time, 
-                    const bool reached_pos_flag);
+    bool go_to_pos( const float &x_ref, const float &y_ref, const float &z_ref, 
+                    const float &x_thresh, const float &y_thresh, 
+                    const float &z_thresh, const int &delay_time,
+                    const float &max_time, const bool &reached_pos_flag);
 
     private:
     cpp_msg::QuadPositionCmd pos_cmd{};
