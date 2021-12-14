@@ -4,13 +4,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(raptor_lib)
 
-target_sources(raptor_lib PRIVATE
-    src/Participant.cpp
-    src/Quad.cpp
-    src/Item.cpp
-    src/Gripper.cpp
-)
-
 # requirements
 # find_package(MAVSDK REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
@@ -20,6 +13,5 @@ comm_lib
 yaml-cpp
 )
 
-target_include_directories(raptor_lib PUBLIC include)
-
 add_subdirectory(communication_lib)
+add_subdirectory(Participants)
