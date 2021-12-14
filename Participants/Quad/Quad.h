@@ -5,10 +5,10 @@
 class Quad : public raptor::Participant{
     public:
 
-    Quad(   std::string &raptor_participant_id,
+    Quad(   const std::string &raptor_participant_id,
             std::unique_ptr<DefaultParticipant> &dp, 
-            std::string &sub_topic_name,
-            std::string &pub_topic_name);
+            const std::string &sub_topic_name,
+            const std::string &pub_topic_name);
     ~Quad();
 
     DDSPublisher *position_pub;

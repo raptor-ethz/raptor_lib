@@ -1,6 +1,6 @@
 #include "Quad.h"
 
-Quad::Quad( std::string &raptor_participant_id,
+Quad::Quad( const std::string &raptor_participant_id,
             std::unique_ptr<DefaultParticipant> &dp, 
             std::string &sub_topic_name,
             std::string &pub_topic_name) {
