@@ -8,7 +8,10 @@ Gripper::Gripper(std::string &raptor_participant_id,
                               pub_topic_name, dp->participant());
   grip_pub->init();
 };
-Gripper::~Gripper() { delete grip_pub; }
+Gripper::~Gripper() { 
+  delete grip_pub;
+  delete mocap_sub;
+}
 
 void Gripper::open() {
   grip_cmd.position.x = 1;
