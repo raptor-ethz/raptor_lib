@@ -10,6 +10,8 @@ Item::Item( const std::string &raptor_participant_id,
                                      "mocap_srl_quad", dp->participant());
 
     mocap_sub->init();
+
+    check_for_data();
     
 };
 
