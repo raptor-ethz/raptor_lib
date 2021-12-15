@@ -103,13 +103,26 @@ bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref,
                                 const Vec3 &acc_ref,
                                 const int &completion_time)
 {
-    Vec3 pos_init(  pose_.pose.position.x, 
-                    pose_.pose.position.y, 
-                    pose_.pose.position.z);
+    // TODO: caluclate current velocity and acceleration
+    const Vec3 vel_init(0.0, 0.0, 0.0);
+    const Vec3 acc_init(0.0, 0.0, 0.0);
 
-    Vec3 vel_init(0.0, 0.0, 0.0);
-    Vec3 acc_init(0.0, 0.0, 0.0);
+    // instantiate trajectory
+    RapidQuadrocopterTrajectoryGenerator::RapidTrajectoryGenerator traj (
+        position_, vel_init, acc_init, gravity_);
+    
+    // define reference states
+    traj.SetGoalPosition(pos_ref);
+    traj.SetGoalVelocity(vel_ref);
+    traj.SetGoalAcceleration(acc_ref);
 
-    // RapidQuadrocopterTrajectoryGenerator::RapidTrajectoryGenerator traj(
-    //   pos_init, vel_init, acc_init, g);
+    // generate trajectory
+    traj.Generate(completion_time);
+
+    // DEBUG
+    // std::cout << "Go to position (minJerk): [\t" 
+    //             << pos_ref[0] << ",\t" << pos_ref[1] << ",\t" << pos_ref[2] 
+    //             << "\t] during " << max_time << "ms." << std::endl;
+
+    return false; // TODO
 }

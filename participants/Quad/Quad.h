@@ -120,8 +120,8 @@ class Quad : public raptor::Participant{
     Vec3 position_{};
     Vec3 velocity_{};
     Vec3 acceleration_{};
-    
-    const Vec3 gravity_(0, 0, -9.81);
+
+    const Vec3 gravity_{0, 0, -9.81};
 };
 
 inline bool check_reached_pos_1d(   const float &actual_pos, 
