@@ -23,9 +23,9 @@ namespace raptor{
             **/
             virtual bool check_for_data();
 
-            const cpp_msg::Mocap& get_pose();
+            virtual const cpp_msg::Mocap& get_pose();
 
-            const std::string& get_id();
+            virtual const std::string& get_id();
 
         protected:
             std::string id = "kA";
