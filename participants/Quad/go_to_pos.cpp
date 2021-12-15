@@ -152,9 +152,9 @@ bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref,
     // DEBUG
     if (result)
     {
-        std::cout << "Position reached after time limit." << std::endl;
+        std::cout << "Position reached." << std::endl;
     } else {
-        std::cout << "Position wasn't reached within time limit." << std::endl;
+        std::cout << "Position wasn't reached." << std::endl;
     }
     // DEBUG END
 
