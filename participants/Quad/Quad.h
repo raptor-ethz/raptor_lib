@@ -118,8 +118,8 @@ class Quad : public raptor::Participant{
     int delay_time_{20};
 
     Vec3 position_{};
-    Vec3 velocity_{};
-    Vec3 acceleration_{};
+    Vec3 velocity_{0, 0, 0};
+    Vec3 acceleration_{0, 0, 0};
 
     const Vec3 gravity_{0, 0, -9.81};
 };
