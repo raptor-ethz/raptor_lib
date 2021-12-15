@@ -1,4 +1,4 @@
-#Participants
+#Participant
 target_include_directories(raptor_lib PUBLIC Participant)
 target_sources(raptor_lib PRIVATE
     Participant/Participant.cpp)
