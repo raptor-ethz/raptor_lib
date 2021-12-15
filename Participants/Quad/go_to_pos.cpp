@@ -31,7 +31,7 @@ bool Quad::go_to_pos(   const float &x_ref, const float &y_ref, const float &z_r
                         const float &max_time, const bool &reached_pos_flag)
 {
     // DEBUG
-    std::cout << "Go to position: [\t" 
+    std::cout << "Go to position (standard): [\t" 
                 << x_ref << ",\t" << y_ref << ",\t" << z_ref 
                 << "\t] during max" << max_time << "ms." << std::endl;
     // DEBUG END
