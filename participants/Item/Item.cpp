@@ -1,20 +1,16 @@
 #include "Item.h"
 
-Item::Item( const std::string &raptor_participant_id,
-            std::unique_ptr<DefaultParticipant> &dp, 
-            const std::string &sub_topic_name) {
+Item::Item(const std::string &raptor_participant_id,
+           std::unique_ptr<DefaultParticipant> &dp,
+           const std::string &sub_topic_name) {
+  id = raptor_participant_id;
 
-    id = raptor_participant_id;
+  mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
+                                sub_topic_name, dp->participant());
 
-    mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
-                                    sub_topic_name, dp->participant());
+  mocap_sub->init();
 
-    mocap_sub->init();
-
-    check_for_data();
-    
+  // check_for_data();
 };
 
-Item::~Item () {
-    delete mocap_sub;
-}
+Item::~Item() { delete mocap_sub; }

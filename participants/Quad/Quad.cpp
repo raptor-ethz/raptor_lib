@@ -10,8 +10,8 @@ Quad::Quad(const std::string &raptor_participant_id,
                                 sub_topic_name, dp->participant());
 
   mocap_sub->init();
-  
-  check_for_data();
+
+  // check_for_data();
 
   position_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
                                   pub_topic_name, dp->participant());
