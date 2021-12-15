@@ -7,7 +7,7 @@ Item::Item( const std::string &raptor_participant_id,
     id = raptor_participant_id;
 
     mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
-                                     "mocap_srl_quad", dp->participant());
+                                    sub_topic_name, dp->participant());
 
     mocap_sub->init();
 
