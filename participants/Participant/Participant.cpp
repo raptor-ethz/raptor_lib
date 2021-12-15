@@ -11,7 +11,10 @@ bool raptor::Participant::check_for_data() {
                     << "Bad data after initializiation of mocap_subscriber." 
                     << std::endl;
         return false;
+    } else{
+        std::cout << "check for data ok" << std::endl;
     }
+    
     return true;
 }
 
