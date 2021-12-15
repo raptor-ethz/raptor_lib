@@ -14,3 +14,13 @@ bool raptor::Participant::check_for_data() {
     }
     return true;
 }
+
+const cpp_msg::Mocap& raptor::Participant::get_pose()
+{
+    return pose_;
+}
+
+const std::string& raptor::Participant::get_id()
+{
+    return id;
+}
