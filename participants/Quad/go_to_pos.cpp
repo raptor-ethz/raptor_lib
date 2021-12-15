@@ -106,9 +106,13 @@ bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref,
     // TODO: caluclate current pos, velocity and acceleration
 
     // evaluate current position
-    position_ = Vec3(   pose_.pose.position.x, 
-                        pose_.pose.position.y, 
-                        pose_.pose.position.z);
+    // position_ = Vec3(   pose_.pose.position.x, 
+    //                     pose_.pose.position.y, 
+    //                     pose_.pose.position.z);
+
+    position_ = Vec3(   -1.5, 
+                        1, 
+                        2);
 
     // instantiate trajectory
     RapidQuadrocopterTrajectoryGenerator::RapidTrajectoryGenerator traj (
