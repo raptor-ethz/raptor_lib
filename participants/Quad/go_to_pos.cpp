@@ -124,13 +124,15 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
     pos_cmd.position.z = traj.GetPosition(i).z;
 
     // DEBUG
-    std::cout << "Timestep:" << i << std::endl;
-    std::cout << "Position_cmd:" << '\t' << traj.GetPosition(i).x << '\t'
-              << traj.GetPosition(i).y << '\t' << traj.GetPosition(i).z
-              << std::endl;
-    std::cout << "Position_quad:" << '\t' << pose_.pose.position.x << '\t'
-              << pose_.pose.position.y << '\t' << pose_.pose.position.z
-              << std::endl;
+    std::cout   << "Timestep:" << i << std::endl;
+    std::cout   << "Position_cmd:" << '\t' 
+                << traj.GetPosition(i).x << '\t'
+                << traj.GetPosition(i).y << '\t' 
+                << traj.GetPosition(i).z << std::endl;
+    std::cout   << "Position_quad:" << '\t' 
+                << pose_.pose.position.x << '\t'
+                << pose_.pose.position.y << '\t' 
+                << pose_.pose.position.z << std::endl;
     // DEBUG END
 
     // publish command
