@@ -168,15 +168,20 @@ void Quad::land(Item stand)
     go_to_pos(stand.get_pose().pose.position.x,
                 stand.get_pose().pose.position.y,
                 stand.get_pose().pose.position.z + 0.75,
-                5000, false);
+                2000, false);
 
     go_to_pos(stand.get_pose().pose.position.x,
                 stand.get_pose().pose.position.y,
                 stand.get_pose().pose.position.z + 0.2,
-                3000, false);
+                2000, false);
 
     go_to_pos(stand.get_pose().pose.position.x,
                 stand.get_pose().pose.position.y,
                 stand.get_pose().pose.position.z + 0.0,
-                3000, false);
+                1000, false);
+
+    go_to_pos(stand.get_pose().pose.position.x,
+                stand.get_pose().pose.position.y,
+                stand.get_pose().pose.position.z - 0.2,
+                1000, false);
 }
