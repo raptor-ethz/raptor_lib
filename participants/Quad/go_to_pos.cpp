@@ -21,9 +21,10 @@ inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
 }
 
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
-                     const float &x_thresh, const float &y_thresh,
-                     const float &z_thresh, const int &delay_time,
-                     const float &max_time, const bool &reached_pos_flag) {
+                     const float &yaw_ref, const float &x_thresh,
+                     const float &y_thresh, const float &z_thresh,
+                     const int &delay_time, const float &max_time,
+                     const bool &reached_pos_flag) {
   // DEBUG
   std::cout << "Go to position (standard): [\t" << x_ref << ",\t" << y_ref
             << ",\t" << z_ref << "\t] during max " << max_time << "ms ."
@@ -51,6 +52,7 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
       pos_cmd.position.x = x_ref;
       pos_cmd.position.y = y_ref;
       pos_cmd.position.z = z_ref;
+      pos_cmd.yaw_angle = yaw_ref;
 
       // publich pos_cmd
       position_pub->publish(pos_cmd);
@@ -72,16 +74,17 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
 }
 
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
-                     const int &delay_time, const float &max_time,
-                     const bool &reached_pos_flag) {
-  return go_to_pos(x_ref, y_ref, z_ref, x_thresh_, y_thresh_, z_thresh_,
-                   delay_time, max_time, reached_pos_flag);
+                     const float &yaw_ref, const int &delay_time,
+                     const float &max_time, const bool &reached_pos_flag) {
+  return go_to_pos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_,
+                   z_thresh_, delay_time, max_time, reached_pos_flag);
 }
 
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
-                     const float &max_time, const bool &reached_pos_flag) {
-  return go_to_pos(x_ref, y_ref, z_ref, x_thresh_, y_thresh_, z_thresh_,
-                   delay_time_, max_time, reached_pos_flag);
+                     const float &yaw_ref, const float &max_time,
+                     const bool &reached_pos_flag) {
+  return go_to_pos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_,
+                   z_thresh_, delay_time_, max_time, reached_pos_flag);
 }
 
 bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
@@ -89,9 +92,8 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   // TODO: caluclate current pos, velocity and acceleration
 
   // evaluate current position
-  position_ = Vec3(   pose_.pose.position.x,
-                      pose_.pose.position.y,
-                      pose_.pose.position.z);
+  position_ =
+      Vec3(pose_.pose.position.x, pose_.pose.position.y, pose_.pose.position.z);
 
   // instantiate trajectory
   RapidQuadrocopterTrajectoryGenerator::RapidTrajectoryGenerator traj(
@@ -106,10 +108,8 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   traj.Generate(completion_time);
 
   // DEBUG
-  std::cout << "Go to position (minJerk): [\t" 
-            << pos_ref[0] << ",\t"
-            << pos_ref[1] << ",\t" 
-            << pos_ref[2] << "\t] during "
+  std::cout << "Go to position (minJerk): [\t" << pos_ref[0] << ",\t"
+            << pos_ref[1] << ",\t" << pos_ref[2] << "\t] during "
             << completion_time << "s ." << std::endl;
   // DEBUG END
 
@@ -124,15 +124,13 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
     pos_cmd.position.z = traj.GetPosition(i).z;
 
     // DEBUG
-    std::cout   << "Timestep:" << i << std::endl;
-    std::cout   << "Position_cmd:" << '\t' 
-                << traj.GetPosition(i).x << '\t'
-                << traj.GetPosition(i).y << '\t' 
-                << traj.GetPosition(i).z << std::endl;
-    std::cout   << "Position_quad:" << '\t' 
-                << pose_.pose.position.x << '\t'
-                << pose_.pose.position.y << '\t' 
-                << pose_.pose.position.z << std::endl;
+    std::cout << "Timestep:" << i << std::endl;
+    std::cout << "Position_cmd:" << '\t' << traj.GetPosition(i).x << '\t'
+              << traj.GetPosition(i).y << '\t' << traj.GetPosition(i).z
+              << std::endl;
+    std::cout << "Position_quad:" << '\t' << pose_.pose.position.x << '\t'
+              << pose_.pose.position.y << '\t' << pose_.pose.position.z
+              << std::endl;
     // DEBUG END
 
     // publish command
@@ -158,25 +156,16 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   return result;
 }
 
-void Quad::land(Item stand)
-{
-    go_to_pos(stand.get_pose().pose.position.x,
-                stand.get_pose().pose.position.y,
-                stand.get_pose().pose.position.z + 1.5,
-                5000, false);
+void Quad::land(Item stand) {
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 1.5, 5000, false);
 
-    go_to_pos(stand.get_pose().pose.position.x,
-                stand.get_pose().pose.position.y,
-                stand.get_pose().pose.position.z + 0.75,
-                5000, false);
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 0.75, 5000, false);
 
-    go_to_pos(stand.get_pose().pose.position.x,
-                stand.get_pose().pose.position.y,
-                stand.get_pose().pose.position.z + 0.2,
-                3000, false);
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 0.2, 3000, false);
 
-    go_to_pos(stand.get_pose().pose.position.x,
-                stand.get_pose().pose.position.y,
-                stand.get_pose().pose.position.z + 0.0,
-                3000, false);
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 0.0, 3000, false);
 }
