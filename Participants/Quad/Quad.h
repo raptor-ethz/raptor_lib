@@ -17,12 +17,12 @@ class Quad : public raptor::Participant{
      * Send a position command to this drone with a reference position.
      * Will return once the time is reached, or, if the reached_pos_flag is
      * set to true, if the position has been reached within the threshold.
-     * @param [in] x_ref : Reference position - x coordinate
-     * @param [in] y_ref : Reference position - y coordinate
-     * @param [in] z_ref : Reference position - z coordinate
-     * @param [in] x_thresh : maximal accepted deviation from x_ref
-     * @param [in] y_thresh : maximal accepted deviation from y_ref
-     * @param [in] z_thresh : maximal accepted deviation from z_ref
+     * @param [in] x_ref : [m] Reference position - x coordinate
+     * @param [in] y_ref : [m] Reference position - y coordinate
+     * @param [in] z_ref : [m] Reference position - z coordinate
+     * @param [in] x_thresh : [m] maximal accepted deviation from x_ref
+     * @param [in] y_thresh : [m] maximal accepted deviation from y_ref
+     * @param [in] z_thresh : [m] maximal accepted deviation from z_ref
      * @param [in] delay_time : [ms] delay between commands
      * @param [in] max_time : [ms] The time after which the function latest ends, 
      * even if the position wasn't reached
@@ -37,8 +37,25 @@ class Quad : public raptor::Participant{
                     const float &z_thresh, const int &delay_time,
                     const float &max_time, const bool &reached_pos_flag);
 
+
+
+    void set_thresh(const float x_thresh, 
+                    const float y_thresh, 
+                    const float z_thresh)
+    {
+        x_thresh_ = x_thresh;
+        y_thresh_ = y_thresh;
+        z_thresh_ = z_thresh;
+    }
+
     private:
     cpp_msg::QuadPositionCmd pos_cmd{};
+
+    float x_thresh_{};
+    float y_thresh_{};
+    float z_thresh_{};
+
+    int delay_time_{};
 };
 
 inline bool check_reached_pos_1d(   const float &actual_pos, 
