@@ -97,3 +97,19 @@ bool Quad::go_to_pos( const float &x_ref, const float &y_ref, const float &z_ref
     return go_to_pos(   x_ref, y_ref, z_ref, x_thresh_, y_thresh_, z_thresh_,
                         delay_time_, max_time, reached_pos_flag);
 }
+
+bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref, 
+                                const Vec3 &vel_ref,
+                                const Vec3 &acc_ref,
+                                const int &completion_time)
+{
+    Vec3 pos_init(  pose_.pose.position.x, 
+                    pose_.pose.position.y, 
+                    pose_.pose.position.z);
+
+    Vec3 vel_init(0.0, 0.0, 0.0);
+    Vec3 acc_init(0.0, 0.0, 0.0);
+
+    // RapidQuadrocopterTrajectoryGenerator::RapidTrajectoryGenerator traj(
+    //   pos_init, vel_init, acc_init, g);
+}
