@@ -1,25 +1,24 @@
 #include "Quad.h"
 
-Quad::Quad( const std::string &raptor_participant_id,
-            std::unique_ptr<DefaultParticipant> &dp, 
-            const std::string &sub_topic_name,
-            const std::string &pub_topic_name) {
-    
-    id = raptor_participant_id;
+Quad::Quad(const std::string &raptor_participant_id,
+           std::unique_ptr<DefaultParticipant> &dp,
+           const std::string &sub_topic_name,
+           const std::string &pub_topic_name) {
+  id = raptor_participant_id;
 
-    mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
-                                     sub_topic_name, dp->participant());
+  mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
+                                sub_topic_name, dp->participant());
+  std::cout << velocity_[0] << std::endl;
+  mocap_sub->init();
+  check_for_data();
 
-    mocap_sub->init();
-    check_for_data();
-    
-    position_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
-                                    pub_topic_name, dp->participant());
+  position_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
+                                  pub_topic_name, dp->participant());
 
-    position_pub->init();
+  position_pub->init();
 };
 
-Quad::~Quad () {
-    delete mocap_sub;
-    delete position_pub;
+Quad::~Quad() {
+  delete mocap_sub;
+  delete position_pub;
 }
