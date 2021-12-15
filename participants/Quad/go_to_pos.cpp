@@ -133,7 +133,7 @@ bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref,
     // DEBUG END
 
     // convert delay_time to seconds
-    const int dt = delay_time_/1000;
+    const float dt = delay_time_/1000;
 
     // start controlling loop
     for (double i = 0; i < completion_time; i += dt)
@@ -142,6 +142,16 @@ bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref,
         pos_cmd.position.x = traj.GetPosition(i).x;
         pos_cmd.position.x = traj.GetPosition(i).y;
         pos_cmd.position.x = traj.GetPosition(i).z;
+
+        // DEBUG
+        std::cout << "Timestep:" << i << std::endl;
+        std::cout << "Position_cmd:" << '\t' << traj.GetPosition(i).x << '\t'
+                << traj.GetPosition(i).y << '\t' << traj.GetPosition(i).z
+                << std::endl;
+        std::cout << "Position_quad:" << '\t' << pose_.pose.position.x << '\t'
+                << pose_.pose.position.y << '\t'
+                << pose_.pose.position.z << std::endl;
+        // DEBUG END
 
         // publish command
         position_pub->publish(pos_cmd);
