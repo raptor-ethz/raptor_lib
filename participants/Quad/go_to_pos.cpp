@@ -26,7 +26,7 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                      const float &max_time, const bool &reached_pos_flag) {
   // DEBUG
   std::cout << "Go to position (standard): [\t" << x_ref << ",\t" << y_ref
-            << ",\t" << z_ref << "\t] during max" << max_time << "ms."
+            << ",\t" << z_ref << "\t] during max " << max_time << "ms ."
             << std::endl;
   // DEBUG END
 
@@ -89,11 +89,9 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   // TODO: caluclate current pos, velocity and acceleration
 
   // evaluate current position
-  // position_ = Vec3(   pose_.pose.position.x,
-  //                     pose_.pose.position.y,
-  //                     pose_.pose.position.z);
-
-  position_ = Vec3(-1.5, 1, 2);
+  position_ = Vec3(   pose_.pose.position.x,
+                      pose_.pose.position.y,
+                      pose_.pose.position.z);
 
   // instantiate trajectory
   RapidQuadrocopterTrajectoryGenerator::RapidTrajectoryGenerator traj(
@@ -108,9 +106,11 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   traj.Generate(completion_time);
 
   // DEBUG
-  std::cout << "Go to position (minJerk): [\t" << pos_ref[0] << ",\t"
-            << pos_ref[1] << ",\t" << pos_ref[2] << "\t] during "
-            << completion_time << "s." << std::endl;
+  std::cout << "Go to position (minJerk): [\t" 
+            << pos_ref[0] << ",\t"
+            << pos_ref[1] << ",\t" 
+            << pos_ref[2] << "\t] during "
+            << completion_time << "s ." << std::endl;
   // DEBUG END
 
   // convert delay_time to seconds
