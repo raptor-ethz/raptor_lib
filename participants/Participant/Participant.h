@@ -28,7 +28,7 @@ namespace raptor{
             virtual const std::string& get_id();
 
         protected:
-            std::string id = "kA";
+            std::string id = "N/A";
             cpp_msg::Mocap pose_{};
     };
 
