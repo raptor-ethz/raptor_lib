@@ -3,7 +3,6 @@
 Gripper::Gripper(const std::string &raptor_participant_id,
                  std::unique_ptr<DefaultParticipant> &dp,
                  const std::string &pub_topic_name) {
-
   id = raptor_participant_id;
 
   grip_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
@@ -12,17 +11,9 @@ Gripper::Gripper(const std::string &raptor_participant_id,
   grip_pub->init();
 };
 
-Gripper::~Gripper() { 
-  delete grip_pub;
-  delete mocap_sub;
-}
+Gripper::~Gripper() { delete grip_pub; }
 
-void Gripper::open() {
-  grip_cmd.position.x = 1;
-  grip_pub->publish(grip_cmd);
-}
-
-void Gripper::close() {
-  grip_cmd.position.x = 0;
+void Gripper::set_angle(int angle) {
+  grip_cmd.position.x = angle;
   grip_pub->publish(grip_cmd);
 }

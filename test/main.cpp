@@ -16,16 +16,14 @@ int main() {
   // those values do not have to be passed and the function call is more
   // compact
 
-
   // gripper test
   while (true) {
-    gripper.open();
+    gripper.set_angle(0);
     std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-    gripper.close();
+    gripper.set_angle(45);
     std::this_thread::sleep_for(std::chrono::milliseconds(1500));
   }
 
-  
   // flight test
   //   float x_thresh, y_thresh, z_thresh = 0.2;
   //   int delay_time = 20;
