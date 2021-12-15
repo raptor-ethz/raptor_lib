@@ -88,7 +88,7 @@ class Quad : public raptor::Participant{
      * @param [in] pos_ref : [m] Reference position
      * @param [in] vel_ref : [m] Reference velocity
      * @param [in] acc_ref : [m] Reference acceleration
-     * @param [in] completion_time : [ms] Reference time for the drone to fly
+     * @param [in] completion_time : [s] Reference time for the drone to fly
      * the trajectory
      * @returns If the position has been reached when the function ends
      * 

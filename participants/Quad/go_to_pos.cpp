@@ -104,12 +104,12 @@ bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref,
                                 const int &completion_time)
 {
     // TODO: caluclate current velocity and acceleration
-    const Vec3 vel_init(0.0, 0.0, 0.0);
-    const Vec3 acc_init(0.0, 0.0, 0.0);
+    // const Vec3 vel_init(0.0, 0.0, 0.0);
+    // const Vec3 acc_init(0.0, 0.0, 0.0);
 
     // instantiate trajectory
     RapidQuadrocopterTrajectoryGenerator::RapidTrajectoryGenerator traj (
-        position_, vel_init, acc_init, gravity_);
+        position_, velocity_, acceleration_, gravity_);
     
     // define reference states
     traj.SetGoalPosition(pos_ref);
@@ -120,9 +120,43 @@ bool Quad::go_to_pos_min_jerk(  const Vec3 &pos_ref,
     traj.Generate(completion_time);
 
     // DEBUG
-    // std::cout << "Go to position (minJerk): [\t" 
-    //             << pos_ref[0] << ",\t" << pos_ref[1] << ",\t" << pos_ref[2] 
-    //             << "\t] during " << max_time << "ms." << std::endl;
+    std::cout << "Go to position (minJerk): [\t" 
+                << pos_ref[0] << ",\t" << pos_ref[1] << ",\t" << pos_ref[2] 
+                << "\t] during " << completion_time << "s." << std::endl;
+    // DEBUG END
 
-    return false; // TODO
+    // convert delay_time to seconds
+    const int dt = delay_time_/1000;
+
+    // start controlling loop
+    for (double i = 0; i < completion_time; i += dt)
+    {
+        // update pos_cmd
+        pos_cmd.position.x = traj.GetPosition(i).x;
+        pos_cmd.position.x = traj.GetPosition(i).y;
+        pos_cmd.position.x = traj.GetPosition(i).z;
+
+        // publish command
+        position_pub->publish(pos_cmd);
+
+        // delay
+        std::this_thread::sleep_for(std::chrono::milliseconds(delay_time_));
+    }
+
+    // check if reference position has been reached
+    bool result = check_reached_pos_3d(  
+        pose_.pose.position.x, pos_ref[0], x_thresh_,
+        pose_.pose.position.y, pos_ref[1], y_thresh_,
+        pose_.pose.position.z, pos_ref[2], z_thresh_);
+
+    // DEBUG
+    if (result)
+    {
+        std::cout << "Position reached after time limit." << std::endl;
+    } else {
+        std::cout << "Position wasn't reached within time limit." << std::endl;
+    }
+    // DEBUG END
+
+    return result;
 }
