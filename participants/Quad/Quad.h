@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Participant.h"
+#include "Item.h"
 #include "QuadPositionCmdPubSubTypes.h"
 #include "RapidTrajectoryGenerator.h"
 #include "Vec3.h"
@@ -97,6 +98,8 @@ class Quad : public raptor::Participant{
                             const Vec3 &vel_ref,
                             const Vec3 &acc_ref,
                             const int &completion_time);
+
+    void land(Item stand);
 
 
     void set_thresh(const float x_thresh, 

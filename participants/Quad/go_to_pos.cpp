@@ -157,3 +157,26 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
 
   return result;
 }
+
+void Quad::land(Item stand)
+{
+    go_to_pos(stand.get_pose().pose.position.x,
+                stand.get_pose().pose.position.y,
+                stand.get_pose().pose.position.z + 1.5,
+                5000, false);
+
+    go_to_pos(stand.get_pose().pose.position.x,
+                stand.get_pose().pose.position.y,
+                stand.get_pose().pose.position.z + 0.75,
+                5000, false);
+
+    go_to_pos(stand.get_pose().pose.position.x,
+                stand.get_pose().pose.position.y,
+                stand.get_pose().pose.position.z + 0.2,
+                3000, false);
+
+    go_to_pos(stand.get_pose().pose.position.x,
+                stand.get_pose().pose.position.y,
+                stand.get_pose().pose.position.z + 0.0,
+                3000, false);
+}
