@@ -36,7 +36,46 @@ class Quad : public raptor::Participant{
                     const float &x_thresh, const float &y_thresh, 
                     const float &z_thresh, const int &delay_time,
                     const float &max_time, const bool &reached_pos_flag);
+    
+    /** 
+     * Send a position command to this drone with a reference position.
+     * Will return once the time is reached, or, if the reached_pos_flag is
+     * set to true, if the position has been reached within the threshold
+     * previously defined in the instance.
+     * @param [in] x_ref : [m] Reference position - x coordinate
+     * @param [in] y_ref : [m] Reference position - y coordinate
+     * @param [in] z_ref : [m] Reference position - z coordinate
+     * @param [in] delay_time : [ms] delay between commands
+     * @param [in] max_time : [ms] The time after which the function latest ends, 
+     * even if the position wasn't reached
+     * @param [in] reached_pos_flag : Flag if the function should end once
+     * the position was reached. If false, the function always waits for 
+     * max_time before ending
+     * @returns If the position has been reached when the function ends
+     * 
+    **/
+    bool go_to_pos( const float &x_ref, const float &y_ref, const float &z_ref,
+                    const int &delay_time, const float &max_time, 
+                    const bool &reached_pos_flag);
 
+    /** 
+     * Send a position command to this drone with a reference position.
+     * Will return once the time is reached, or, if the reached_pos_flag is
+     * set to true, if the position has been reached within the threshold
+     * and delay time previously defined in the instance.
+     * @param [in] x_ref : [m] Reference position - x coordinate
+     * @param [in] y_ref : [m] Reference position - y coordinate
+     * @param [in] z_ref : [m] Reference position - z coordinate
+     * @param [in] max_time : [ms] The time after which the function latest ends, 
+     * even if the position wasn't reached
+     * @param [in] reached_pos_flag : Flag if the function should end once
+     * the position was reached. If false, the function always waits for 
+     * max_time before ending
+     * @returns If the position has been reached when the function ends
+     * 
+    **/
+    bool go_to_pos( const float &x_ref, const float &y_ref, const float &z_ref,
+                    const float &max_time, const bool &reached_pos_flag);
 
 
     void set_thresh(const float x_thresh, 
