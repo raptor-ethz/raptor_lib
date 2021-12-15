@@ -111,11 +111,11 @@ class Quad : public raptor::Participant{
     private:
     cpp_msg::QuadPositionCmd pos_cmd{};
 
-    float x_thresh_{};
-    float y_thresh_{};
-    float z_thresh_{};
+    float x_thresh_{0.2};
+    float y_thresh_{0.2};
+    float z_thresh_{0.2};
 
-    int delay_time_{};
+    int delay_time_{20};
 
     Vec3 position_{};
     Vec3 velocity_{};
