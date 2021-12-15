@@ -106,6 +106,11 @@ class Quad : public raptor::Participant {
     z_thresh_ = z_thresh;
   }
 
+  void set_velocity(const Vec3 &velocity)
+  {
+      velocity_ = velocity;
+  }
+
  private:
   cpp_msg::QuadPositionCmd pos_cmd{};
 
