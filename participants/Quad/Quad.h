@@ -101,7 +101,7 @@ class Quad : public raptor::Participant {
   void land(Item &stand);
 
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
-             float h0, int time);
+             float dz, float h0, int time);
   void release(Item &target, Gripper &gripper, float length, float h0,
                int time);
 

@@ -179,7 +179,7 @@ void Quad::land(Item &stand) {
 }
 
 void Quad::swoop(Item &target, Gripper &gripper, float length, float dx,
-                 float dy, float h0, int time) {
+                 float dy, float dz, float h0, int time) {
   gripper.set_angle(45);
   // start position
   go_to_pos(target.get_pose().pose.position.x + dx - length,
@@ -188,10 +188,10 @@ void Quad::swoop(Item &target, Gripper &gripper, float length, float dx,
   // swoop to object
   go_to_pos(target.get_pose().pose.position.x + dx - 0.2,
             target.get_pose().pose.position.y + dy,
-            target.get_pose().pose.position.z + 0.45, 0, 4500, true);
+            target.get_pose().pose.position.z + +dz + 0.45, 0, 4500, true);
   go_to_pos(target.get_pose().pose.position.x + dx,
             target.get_pose().pose.position.y + dy,
-            target.get_pose().pose.position.z + 0.28, 0, time, false);
+            target.get_pose().pose.position.z + dz + 0.28, 0, time, false);
   gripper.set_angle(5);
   std::this_thread::sleep_for(std::chrono::milliseconds(350));
 
