@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Gripper.h"
 #include "Item.h"
 #include "Participant.h"
 #include "QuadPositionCmdPubSubTypes.h"
@@ -97,7 +98,9 @@ class Quad : public raptor::Participant {
   bool go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
                           const Vec3 &acc_ref, const int &completion_time);
 
-  void land(Item stand);
+  void land(Item &stand);
+
+  void swoop(Item &target, Gripper &gripper, float length, float h0, int time);
 
   void set_thresh(const float x_thresh, const float y_thresh,
                   const float z_thresh) {
@@ -106,10 +109,7 @@ class Quad : public raptor::Participant {
     z_thresh_ = z_thresh;
   }
 
-  void set_velocity(const Vec3 &velocity)
-  {
-      velocity_ = velocity;
-  }
+  void set_velocity(const Vec3 &velocity) { velocity_ = velocity; }
 
  private:
   cpp_msg::QuadPositionCmd pos_cmd{};

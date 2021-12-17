@@ -156,7 +156,7 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   return result;
 }
 
-void Quad::land(Item stand) {
+void Quad::land(Item &stand) {
   go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
             stand.get_pose().pose.position.z + 1.0,
             stand.get_pose().pose.orientation_euler.yaw, 5000, false);
@@ -176,4 +176,27 @@ void Quad::land(Item stand) {
   go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
             stand.get_pose().pose.position.z - 0.2,
             stand.get_pose().pose.orientation_euler.yaw, 2000, false);
+}
+
+void Quad::swoop(Item &target, Gripper &gripper, float length, float h0,
+                 int time) {
+  gripper.set_angle(45);
+  // start position
+  go_to_pos(target.get_pose().pose.position.x - length,
+            target.get_pose().pose.position.y, h0, 0, 3000, true);
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  // swoop to object
+  go_to_pos(target.get_pose().pose.position.x - 0.2,
+            target.get_pose().pose.position.y,
+            target.get_pose().pose.position.z + 0.45, 0, 4500, true);
+  go_to_pos(target.get_pose().pose.position.x,
+            target.get_pose().pose.position.y,
+            target.get_pose().pose.position.z + 0.28, 0, time, false);
+  gripper.set_angle(5);
+  std::this_thread::sleep_for(std::chrono::milliseconds(350));
+
+  // swoop away from object
+  go_to_pos(target.get_pose().pose.position.x + length,
+            target.get_pose().pose.position.y, h0, 0, 3000, true);
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
