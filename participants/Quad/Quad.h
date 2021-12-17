@@ -104,6 +104,8 @@ class Quad : public raptor::Participant {
              float dz, float h0, int time);
   void release(Item &target, Gripper &gripper, float length, float h0,
                int time);
+  void quick_release(Item &target, Gripper &gripper, float length, float h0,
+  int time);
 
   void set_thresh(const float x_thresh, const float y_thresh,
                   const float z_thresh) {

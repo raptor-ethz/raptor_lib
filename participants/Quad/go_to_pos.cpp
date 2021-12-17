@@ -220,3 +220,41 @@ void Quad::release(Item &target, Gripper &gripper, float length, float h0,
             target.get_pose().pose.position.y, h0, 0, 3000, true);
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
+
+// only for demo
+void Quad::quick_release(Item &target, Gripper &gripper, float length, float h0,
+                   int time) {
+  
+  // start position
+  go_to_pos(target.get_pose().pose.position.x + length,
+              target.get_pose().pose.position.y, h0, 0, 3000, false);
+
+  // define ref position
+  Vec3 pos_ref(target.get_pose().pose.position.x, 
+                target.get_pose().pose.position.y, 
+                target.get_pose().pose.position.z + 0.50);
+  Vec3 vel_ref(-0.5, 0, 0);
+  Vec3 acc_ref(0, 0, 0);
+
+  // swoop down
+  go_to_pos_min_jerk(pos_ref, vel_ref, acc_ref, 3);
+
+  // drop
+  gripper.set_angle(45);
+
+  // define next ref position
+  set_velocity(Vec3(-0.5, 0, 0));
+  pos_ref= Vec3(target.get_pose().pose.position.x - length, 
+                target.get_pose().pose.position.y, 
+                h0);
+  vel_ref = Vec3(0, 0, 0);
+
+  // swoop up
+  go_to_pos_min_jerk(pos_ref, vel_ref, acc_ref, 3);
+
+  // close gripper and reset
+  gripper.set_angle(0);
+  set_velocity(Vec3(0, 0, 0));
+  
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+}
