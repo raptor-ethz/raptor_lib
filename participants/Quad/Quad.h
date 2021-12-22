@@ -102,6 +102,8 @@ class Quad : public raptor::Participant {
 
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
              float dz, float h0, int time, int grip_angle);
+  void quick_swoop(Item &target, Gripper &gripper, float length, float dx,
+                   float dy, float dz, float h0, int time, int grip_angle);
   void release(Item &target, Gripper &gripper, float length, float h0,
                int time);
   void quick_release(Item &target, Gripper &gripper, float length, float h0,
