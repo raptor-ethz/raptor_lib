@@ -180,7 +180,7 @@ void Quad::land(Item &stand) {
 
 void Quad::swoop(Item &target, Gripper &gripper, float length, float dx,
                  float dy, float dz, float h0, int time, int grip_angle) {
-  gripper.set_angle(45);
+  gripper.set_angle_sym(45);
   // start position
   go_to_pos(target.get_pose().pose.position.x + dx - length,
             target.get_pose().pose.position.y + dy, h0, 0, 3000, true);
@@ -192,7 +192,7 @@ void Quad::swoop(Item &target, Gripper &gripper, float length, float dx,
   go_to_pos(target.get_pose().pose.position.x + dx,
             target.get_pose().pose.position.y + dy,
             target.get_pose().pose.position.z + dz + 0.28, 0, time, false);
-  gripper.set_angle(grip_angle);
+  gripper.set_angle_sym(grip_angle);
   std::this_thread::sleep_for(std::chrono::milliseconds(350));
 
   // swoop away from object
@@ -212,9 +212,9 @@ void Quad::release(Item &target, Gripper &gripper, float length, float h0,
   go_to_pos(target.get_pose().pose.position.x,
             target.get_pose().pose.position.y,
             target.get_pose().pose.position.z + 0.50, 0, 2500, false);
-  gripper.set_angle(45);
+  gripper.set_angle_sym(45);
   std::this_thread::sleep_for(std::chrono::milliseconds(350));
-  gripper.set_angle(0);
+  gripper.set_angle_sym(0);
   // swoop away from object
   go_to_pos(target.get_pose().pose.position.x - length,
             target.get_pose().pose.position.y, h0, 0, 3000, true);
@@ -239,7 +239,7 @@ void Quad::quick_release(Item &target, Gripper &gripper, float length, float h0,
   go_to_pos_min_jerk(pos_ref, vel_ref, acc_ref, 2);
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   // drop
-  gripper.set_angle(45);
+  gripper.set_angle_sym(45);
 
   // define next ref position
   set_velocity(Vec3(-0.5, 0, 0));
@@ -251,7 +251,7 @@ void Quad::quick_release(Item &target, Gripper &gripper, float length, float h0,
   go_to_pos_min_jerk(pos_ref, vel_ref, acc_ref, 2);
 
   // close gripper and reset
-  gripper.set_angle(0);
+  gripper.set_angle_sym(0);
   set_velocity(Vec3(0, 0, 0));
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
