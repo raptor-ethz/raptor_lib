@@ -18,9 +18,10 @@ int main() {
 
   // gripper test
   while (true) {
-    gripper.set_angle(0);
+    // le
+    gripper.set_angle_sym(0);
     std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-    gripper.set_angle(45);
+    gripper.set_angle_sym(45);
     std::this_thread::sleep_for(std::chrono::milliseconds(1500));
   }
 
