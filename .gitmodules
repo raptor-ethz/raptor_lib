@@ -1,3 +1,0 @@
-[submodule "communication_lib"]
-	path = communication_lib
-	url = https://github.com/sarath-menon/communication_lib.git
