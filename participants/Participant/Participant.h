@@ -8,6 +8,7 @@
 #include "geometry_msgs/msgs/Position.h"
 #include "quadcopter_msgs/msgs/QuadPositionCmd.h"
 #include "sensor_msgs/msgs/Mocap.h"
+#include "std_msgs/msgs/Header.h"
 
 namespace raptor{
 

@@ -4,6 +4,7 @@
 #include "Item.h"
 #include "Participant.h"
 #include "QuadPositionCmdPubSubTypes.h"
+#include "HeaderPubSubTypes.h"
 #include "RapidTrajectoryGenerator.h"
 #include "Vec3.h"
 
@@ -15,6 +16,8 @@ class Quad : public raptor::Participant {
   ~Quad();
 
   DDSPublisher *position_pub;
+  DDSPublisher *px4_cmd_pub;
+  DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header>  *px4_error_sub;
 
   /**
    * Send a position command to this drone with a reference position.
@@ -120,6 +123,7 @@ class Quad : public raptor::Participant {
 
  private:
   cpp_msg::QuadPositionCmd pos_cmd{};
+  cpp_msg::Header px4_error_msg{};
 
   float x_thresh_{0.2};
   float y_thresh_{0.2};
