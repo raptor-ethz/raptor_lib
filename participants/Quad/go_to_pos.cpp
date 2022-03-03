@@ -267,7 +267,7 @@ void Quad::quick_swoop(Item &target, Gripper &gripper, float length, float dx,
   // go to start position
   go_to_pos(target.get_pose().pose.position.x + dx - length,
             target.get_pose().pose.position.y + dy, h0, 0, 4500, false);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   // swoop to object
   go_to_pos(target.get_pose().pose.position.x + dx,
