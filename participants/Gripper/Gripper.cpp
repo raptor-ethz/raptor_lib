@@ -7,7 +7,6 @@ Gripper::Gripper(const std::string &raptor_participant_id,
   grip_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
                               pub_topic_name, dp->participant());
 
-  grip_pub->init();
 };
 
 Gripper::~Gripper() { delete grip_pub; }
