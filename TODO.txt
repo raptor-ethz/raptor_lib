@@ -1,5 +1,8 @@
-Add yaml parameters
+Add px4 commands as methods to Quad
 
-reference velocity & threshold for go_to_pos
+Feedback
+- Check for Kill switch engaged before arming
 
-MM integration
+MOCAP feasability
+
+Battery status
