@@ -20,23 +20,23 @@ class Quad : public raptor::Participant {
   DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header>  *px4_error_sub;
 
   /**
-   * Send a position command to this drone with a reference position.
-   * Will return once the time is reached, or, if the reached_pos_flag is
-   * set to true, if the position has been reached within the threshold.
+   * Let the drone track a position using continuously sent position commands
+   * at a specified frequency. 
    * @param [in] x_ref : [m] Reference position - x coordinate
    * @param [in] y_ref : [m] Reference position - y coordinate
    * @param [in] z_ref : [m] Reference position - z coordinate
-   * @param [in] x_thresh : [m] maximal accepted deviation from x_ref
-   * @param [in] y_thresh : [m] maximal accepted deviation from y_ref
-   * @param [in] z_thresh : [m] maximal accepted deviation from z_ref
+   * @param [in] x_thresh : [m] Maximal accepted deviation from x_ref
+   * @param [in] y_thresh : [m] Maximal accepted deviation from y_ref
+   * @param [in] z_thresh : [m] Maximal accepted deviation from z_ref
    * @param [in] delay_time : [ms] delay between commands
-   * @param [in] max_time : [ms] The time after which the function latest ends,
+   * @param [in] max_time : [ms] Time after which the function latest ends,
    * even if the position wasn't reached
    * @param [in] reached_pos_flag : Flag if the function should end once
    * the position was reached. If false, the function always waits for
    * max_time before ending
-   * @returns If the position has been reached when the function ends
-   *
+   * @returns Latest after the timelimit or,
+   * if the reached_pos_flag is set to true, once the position has been reached
+   * within the specified threshold.
    **/
   bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                  const float &yaw_ref, const float &x_thresh,

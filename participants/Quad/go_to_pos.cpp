@@ -73,6 +73,7 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
   return result;
 }
 
+// using default threshold
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                      const float &yaw_ref, const int &delay_time,
                      const float &max_time, const bool &reached_pos_flag) {
@@ -80,6 +81,7 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                    z_thresh_, delay_time, max_time, reached_pos_flag);
 }
 
+// using default delay
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                      const float &yaw_ref, const float &max_time,
                      const bool &reached_pos_flag) {
