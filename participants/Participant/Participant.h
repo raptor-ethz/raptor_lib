@@ -14,7 +14,7 @@ namespace raptor{
 
     class Participant {
         public:
-            DDSSubscriber<idl_msg::MocapPubSubType, cpp_msg::Mocap> *mocap_sub;
+            DDSSubscriber<idl_msg::MocapPubSubType, cpp_msg::Mocap> *mocap_sub_;
 
             /**
              * Reads 30 datapoints from the subscriber and 
