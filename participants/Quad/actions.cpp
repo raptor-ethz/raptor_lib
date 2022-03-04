@@ -43,7 +43,7 @@ bool Quad::takeOff() {
     std::cout << "[INFO][Particpant: "<< id << "] Taking off." << std::endl;
   }
   /* INFO END */
-  
+
   px4_action_cmd_.id = "takeoff";
   px4_action_pub_->publish(px4_action_cmd_);
 
@@ -58,4 +58,48 @@ bool Quad::takeOff() {
   /* DEBUG END */
 
   return true;
+}
+
+void Quad::land(Item &stand) {
+  /* INFO */
+  if (console_state_ <= 1)
+  {
+    std::cout << "[INFO][Particpant: "<< id << "] Landing." << std::endl;
+  }
+  /* INFO END */
+  /* DEBUG */
+  if (console_state_ == 0)
+  {
+    std::cout << "[DEBUG][Particpant: "<< id << "] Go back to stand." << std::endl;
+  }
+  /* DEBUG END */
+
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 1.0,
+            stand.get_pose().pose.orientation_euler.yaw, 5000, false);
+
+  /* DEBUG */
+  if (console_state_ == 0)
+  {
+    std::cout << "[DEBUG][Particpant: "<< id << "] Descending." << std::endl;
+  }
+  /* DEBUG END */
+
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 0.75,
+            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
+
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 0.2,
+            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
+
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z + 0.0,
+            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
+
+  // TODO : Send land (action) command to px4
+
+  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
+            stand.get_pose().pose.position.z - 0.2,
+            stand.get_pose().pose.orientation_euler.yaw, 1000, false);
 }
