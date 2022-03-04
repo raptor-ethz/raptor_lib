@@ -149,6 +149,7 @@ class Quad : public raptor::Participant {
   state state_ = uninitialized;
     
   cpp_msg::QuadPositionCmd pos_cmd_{};
+  cpp_msg::Header px4_action_cmd_{};
 
   // got_to_pos stuff
   float x_thresh_{0.2};
