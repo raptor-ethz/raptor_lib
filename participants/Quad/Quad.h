@@ -10,9 +10,10 @@
 
 class Quad : public raptor::Participant {
  public:
+
   Quad(const std::string &raptor_participant_id,
-       std::unique_ptr<DefaultParticipant> &dp,
-       const std::string &sub_topic_name, const std::string &pub_topic_name);
+        std::unique_ptr<DefaultParticipant> &dp,
+        const std::string &sub_topic_name, const std::string &pub_topic_name);
   ~Quad();
 
   DDSPublisher *position_pub;
@@ -20,56 +21,90 @@ class Quad : public raptor::Participant {
   DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header>  *px4_error_sub;
 
   /**
-   * Let the drone track a position using continuously sent position commands
-   * at a specified frequency. 
-   * @param [in] x_ref : [m] Reference position - x coordinate
-   * @param [in] y_ref : [m] Reference position - y coordinate
-   * @param [in] z_ref : [m] Reference position - z coordinate
-   * @param [in] x_thresh : [m] Maximal accepted deviation from x_ref
-   * @param [in] y_thresh : [m] Maximal accepted deviation from y_ref
-   * @param [in] z_thresh : [m] Maximal accepted deviation from z_ref
-   * @param [in] delay_time : [ms] delay between commands
-   * @param [in] max_time : [ms] Time after which the function latest ends,
-   * even if the position wasn't reached
-   * @param [in] reached_pos_flag : Flag if the function should end once
-   * the position was reached. If false, the function always waits for
-   * max_time before ending
-   * @returns Latest after the timelimit or,
-   * if the reached_pos_flag is set to true, once the position has been reached
-   * within the specified threshold.
-   **/
-  bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
-                 const float &yaw_ref, const float &x_thresh,
-                 const float &y_thresh, const float &z_thresh,
-                 const int &delay_time, const float &max_time,
-                 const bool &reached_pos_flag);
+   * @brief Checks if the actual 1D position lies within a specified thershold of 
+   * the reference position.
+   * 
+   * @param actual_pos actual position
+   * @param reference_pos reference position
+   * @param threshold threshold
+   */
+  inline bool check_reached_pos_1d(const float &actual_pos,
+                                  const float &reference_pos,
+                                  const float &threshold);
 
   /**
-   * Send a position command to this drone with a reference position.
-   * Will return once the time is reached, or, if the reached_pos_flag is
-   * set to true, if the position has been reached within the threshold
-   * previously defined in the instance.
-   * @param [in] x_ref : [m] Reference position - x coordinate
-   * @param [in] y_ref : [m] Reference position - y coordinate
-   * @param [in] z_ref : [m] Reference position - z coordinate
-   * @param [in] delay_time : [ms] delay between commands
-   * @param [in] max_time : [ms] The time after which the function latest ends,
-   * even if the position wasn't reached
-   * @param [in] reached_pos_flag : Flag if the function should end once
+   * @brief Checks if the actual 3D position lies within a specified thershold of 
+   * the reference position.
+   * 
+   * @param x_actual 
+   * @param x_ref 
+   * @param x_thresh 
+   * @param y_actual 
+   * @param y_ref 
+   * @param y_thresh 
+   * @param z_actual 
+   * @param z_ref 
+   * @param z_thresh 
+   */
+  inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
+                                  const float &x_thresh, const float &y_actual,
+                                  const float &y_ref, const float &y_thresh,
+                                  const float &z_actual, const float &z_ref,
+                                  const float &z_thresh);
+
+  /**
+   * @brief Comand the drone to track a position (full configuration).
+   * 
+   * Command the drone to track a position using continuously sent position commands
+   * at a specified frequency. Returns latest after the time limit or, if the reached_pos_flag is 
+   * set to true, once the position has been reached within the specified threshold.
+   * @param[in] x_ref [m] Reference position - x coordinate
+   * @param[in] y_ref [m] Reference position - y coordinate
+   * @param[in] z_ref [m] Reference position - z coordinate
+   * @param[in] x_thresh [m] Maximal accepted deviation from x_ref
+   * @param[in] y_thresh [m] Maximal accepted deviation from y_ref
+   * @param[in] z_thresh [m] Maximal accepted deviation from z_ref
+   * @param[in] delay_time [ms] Delay between commands
+   * @param[in] max_time [ms] Time after which the function latest ends
+   * @param[in] reached_pos_flag Flag if the function should end once
    * the position was reached. If false, the function always waits for
    * max_time before ending
-   * @returns If the position has been reached when the function ends
-   *
-   **/
+   * @returns True if the position has been reached, false otherwise.
+   */
   bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
-                 const float &yaw_ref, const int &delay_time,
-                 const float &max_time, const bool &reached_pos_flag);
+                  const float &yaw_ref, const float &x_thresh,
+                  const float &y_thresh, const float &z_thresh,
+                  const int &delay_time, const float &max_time,
+                  const bool &reached_pos_flag);
+
+  /**
+   * @brief Comand the drone to track a position (no threshold).
+   * 
+   * Command the drone to track a position using continuously sent position commands
+   * at a specified frequency. Returns latest after the time limit or, if the reached_pos_flag is 
+   * set to true, once the position has been reached within a specified threshold.
+   * @param[in] x_ref [m] Reference position - x coordinate
+   * @param[in] y_ref [m] Reference position - y coordinate
+   * @param[in] z_ref [m] Reference position - z coordinate
+   * @param[in] delay_time [ms] Delay between commands
+   * @param[in] max_time [ms] Time after which the function latest ends
+   * @param[in] reached_pos_flag Flag if the function should end once
+   * the position was reached. If false, the function always waits for
+   * max_time before ending
+   * @returns True if the position has been reached, false otherwise.
+   */
+  bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
+                  const float &yaw_ref, const int &delay_time,
+                  const float &max_time, const bool &reached_pos_flag);
 
   /**
    * Send a position command to this drone with a reference position.
    * Will return once the time is reached, or, if the reached_pos_flag is
    * set to true, if the position has been reached within the threshold
    * and delay time previously defined in this instance.
+   * @brief Comand the drone to track a position using continuously sent position commands
+   * at a specified frequency. Returns latest after the time limit or, if the reached_pos_flag is 
+   * set to true, once the position has been reached within the default threshold.
    * @param [in] x_ref : [m] Reference position - x coordinate
    * @param [in] y_ref : [m] Reference position - y coordinate
    * @param [in] z_ref : [m] Reference position - z coordinate
@@ -81,19 +116,34 @@ class Quad : public raptor::Participant {
    * @returns If the position has been reached when the function ends
    *
    **/
+  /**
+   * @brief Comand the drone to track a position (no threshold, delay_time).
+   * 
+   * Command the drone to track a position using continuously sent position commands
+   * at a specified frequency. Returns latest after the time limit or, if the reached_pos_flag is 
+   * set to true, once the position has been reached within a specified threshold.
+   * @param[in] x_ref [m] Reference position - x coordinate
+   * @param[in] y_ref [m] Reference position - y coordinate
+   * @param[in] z_ref [m] Reference position - z coordinate
+   * @param[in] max_time [ms] Time after which the function latest ends
+   * @param[in] reached_pos_flag Flag if the function should end once
+   * the position was reached. If false, the function always waits for
+   * max_time before ending
+   * @returns True if the position has been reached, false otherwise.
+   */
   bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
-                 const float &yaw_ref, const float &max_time,
-                 const bool &reached_pos_flag);
+                  const float &yaw_ref, const float &max_time,
+                  const bool &reached_pos_flag);
 
   /**
    * Compute a trajectory between the current state of the drone and the
    * specified reference state during the duration of completion_time.
    * Then, send position commands to the drone to follow the trajectory
    * using the previously defined delay_time in this instance.
-   * @param [in] pos_ref : [m] Reference position
-   * @param [in] vel_ref : [m] Reference velocity
-   * @param [in] acc_ref : [m] Reference acceleration
-   * @param [in] completion_time : [s] Reference time for the drone to fly
+   * @param[in] pos_ref : [m] Reference position
+   * @param[in] vel_ref : [m] Reference velocity
+   * @param[in] acc_ref : [m] Reference acceleration
+   * @param[in] completion_time [s] Reference time for the drone to fly
    * the trajectory
    * @returns If the position has been reached when the function ends
    *
@@ -101,18 +151,20 @@ class Quad : public raptor::Participant {
   bool go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
                           const Vec3 &acc_ref, const int &completion_time);
 
+  bool takeOff ();
+
   void land(Item &stand);
 
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
-             float dz, float h0, int time, int grip_angle);
+              float dz, float h0, int time, int grip_angle);
   void quick_swoop(Item &target, Gripper &gripper, float length, float dx,
-                   float dy, float dz, float h0, int time, int grip_angle);
+                    float dy, float dz, float h0, int time, int grip_angle);
   void release(Item &target, Gripper &gripper, float length, float h0,
-               int time);
+                int time);
   void quick_release(Item &target, Gripper &gripper, float length, float h0,
-                     int time);
+                      int time);
 
-  void set_thresh(const float x_thresh, const float y_thresh,
+  void setDefaultThreshold(const float x_thresh, const float y_thresh,
                   const float z_thresh) {
     x_thresh_ = x_thresh;
     y_thresh_ = y_thresh;
@@ -121,7 +173,15 @@ class Quad : public raptor::Participant {
 
   void set_velocity(const Vec3 &velocity) { velocity_ = velocity; }
 
- private:
+  private:
+
+  enum state_ {
+    uninitialized,
+    initialized,
+    armed,
+    airborne
+  }
+    
   cpp_msg::QuadPositionCmd pos_cmd{};
   cpp_msg::Header px4_error_msg{};
 
@@ -131,19 +191,9 @@ class Quad : public raptor::Participant {
 
   int delay_time_{20};
 
-  Vec3 position_{};
+  Vec3 position_{0, 0, 0};
   Vec3 velocity_{0, 0, 0};
   Vec3 acceleration_{0, 0, 0};
 
   const Vec3 gravity_{0, 0, -9.81};
-};
-
-inline bool check_reached_pos_1d(const float &actual_pos,
-                                 const float &reference_pos,
-                                 const float &threshold);
-
-inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
-                                 const float &x_thresh, const float &y_actual,
-                                 const float &y_ref, const float &y_thresh,
-                                 const float &z_actual, const float &z_ref,
-                                 const float &z_thresh);
+  };
