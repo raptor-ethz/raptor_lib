@@ -1,5 +1,4 @@
 #include <chrono>
-
 #include "Quad.h"
 
 
