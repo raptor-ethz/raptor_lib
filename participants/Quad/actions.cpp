@@ -64,7 +64,7 @@ void Quad::land(Item &stand) {
   /* INFO */
   if (console_state_ <= 1)
   {
-    std::cout << "[INFO][Particpant: "<< id << "] Landing." << std::endl;
+    std::cout << "[INFO][Particpant: "<< id << "] Commence landing sequence." << std::endl;
   }
   /* INFO END */
   /* DEBUG */
@@ -98,8 +98,13 @@ void Quad::land(Item &stand) {
             stand.get_pose().pose.orientation_euler.yaw, 2000, false);
 
   // TODO : Send land (action) command to px4
+  /* DEBUG */
+  if (console_state_ <= 1>
+  {
+    std::cout << "[INFO][Particpant: "<< id << "] Landing." << std::endl;
+  }
+  /* DEBUG END */
 
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z - 0.2,
-            stand.get_pose().pose.orientation_euler.yaw, 1000, false);
+  px4_action_cmd_.id = "land";
+  px4_action_pub_->publish(px4_action_cmd_);
 }
