@@ -20,6 +20,13 @@ enum state {
   airborne
 };
 
+enum consoleState {
+  debug,
+  info,
+  warning,
+  error
+};
+
 
 
 
@@ -138,17 +145,19 @@ class Quad : public raptor::Participant {
 
   private:
 
+  consoleState console_state_ = debug;
   state state_ = uninitialized;
     
   cpp_msg::QuadPositionCmd pos_cmd_{};
-  cpp_msg::Header px4_error_msg{};
 
+  // got_to_pos stuff
   float x_thresh_{0.2};
   float y_thresh_{0.2};
   float z_thresh_{0.2};
 
   int delay_time_{20};
 
+  // MM stuff
   Vec3 position_{0, 0, 0};
   Vec3 velocity_{0, 0, 0};
   Vec3 acceleration_{0, 0, 0};
