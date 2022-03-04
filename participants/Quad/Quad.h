@@ -8,6 +8,21 @@
 #include "RapidTrajectoryGenerator.h"
 #include "Vec3.h"
 
+
+
+
+/* Non-member variables */
+
+enum state {
+  uninitialized,
+  initialized,
+  armed,
+  airborne
+};
+
+
+
+
 class Quad : public raptor::Participant {
  public:
 
@@ -17,8 +32,7 @@ class Quad : public raptor::Participant {
   ~Quad();
 
   DDSPublisher *position_pub_;
-  DDSPublisher *px4_cmd_pub;
-  DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header>  *px4_error_sub;
+  DDSPublisher *px4_action_pub_;
 
   /**
    * @brief Comand the drone to track a position (full configuration).
@@ -65,25 +79,6 @@ class Quad : public raptor::Participant {
                   const float &yaw_ref, const int &delay_time,
                   const float &max_time, const bool &reached_pos_flag);
 
-  /**
-   * Send a position command to this drone with a reference position.
-   * Will return once the time is reached, or, if the reached_pos_flag is
-   * set to true, if the position has been reached within the threshold
-   * and delay time previously defined in this instance.
-   * @brief Comand the drone to track a position using continuously sent position commands
-   * at a specified frequency. Returns latest after the time limit or, if the reached_pos_flag is 
-   * set to true, once the position has been reached within the default threshold.
-   * @param [in] x_ref : [m] Reference position - x coordinate
-   * @param [in] y_ref : [m] Reference position - y coordinate
-   * @param [in] z_ref : [m] Reference position - z coordinate
-   * @param [in] max_time : [ms] The time after which the function latest ends,
-   * even if the position wasn't reached
-   * @param [in] reached_pos_flag : Flag if the function should end once
-   * the position was reached. If false, the function always waits for
-   * max_time before ending
-   * @returns If the position has been reached when the function ends
-   *
-   **/
   /**
    * @brief Comand the drone to track a position (no threshold, delay_time).
    * 
@@ -143,12 +138,7 @@ class Quad : public raptor::Participant {
 
   private:
 
-  enum state_ {
-    uninitialized,
-    initialized,
-    armed,
-    airborne
-  };
+  state state_ = uninitialized;
     
   cpp_msg::QuadPositionCmd pos_cmd_{};
   cpp_msg::Header px4_error_msg{};
@@ -165,6 +155,9 @@ class Quad : public raptor::Participant {
 
   const Vec3 gravity_{0, 0, -9.81};
   };
+
+
+
 
 /* Non-member functions */
 
