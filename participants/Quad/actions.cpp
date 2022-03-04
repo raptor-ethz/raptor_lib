@@ -53,7 +53,28 @@ bool Quad::takeOff() {
   /* DEBUG */
   if (console_state_ == 0)
   {
-    std::cout << "[INFO][Particpant: "<< id << "] Take-off sequence completed." << std::endl;
+    std::cout << "[DEBUG][Particpant: "<< id << "] Take-off sequence completed." << std::endl;
+  }
+  /* DEBUG END */
+
+  /* INFO */
+  if (console_state_ <= 1)
+  {
+    std::cout << "[INFO][Particpant: "<< id << "] Starting offboard." << std::endl;
+  }
+  /* INFO END */
+  
+  px4_cmd.id = "offboard";
+  quad.px4_cmd_pub->publish(px4_cmd);
+
+  // wait for the drone to stabilize
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+  /* DEBUG */
+  if (console_state_ == 0)
+  {
+    std::cout << "[DEBUG][Particpant: "<< id << "] Switched to offboard. 
+      Ready to fly mission." << std::endl;
   }
   /* DEBUG END */
 
