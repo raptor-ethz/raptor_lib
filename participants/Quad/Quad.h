@@ -16,41 +16,9 @@ class Quad : public raptor::Participant {
         const std::string &sub_topic_name, const std::string &pub_topic_name);
   ~Quad();
 
-  DDSPublisher *position_pub;
+  DDSPublisher *position_pub_;
   DDSPublisher *px4_cmd_pub;
   DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header>  *px4_error_sub;
-
-  /**
-   * @brief Checks if the actual 1D position lies within a specified thershold of 
-   * the reference position.
-   * 
-   * @param actual_pos actual position
-   * @param reference_pos reference position
-   * @param threshold threshold
-   */
-  inline bool check_reached_pos_1d(const float &actual_pos,
-                                  const float &reference_pos,
-                                  const float &threshold);
-
-  /**
-   * @brief Checks if the actual 3D position lies within a specified thershold of 
-   * the reference position.
-   * 
-   * @param x_actual 
-   * @param x_ref 
-   * @param x_thresh 
-   * @param y_actual 
-   * @param y_ref 
-   * @param y_thresh 
-   * @param z_actual 
-   * @param z_ref 
-   * @param z_thresh 
-   */
-  inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
-                                  const float &x_thresh, const float &y_actual,
-                                  const float &y_ref, const float &y_thresh,
-                                  const float &z_actual, const float &z_ref,
-                                  const float &z_thresh);
 
   /**
    * @brief Comand the drone to track a position (full configuration).
@@ -180,9 +148,9 @@ class Quad : public raptor::Participant {
     initialized,
     armed,
     airborne
-  }
+  };
     
-  cpp_msg::QuadPositionCmd pos_cmd{};
+  cpp_msg::QuadPositionCmd pos_cmd_{};
   cpp_msg::Header px4_error_msg{};
 
   float x_thresh_{0.2};
@@ -197,3 +165,37 @@ class Quad : public raptor::Participant {
 
   const Vec3 gravity_{0, 0, -9.81};
   };
+
+/* Non-member functions */
+
+/**
+ * @brief Checks if the actual 1D position lies within a specified thershold of 
+ * the reference position.
+ * 
+ * @param actual_pos actual position
+ * @param reference_pos reference position
+ * @param threshold threshold
+ */
+inline bool check_reached_pos_1d(const float &actual_pos,
+                                const float &reference_pos,
+                                const float &threshold);
+
+/**
+ * @brief Checks if the actual 3D position lies within a specified thershold of 
+ * the reference position.
+ * 
+ * @param x_actual 
+ * @param x_ref 
+ * @param x_thresh 
+ * @param y_actual 
+ * @param y_ref 
+ * @param y_thresh 
+ * @param z_actual 
+ * @param z_ref 
+ * @param z_thresh 
+ */
+inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
+                                const float &x_thresh, const float &y_actual,
+                                const float &y_ref, const float &y_thresh,
+                                const float &z_actual, const float &z_ref,
+                                const float &z_thresh);

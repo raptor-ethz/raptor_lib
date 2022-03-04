@@ -49,13 +49,13 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
       return result;
     } else {
       // send new pos_cmd if position hasn't been reached
-      pos_cmd.position.x = x_ref;
-      pos_cmd.position.y = y_ref;
-      pos_cmd.position.z = z_ref;
-      pos_cmd.yaw_angle = yaw_ref;
+      pos_cmd_.position.x = x_ref;
+      pos_cmd_.position.y = y_ref;
+      pos_cmd_.position.z = z_ref;
+      pos_cmd_.yaw_angle = yaw_ref;
 
       // publich pos_cmd
-      position_pub->publish(pos_cmd);
+      position_pub_->publish(pos_cmd_);
     }
 
     // delay
@@ -121,9 +121,9 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   // start controlling loop
   for (double i = 0; i < completion_time; i += dt) {
     // update pos_cmd
-    pos_cmd.position.x = traj.GetPosition(i).x;
-    pos_cmd.position.y = traj.GetPosition(i).y;
-    pos_cmd.position.z = traj.GetPosition(i).z;
+    pos_cmd_.position.x = traj.GetPosition(i).x;
+    pos_cmd_.position.y = traj.GetPosition(i).y;
+    pos_cmd_.position.z = traj.GetPosition(i).z;
 
     // DEBUG
     std::cout << "Timestep:" << i << std::endl;
@@ -136,7 +136,7 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
     // DEBUG END
 
     // publish command
-    position_pub->publish(pos_cmd);
+    position_pub_->publish(pos_cmd_);
 
     // delay
     std::this_thread::sleep_for(std::chrono::milliseconds(delay_time_));

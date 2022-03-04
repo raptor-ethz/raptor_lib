@@ -10,7 +10,7 @@ Quad::Quad(const std::string &raptor_participant_id,
                                 sub_topic_name, dp->participant());
 
   
-  position_pub = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
+  position_pub_ = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
                                   pub_topic_name, dp->participant());
   px4_cmd_pub = new DDSPublisher(idl_msg::HeaderPubSubType(),
                                   "px4_commands", dp->participant());
@@ -21,5 +21,5 @@ Quad::Quad(const std::string &raptor_participant_id,
 
 Quad::~Quad() {
   delete mocap_sub_;
-  delete position_pub;
+  delete position_pub_;
 }
