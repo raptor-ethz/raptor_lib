@@ -6,7 +6,7 @@ Quad::Quad(const std::string &raptor_participant_id,
            const std::string &pub_topic_name) {
   id = raptor_participant_id;
 
-  mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
+  mocap_sub_ = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
                                 sub_topic_name, dp->participant());
 
   
@@ -20,6 +20,6 @@ Quad::Quad(const std::string &raptor_participant_id,
 };
 
 Quad::~Quad() {
-  delete mocap_sub;
+  delete mocap_sub_;
   delete position_pub;
 }

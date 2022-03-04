@@ -4,7 +4,7 @@ bool raptor::Participant::check_for_data() {
     float x;
 
     for (int i = 0; i < 10; ++i) {
-        mocap_sub->listener->wait_for_data();
+        mocap_sub_->listener->wait_for_data();
         x = pose_.pose.position.x;
     }
     if (x == 0.0) {
