@@ -6,3 +6,8 @@ Feedback
 MOCAP feasability
 
 Battery status
+
+Raspberry initilization
+
+vicon class
+- publishing parameter
