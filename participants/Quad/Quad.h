@@ -7,6 +7,7 @@
 #include "QuadPositionCmdPubSubTypes.h"
 #include "RapidTrajectoryGenerator.h"
 #include "Vec3.h"
+#include <chrono>
 
 /* Non-member variables */
 
