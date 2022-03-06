@@ -64,8 +64,8 @@ bool Quad::takeOff() {
   }
   /* INFO END */
   
-  px4_cmd.id = "offboard";
-  quad.px4_cmd_pub->publish(px4_cmd);
+  px4_action_cmd_.id = "offboard";
+  px4_action_pub_->publish(px4_action_cmd_);
 
   // wait for the drone to stabilize
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
@@ -73,8 +73,8 @@ bool Quad::takeOff() {
   /* DEBUG */
   if (console_state_ == 0)
   {
-    std::cout << "[DEBUG][Particpant: "<< id << "] Switched to offboard. 
-      Ready to fly mission." << std::endl;
+    std::cout << "[DEBUG][Particpant: "<< id << "] Switched to offboard." 
+      << "Ready to fly mission." << std::endl;
   }
   /* DEBUG END */
 
@@ -117,15 +117,28 @@ void Quad::land(Item &stand) {
   go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
             stand.get_pose().pose.position.z + 0.0,
             stand.get_pose().pose.orientation_euler.yaw, 2000, false);
-
-  // TODO : Send land (action) command to px4
-  /* DEBUG */
-  if (console_state_ <= 1>
+            
+  /* INFO */
+  if (console_state_ <= 1)
   {
     std::cout << "[INFO][Particpant: "<< id << "] Landing." << std::endl;
   }
-  /* DEBUG END */
-
+  /* INFO END */
   px4_action_cmd_.id = "land";
   px4_action_pub_->publish(px4_action_cmd_);
+
+  // wait for the drone to land
+  std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+
+  // back up disarm command
+  /* INFO */
+  if (console_state_ <= 1)
+  {
+    std::cout << "[INFO][Particpant: "<< id << "] Safety Disarm." << std::endl;
+  }
+  /* INFO END */
+  px4_action_cmd_.id = "disarm";
+  px4_action_pub_->publish(px4_action_cmd_);
+
+  // kill?
 }
