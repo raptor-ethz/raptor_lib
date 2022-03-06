@@ -13,3 +13,5 @@ Gripper initilization
 
 vicon class
 - publishing parameter
+
+change coordinate arguments to arrays
