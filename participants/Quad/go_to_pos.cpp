@@ -34,9 +34,9 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
 
   /* DEBUG */
   if (console_state_ == 0) {
-    std::cout << "Go to position (standard): [\t" << x_ref << ",\t" << y_ref
-              << ",\t" << z_ref << "\t] during max " << max_time << "ms ."
-              << std::endl;
+    std::cout << "[DEBUG][Participant: " << id << "] Go to position: [\t"
+              << x_ref << ",\t" << y_ref << ",\t" << z_ref << "\t] during max "
+              << max_time << "ms." << std::endl;
   }
   /* DEBUG END */
 
@@ -52,7 +52,8 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
     if (result && reached_pos_flag) {
       /* DEBUG */
       if (console_state_ == 0) {
-        std::cout << "Position reached before time limit." << std::endl;
+        std::cout << "[DEBUG][Participant: " << id
+                  << "] Position reached before time limit." << std::endl;
       }
       /* DEBUG END */
 
@@ -75,10 +76,11 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
 
   /* DEBUG */
   if (console_state_ == 0) {
+    std::cout << "[DEBUG][Participant: " << id << "] ";
     if (result) {
       std::cout << "Position reached after time limit." << std::endl;
     } else {
-      std::cout << "Position wasn't reached within time limit." << std::endl;
+      std::cout << "Position was not reached within time limit." << std::endl;
     }
   }
   /* DEBUG END */
