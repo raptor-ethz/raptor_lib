@@ -30,6 +30,7 @@ bool Quad::takeOff()
 
   px4_action_cmd_.id = "arm";
   px4_action_pub_->publish(px4_action_cmd_);
+  state_ = armed;
 
   // wait before take-off
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
@@ -43,6 +44,7 @@ bool Quad::takeOff()
 
   px4_action_cmd_.id = "takeoff";
   px4_action_pub_->publish(px4_action_cmd_);
+  state_ = airborne;
 
   // wait during take-off sequence
   std::this_thread::sleep_for(std::chrono::milliseconds(8000));
@@ -133,6 +135,8 @@ void Quad::land(Item &stand)
   /* INFO END */
   px4_action_cmd_.id = "disarm";
   px4_action_pub_->publish(px4_action_cmd_);
+
+  state_ = initialized;
 
   // kill?
 }
