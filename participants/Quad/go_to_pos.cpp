@@ -1,10 +1,11 @@
-#include <chrono>
-
 #include "Quad.h"
+
+/* Non-member functions */
 
 inline bool check_reached_pos_1d(const float &actual_pos,
                                  const float &reference_pos,
-                                 const float &threshold) {
+                                 const float &threshold)
+{
   return std::abs(reference_pos - actual_pos) <= threshold;
 }
 
@@ -12,7 +13,8 @@ inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
                                  const float &x_thresh, const float &y_actual,
                                  const float &y_ref, const float &y_thresh,
                                  const float &z_actual, const float &z_ref,
-                                 const float &z_thresh) {
+                                 const float &z_thresh)
+{
   bool x_reach_flag = check_reached_pos_1d(x_actual, x_ref, x_thresh);
   bool y_reach_flag = check_reached_pos_1d(y_actual, y_ref, y_thresh);
   bool z_reach_flag = check_reached_pos_1d(z_actual, z_ref, z_thresh);
@@ -20,16 +22,22 @@ inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
   return x_reach_flag && y_reach_flag && z_reach_flag;
 }
 
+/* Member functions */
+
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                      const float &yaw_ref, const float &x_thresh,
                      const float &y_thresh, const float &z_thresh,
                      const int &delay_time, const float &max_time,
-                     const bool &reached_pos_flag) {
-  // DEBUG
-  std::cout << "Go to position (standard): [\t" << x_ref << ",\t" << y_ref
-            << ",\t" << z_ref << "\t] during max " << max_time << "ms ."
-            << std::endl;
-  // DEBUG END
+                     const bool &reached_pos_flag)
+{
+
+  /* DEBUG */
+  if (console_state_ == 0) {
+    std::cout << "[DEBUG][Participant: " << id << "] Go to position: [\t"
+              << x_ref << ",\t" << y_ref << ",\t" << z_ref << "\t] during max "
+              << max_time << "ms." << std::endl;
+  }
+  /* DEBUG END */
 
   // resulting bool
   bool result = false;
@@ -41,34 +49,40 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                                   pose_.pose.position.z, z_ref, z_thresh);
 
     if (result && reached_pos_flag) {
-      // DEBUG
-      std::cout << "Position reached (return)." << std::endl;
-      // DEBUG END
+      /* DEBUG */
+      if (console_state_ == 0) {
+        std::cout << "[DEBUG][Participant: " << id
+                  << "] Position reached before time limit." << std::endl;
+      }
+      /* DEBUG END */
 
       // return from the function direclty
       return result;
     } else {
       // send new pos_cmd if position hasn't been reached
-      pos_cmd.position.x = x_ref;
-      pos_cmd.position.y = y_ref;
-      pos_cmd.position.z = z_ref;
-      pos_cmd.yaw_angle = yaw_ref;
+      pos_cmd_.position.x = x_ref;
+      pos_cmd_.position.y = y_ref;
+      pos_cmd_.position.z = z_ref;
+      pos_cmd_.yaw_angle = yaw_ref;
 
       // publich pos_cmd
-      position_pub->publish(pos_cmd);
+      position_pub_->publish(pos_cmd_);
     }
 
     // delay
     std::this_thread::sleep_for(std::chrono::milliseconds(delay_time));
   }
 
-  // DEBUG
-  if (result) {
-    std::cout << "Position reached after time limit." << std::endl;
-  } else {
-    std::cout << "Position wasn't reached within time limit." << std::endl;
+  /* DEBUG */
+  if (console_state_ == 0) {
+    std::cout << "[DEBUG][Participant: " << id << "] ";
+    if (result) {
+      std::cout << "Position reached after time limit." << std::endl;
+    } else {
+      std::cout << "Position was not reached within time limit." << std::endl;
+    }
   }
-  // DEBUG END
+  /* DEBUG END */
 
   return result;
 }
@@ -76,7 +90,8 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
 // using default threshold
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                      const float &yaw_ref, const int &delay_time,
-                     const float &max_time, const bool &reached_pos_flag) {
+                     const float &max_time, const bool &reached_pos_flag)
+{
   return go_to_pos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_,
                    z_thresh_, delay_time, max_time, reached_pos_flag);
 }
@@ -84,13 +99,15 @@ bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
 // using default delay
 bool Quad::go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
                      const float &yaw_ref, const float &max_time,
-                     const bool &reached_pos_flag) {
+                     const bool &reached_pos_flag)
+{
   return go_to_pos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_,
                    z_thresh_, delay_time_, max_time, reached_pos_flag);
 }
 
 bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
-                              const Vec3 &acc_ref, const int &completion_time) {
+                              const Vec3 &acc_ref, const int &completion_time)
+{
   // TODO: caluclate current pos, velocity and acceleration
 
   // evaluate current position
@@ -121,9 +138,9 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   // start controlling loop
   for (double i = 0; i < completion_time; i += dt) {
     // update pos_cmd
-    pos_cmd.position.x = traj.GetPosition(i).x;
-    pos_cmd.position.y = traj.GetPosition(i).y;
-    pos_cmd.position.z = traj.GetPosition(i).z;
+    pos_cmd_.position.x = traj.GetPosition(i).x;
+    pos_cmd_.position.y = traj.GetPosition(i).y;
+    pos_cmd_.position.z = traj.GetPosition(i).z;
 
     // DEBUG
     std::cout << "Timestep:" << i << std::endl;
@@ -136,7 +153,7 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
     // DEBUG END
 
     // publish command
-    position_pub->publish(pos_cmd);
+    position_pub_->publish(pos_cmd_);
 
     // delay
     std::this_thread::sleep_for(std::chrono::milliseconds(delay_time_));
@@ -156,132 +173,4 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   // DEBUG END
 
   return result;
-}
-
-void Quad::land(Item &stand) {
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 1.0,
-            stand.get_pose().pose.orientation_euler.yaw, 5000, false);
-
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 0.75,
-            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
-
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 0.2,
-            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
-
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 0.0,
-            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
-
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z - 0.2,
-            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
-}
-
-void Quad::swoop(Item &target, Gripper &gripper, float length, float dx,
-                 float dy, float dz, float h0, int time, int grip_angle) {
-  gripper.set_angle_sym(45);
-  // start position
-  go_to_pos(target.get_pose().pose.position.x + dx - length,
-            target.get_pose().pose.position.y + dy, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  // swoop to object
-  go_to_pos(target.get_pose().pose.position.x + dx - 0.2,
-            target.get_pose().pose.position.y + dy,
-            target.get_pose().pose.position.z + dz + 0.45, 0, 4500, true);
-  go_to_pos(target.get_pose().pose.position.x + dx,
-            target.get_pose().pose.position.y + dy,
-            target.get_pose().pose.position.z + dz + 0.28, 0, time, false);
-  gripper.set_angle_sym(grip_angle);
-  std::this_thread::sleep_for(std::chrono::milliseconds(350));
-
-  // swoop away from object
-  go_to_pos(target.get_pose().pose.position.x + dx + length,
-            target.get_pose().pose.position.y + dy, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-}
-
-// only for demo
-void Quad::release(Item &target, Gripper &gripper, float length, float h0,
-                   int time) {
-  // start position
-  go_to_pos(target.get_pose().pose.position.x + length,
-            target.get_pose().pose.position.y, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  // swoop to object
-  go_to_pos(target.get_pose().pose.position.x,
-            target.get_pose().pose.position.y,
-            target.get_pose().pose.position.z + 0.50, 0, 2500, false);
-  gripper.set_angle_sym(45);
-  std::this_thread::sleep_for(std::chrono::milliseconds(350));
-  gripper.set_angle_sym(0);
-  // swoop away from object
-  go_to_pos(target.get_pose().pose.position.x - length,
-            target.get_pose().pose.position.y, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-}
-
-// only for demo
-void Quad::quick_release(Item &target, Gripper &gripper, float length, float h0,
-                         int time) {
-  // start position
-  go_to_pos(target.get_pose().pose.position.x + length,
-            target.get_pose().pose.position.y, h0, 0, 3000, false);
-
-  // define ref position
-  Vec3 pos_ref(target.get_pose().pose.position.x,
-               target.get_pose().pose.position.y,
-               target.get_pose().pose.position.z + 0.50);
-  Vec3 vel_ref(-0.5, 0, 0);
-  Vec3 acc_ref(0, 0, 0);
-
-  // swoop down
-  go_to_pos_min_jerk(pos_ref, vel_ref, acc_ref, 1.5);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-  // drop
-  gripper.set_angle_sym(45);
-
-  // define next ref position
-  set_velocity(Vec3(-0.5, 0, 0));
-  pos_ref = Vec3(target.get_pose().pose.position.x - length,
-                 target.get_pose().pose.position.y, h0);
-  vel_ref = Vec3(0, 0, 0);
-
-  // swoop up
-  go_to_pos_min_jerk(pos_ref, vel_ref, acc_ref, 1.5);
-
-  // close gripper and reset
-  gripper.set_angle_sym(0);
-  set_velocity(Vec3(0, 0, 0));
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-}
-
-void Quad::quick_swoop(Item &target, Gripper &gripper, float length, float dx,
-                       float dy, float dz, float h0, int time, int grip_angle) {
-  // attack pose
-  gripper.set_front_arm(79);
-  std::this_thread::sleep_for(std::chrono::milliseconds(30));
-  gripper.set_back_arm(grip_angle);
-
-  // go to start position
-  go_to_pos(target.get_pose().pose.position.x + dx - length,
-            target.get_pose().pose.position.y + dy, h0, 0, 4500, false);
-  // std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-  // swoop to object
-  go_to_pos(target.get_pose().pose.position.x + dx,
-            target.get_pose().pose.position.y + dy,
-            target.get_pose().pose.position.z + dz + 0.21, 0, 4500, true);
-
-  // close gripper
-  gripper.set_front_arm(grip_angle);
-  std::this_thread::sleep_for(std::chrono::milliseconds(time));
-
-  // swoop away from object
-  go_to_pos(target.get_pose().pose.position.x + dx + length,
-            target.get_pose().pose.position.y + dy, h0, 0, 3000, false);
-  std::this_thread::sleep_for(std::chrono::milliseconds(250));
 }

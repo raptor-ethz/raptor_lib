@@ -6,3 +6,12 @@ Feedback
 MOCAP feasability
 
 Battery status
+
+Raspberry initilization
+
+Gripper initilization
+
+vicon class
+- publishing parameter
+
+change coordinate arguments to arrays

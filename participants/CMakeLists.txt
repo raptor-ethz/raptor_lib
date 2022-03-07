@@ -17,4 +17,6 @@ target_sources(raptor_lib PRIVATE
 target_include_directories(raptor_lib PUBLIC Quad)
 target_sources(raptor_lib PRIVATE
     Quad/Quad.cpp
-    Quad/go_to_pos.cpp)
+    Quad/go_to_pos.cpp
+    Quad/actions.cpp
+    Quad/swoop.cpp)

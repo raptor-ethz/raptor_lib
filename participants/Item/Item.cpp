@@ -5,9 +5,9 @@ Item::Item(const std::string &raptor_participant_id,
            const std::string &sub_topic_name) {
   id = raptor_participant_id;
 
-  mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
+  mocap_sub_ = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
                                 sub_topic_name, dp->participant());
 
 };
 
-Item::~Item() { delete mocap_sub; }
+Item::~Item() { delete mocap_sub_; }
