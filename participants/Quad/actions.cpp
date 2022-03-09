@@ -24,7 +24,7 @@ bool Quad::takeOff()
   /* ARM */
   /* INFO */
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Particpant: " << id << "] Arming." << std::endl;
+    std::cout << "[INFO][Participant: " << id << "] Arming." << std::endl;
   }
   /* INFO END */
 
@@ -38,7 +38,7 @@ bool Quad::takeOff()
   /* TAKEOFF */
   /* INFO */
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Particpant: " << id << "] Taking off." << std::endl;
+    std::cout << "[INFO][Participant: " << id << "] Taking off." << std::endl;
   }
   /* INFO END */
 
@@ -53,14 +53,14 @@ bool Quad::takeOff()
 
   /* DEBUG */
   if (console_state_ == 0) {
-    std::cout << "[DEBUG][Particpant: " << id
+    std::cout << "[DEBUG][Participant: " << id
               << "] Take-off sequence completed." << std::endl;
   }
   /* DEBUG END */
 
   /* INFO */
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Particpant: " << id << "] Starting offboard."
+    std::cout << "[INFO][Participant: " << id << "] Starting offboard."
               << std::endl;
   }
   /* INFO END */
@@ -73,7 +73,7 @@ bool Quad::takeOff()
 
   /* DEBUG */
   if (console_state_ == 0) {
-    std::cout << "[DEBUG][Particpant: " << id << "] Switched to offboard."
+    std::cout << "[DEBUG][Participant: " << id << "] Switched to offboard."
               << "Ready to fly mission." << std::endl;
   }
   /* DEBUG END */
@@ -85,13 +85,13 @@ void Quad::land(Item &stand)
 {
   /* INFO */
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Particpant: " << id << "] Commence landing sequence."
+    std::cout << "[INFO][Participant: " << id << "] Commence landing sequence."
               << std::endl;
   }
   /* INFO END */
   /* DEBUG */
   if (console_state_ == 0) {
-    std::cout << "[DEBUG][Particpant: " << id << "] Go back to stand."
+    std::cout << "[DEBUG][Participant: " << id << "] Go back to stand."
               << std::endl;
   }
   /* DEBUG END */
@@ -102,7 +102,7 @@ void Quad::land(Item &stand)
 
   /* DEBUG */
   if (console_state_ == 0) {
-    std::cout << "[DEBUG][Particpant: " << id << "] Descending." << std::endl;
+    std::cout << "[DEBUG][Participant: " << id << "] Descending." << std::endl;
   }
   /* DEBUG END */
 
@@ -120,7 +120,7 @@ void Quad::land(Item &stand)
 
   /* INFO */
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Particpant: " << id << "] Landing." << std::endl;
+    std::cout << "[INFO][Participant: " << id << "] Landing." << std::endl;
   }
   /* INFO END */
 
@@ -138,7 +138,7 @@ void Quad::land(Item &stand)
   // back up disarm command
   /* INFO */
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Particpant: " << id << "] Safety Disarm." << std::endl;
+    std::cout << "[INFO][Participant: " << id << "] Safety Disarm." << std::endl;
   }
   /* INFO END */
   px4_action_cmd_.id = "disarm";
