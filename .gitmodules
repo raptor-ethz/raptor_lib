@@ -1,3 +1,0 @@
-[submodule "external/communication_lib"]
-	path = external/communication_lib
-	url = https://github.com/srl-ethz/communication_lib.git
