@@ -109,6 +109,19 @@ public:
   bool go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
                           const Vec3 &acc_ref, const int &completion_time);
 
+  /**
+   * @brief Arms the quad, performs the take-off and switches to offboard.
+   * 
+   * In the first step, a proper state of the quad is asserted. If the state
+   * is accepted, the quad ist armed. After sleeping for 2 seconds, 
+   * a take off command is sent to the drone and the state is set to ariborne. 
+   * The thread then waits for 8 seconds for the maneuver to complete. Then
+   * it switches to offboard control mode and sleeps for additional 2 seconds
+   * for the drone to stabilize before it returns.
+   * 
+   * @return true: If the take off has been successful.
+   * @return false: If an error occured.
+   */
   bool takeOff();
 
   void land(Item &stand);
