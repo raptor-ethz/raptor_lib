@@ -22,11 +22,11 @@ namespace raptor{
              * 
              * @returns if (position.x != 0.0)
             **/
-            virtual bool check_for_data();
+            virtual bool checkForData();
 
-            virtual const cpp_msg::Mocap& get_pose();
+            virtual const cpp_msg::Mocap& getPose();
 
-            virtual const std::string& get_id();
+            virtual const std::string& getId();
 
         protected:
             std::string id = "N/A";

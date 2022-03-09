@@ -1,6 +1,6 @@
 #include "Participant.h"
 
-bool raptor::Participant::check_for_data() {
+bool raptor::Participant::checkForData() {
     float x;
 
     for (int i = 0; i < 10; ++i) {
@@ -21,12 +21,12 @@ bool raptor::Participant::check_for_data() {
     return true;
 }
 
-const cpp_msg::Mocap& raptor::Participant::get_pose()
+const cpp_msg::Mocap& raptor::Participant::getPose()
 {
     return pose_;
 }
 
-const std::string& raptor::Participant::get_id()
+const std::string& raptor::Participant::getId()
 {
     return id;
 }
