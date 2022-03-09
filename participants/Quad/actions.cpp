@@ -19,7 +19,7 @@ bool Quad::takeOff()
   default:
     break;
   }
-  // TODO check unkilled?
+  // TODO check unkilled? or unkill here?
 
   /* ARM */
   /* INFO */
@@ -48,6 +48,8 @@ bool Quad::takeOff()
 
   // wait during take-off sequence
   std::this_thread::sleep_for(std::chrono::milliseconds(8000));
+
+  // TODO : check height?
 
   /* DEBUG */
   if (console_state_ == 0) {
@@ -94,9 +96,9 @@ void Quad::land(Item &stand)
   }
   /* DEBUG END */
 
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 1.0,
-            stand.get_pose().pose.orientation_euler.yaw, 5000, false);
+  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
+            stand.getPose().pose.position.z + 1.0,
+            stand.getPose().pose.orientation_euler.yaw, 5000, false);
 
   /* DEBUG */
   if (console_state_ == 0) {
@@ -104,17 +106,17 @@ void Quad::land(Item &stand)
   }
   /* DEBUG END */
 
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 0.75,
-            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
+  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
+            stand.getPose().pose.position.z + 0.5, //.75
+            stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 0.2,
-            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
+  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
+            stand.getPose().pose.position.z + 0.2,
+            stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
-  go_to_pos(stand.get_pose().pose.position.x, stand.get_pose().pose.position.y,
-            stand.get_pose().pose.position.z + 0.0,
-            stand.get_pose().pose.orientation_euler.yaw, 2000, false);
+  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
+            stand.getPose().pose.position.z + 0.0,
+            stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
   /* INFO */
   if (console_state_ <= 1) {
@@ -140,3 +142,4 @@ void Quad::land(Item &stand)
 
   // kill?
 }
+
