@@ -124,6 +124,11 @@ public:
    */
   bool takeOff();
 
+  /**
+   * @brief Commands the drone to fly back to the stand, descend and land.
+   * 
+   * @param stand The instance of the stand to land in.
+   */
   void land(Item &stand);
 
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
