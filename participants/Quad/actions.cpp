@@ -97,8 +97,8 @@ void Quad::land(Item &stand)
   /* DEBUG END */
 
   goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-            stand.getPose().pose.position.z + 1.0,
-            stand.getPose().pose.orientation_euler.yaw, 5000, false);
+          stand.getPose().pose.position.z + 1.0,
+          stand.getPose().pose.orientation_euler.yaw, 5000, false);
 
   /* DEBUG */
   if (console_state_ == 0) {
@@ -107,29 +107,33 @@ void Quad::land(Item &stand)
   /* DEBUG END */
 
   goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-            stand.getPose().pose.position.z + 0.5, //.75
-            stand.getPose().pose.orientation_euler.yaw, 2000, false);
+          stand.getPose().pose.position.z + 0.5, //.75
+          stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
   goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-            stand.getPose().pose.position.z + 0.2,
-            stand.getPose().pose.orientation_euler.yaw, 2000, false);
+          stand.getPose().pose.position.z + 0.2,
+          stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
   goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-            stand.getPose().pose.position.z + 0.0,
-            stand.getPose().pose.orientation_euler.yaw, 2000, false);
+          stand.getPose().pose.position.z + 0.0,
+          stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
   /* INFO */
   if (console_state_ <= 1) {
     std::cout << "[INFO][Particpant: " << id << "] Landing." << std::endl;
   }
   /* INFO END */
-  pos_cmd_.header.id = "break";
-  position_pub_->publish(pos_cmd_);
-  px4_action_cmd_.id = "land";
-  px4_action_pub_->publish(px4_action_cmd_);
+
+  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
+          stand.getPose().pose.position.z - 0.3,
+          stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
   // wait for the drone to land
   std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+
+  // terminate offboard
+  pos_cmd_.header.id = "break";
+  position_pub_->publish(pos_cmd_);
 
   // back up disarm command
   /* INFO */
@@ -144,4 +148,3 @@ void Quad::land(Item &stand)
 
   // kill?
 }
-
