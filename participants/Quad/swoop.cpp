@@ -5,21 +5,21 @@ void Quad::swoop(Item &target, Gripper &gripper, float length, float dx,
 {
   gripper.set_angle_sym(45);
   // start position
-  go_to_pos(target.get_pose().pose.position.x + dx - length,
+  goToPos(target.get_pose().pose.position.x + dx - length,
             target.get_pose().pose.position.y + dy, h0, 0, 3000, true);
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   // swoop to object
-  go_to_pos(target.get_pose().pose.position.x + dx - 0.2,
+  goToPos(target.get_pose().pose.position.x + dx - 0.2,
             target.get_pose().pose.position.y + dy,
             target.get_pose().pose.position.z + dz + 0.45, 0, 4500, true);
-  go_to_pos(target.get_pose().pose.position.x + dx,
+  goToPos(target.get_pose().pose.position.x + dx,
             target.get_pose().pose.position.y + dy,
             target.get_pose().pose.position.z + dz + 0.28, 0, time, false);
   gripper.set_angle_sym(grip_angle);
   std::this_thread::sleep_for(std::chrono::milliseconds(350));
 
   // swoop away from object
-  go_to_pos(target.get_pose().pose.position.x + dx + length,
+  goToPos(target.get_pose().pose.position.x + dx + length,
             target.get_pose().pose.position.y + dy, h0, 0, 3000, true);
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
@@ -29,28 +29,28 @@ void Quad::release(Item &target, Gripper &gripper, float length, float h0,
                    int time)
 {
   // start position
-  go_to_pos(target.get_pose().pose.position.x + length,
+  goToPos(target.get_pose().pose.position.x + length,
             target.get_pose().pose.position.y, h0, 0, 3000, true);
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   // swoop to object
-  go_to_pos(target.get_pose().pose.position.x,
+  goToPos(target.get_pose().pose.position.x,
             target.get_pose().pose.position.y,
             target.get_pose().pose.position.z + 0.50, 0, 2500, false);
   gripper.set_angle_sym(45);
   std::this_thread::sleep_for(std::chrono::milliseconds(350));
   gripper.set_angle_sym(0);
   // swoop away from object
-  go_to_pos(target.get_pose().pose.position.x - length,
+  goToPos(target.get_pose().pose.position.x - length,
             target.get_pose().pose.position.y, h0, 0, 3000, true);
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 // only for demo
-void Quad::quick_release(Item &target, Gripper &gripper, float length, float h0,
+void Quad::quickRelease(Item &target, Gripper &gripper, float length, float h0,
                          int time)
 {
   // start position
-  go_to_pos(target.get_pose().pose.position.x + length,
+  goToPos(target.get_pose().pose.position.x + length,
             target.get_pose().pose.position.y, h0, 0, 3000, false);
 
   // define ref position
@@ -82,7 +82,7 @@ void Quad::quick_release(Item &target, Gripper &gripper, float length, float h0,
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
-void Quad::quick_swoop(Item &target, Gripper &gripper, float length, float dx,
+void Quad::quickSwoop(Item &target, Gripper &gripper, float length, float dx,
                        float dy, float dz, float h0, int time, int grip_angle)
 {
   // attack pose
@@ -91,12 +91,12 @@ void Quad::quick_swoop(Item &target, Gripper &gripper, float length, float dx,
   gripper.set_back_arm(grip_angle);
 
   // go to start position
-  go_to_pos(target.get_pose().pose.position.x + dx - length,
+  goToPos(target.get_pose().pose.position.x + dx - length,
             target.get_pose().pose.position.y + dy, h0, 0, 4500, false);
   // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
   // swoop to object
-  go_to_pos(target.get_pose().pose.position.x + dx,
+  goToPos(target.get_pose().pose.position.x + dx,
             target.get_pose().pose.position.y + dy,
             target.get_pose().pose.position.z + dz + 0.21, 0, 4500, true);
 
@@ -105,7 +105,7 @@ void Quad::quick_swoop(Item &target, Gripper &gripper, float length, float dx,
   std::this_thread::sleep_for(std::chrono::milliseconds(time));
 
   // swoop away from object
-  go_to_pos(target.get_pose().pose.position.x + dx + length,
+  goToPos(target.get_pose().pose.position.x + dx + length,
             target.get_pose().pose.position.y + dy, h0, 0, 3000, false);
   std::this_thread::sleep_for(std::chrono::milliseconds(250));
 }
