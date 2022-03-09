@@ -151,7 +151,7 @@ public:
   void set_velocity(const Vec3 &velocity) { velocity_ = velocity; }
 
   // temporary (until initialization is ready)
-  void set_state(const state new_state) {state_ = new_state;}
+  void setState(const state new_state) {state_ = new_state;}
 
 private:
   consoleState console_state_ = debug;
