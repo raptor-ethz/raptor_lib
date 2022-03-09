@@ -123,6 +123,8 @@ void Quad::land(Item &stand)
     std::cout << "[INFO][Particpant: " << id << "] Landing." << std::endl;
   }
   /* INFO END */
+  pos_cmd_.header.id = "break";
+  position_pub_->publish(pos_cmd_);
   px4_action_cmd_.id = "land";
   px4_action_pub_->publish(px4_action_cmd_);
 
