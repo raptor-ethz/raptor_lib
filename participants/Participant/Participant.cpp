@@ -2,22 +2,32 @@
 
 bool raptor::Participant::checkForData()
 {
-  float x;
+  // check if subscriber matched something
+  if (!mocap_sub_->listener->matched()) {
+    std::cout << "[ERROR][Participant: " << id
+              << "] Mocap subscriber is not matched." << std::endl;
+    return false;
+  }
 
+  // read 10 data points
+  float x;
   for (int i = 0; i < 10; ++i) {
     mocap_sub_->listener->wait_for_data();
     x = pose_.pose.position.x;
   }
-  if (x == 0.0) {
-    std::cout << "[ERROR][Participant: " << id << "]: "
+
+  // check the last datapoint
+  const float tolerance = 0.1;
+  if (pose_.pose.position.x < tolerance && pose_.pose.position.y < tolerance &&
+      pose_.pose.position.z < tolerance) {
+    std::cout << "[ERROR][Participant: " << id << "] "
               << "Bad data after initializiation of mocap_subscriber."
               << std::endl;
     return false;
-  } else {
-    std::cout << "[INFO][Participant: " << id << "]: "
-              << "Good data after initializiation of mocap_subscriber."
-              << std::endl;
   }
+  std::cout << "[INFO][Participant: " << id << "] "
+            << "Good data after initializiation of mocap_subscriber."
+            << std::endl;
 
   return true;
 }
