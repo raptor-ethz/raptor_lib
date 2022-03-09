@@ -1,15 +1,9 @@
-Add px4 commands as methods to Quad
-
 Feedback
 - Check for Kill switch engaged before arming
 
 MOCAP feasability
 
 Battery status
-
-Raspberry initilization
-
-Gripper initilization
 
 vicon class
 - publishing parameter
