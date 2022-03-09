@@ -46,7 +46,7 @@ public:
    * max_time before ending
    * @returns True if the position has been reached, false otherwise.
    */
-  bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
+  bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                  const float &yaw_ref, const float &x_thresh,
                  const float &y_thresh, const float &z_thresh,
                  const int &delay_time, const float &max_time,
@@ -69,7 +69,7 @@ public:
    * max_time before ending
    * @returns True if the position has been reached, false otherwise.
    */
-  bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
+  bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                  const float &yaw_ref, const int &delay_time,
                  const float &max_time, const bool &reached_pos_flag);
 
@@ -89,7 +89,7 @@ public:
    * max_time before ending
    * @returns True if the position has been reached, false otherwise.
    */
-  bool go_to_pos(const float &x_ref, const float &y_ref, const float &z_ref,
+  bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                  const float &yaw_ref, const float &max_time,
                  const bool &reached_pos_flag);
 
@@ -133,11 +133,11 @@ public:
 
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
              float dz, float h0, int time, int grip_angle);
-  void quick_swoop(Item &target, Gripper &gripper, float length, float dx,
+  void quickSwoop(Item &target, Gripper &gripper, float length, float dx,
                    float dy, float dz, float h0, int time, int grip_angle);
   void release(Item &target, Gripper &gripper, float length, float h0,
                int time);
-  void quick_release(Item &target, Gripper &gripper, float length, float h0,
+  void quickRelease(Item &target, Gripper &gripper, float length, float h0,
                      int time);
 
   void setDefaultThreshold(const float x_thresh, const float y_thresh,
@@ -185,7 +185,7 @@ private:
  * @param reference_pos reference position
  * @param threshold threshold
  */
-inline bool check_reached_pos_1d(const float &actual_pos,
+inline bool checkReachedPos1D(const float &actual_pos,
                                  const float &reference_pos,
                                  const float &threshold);
 
@@ -203,7 +203,7 @@ inline bool check_reached_pos_1d(const float &actual_pos,
  * @param z_ref
  * @param z_thresh
  */
-inline bool check_reached_pos_3d(const float &x_actual, const float &x_ref,
+inline bool checkReachedPos3D(const float &x_actual, const float &x_ref,
                                  const float &x_thresh, const float &y_actual,
                                  const float &y_ref, const float &y_thresh,
                                  const float &z_actual, const float &z_ref,
