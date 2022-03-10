@@ -1,26 +1,69 @@
 #include "Quad.h"
 
-bool Quad::takeOff()
+/**
+ * @brief Checks the state of the drone.
+ *
+ * @return int:
+ * 0, if the drone is ready to fly
+ * 1, if the drone is uninitialized
+ * 2, if the drone is killed
+ * 3, if the drone is already airborne
+ * failsafe
+ * landing
+ */
+int checkState()
 {
   switch (state_) {
   case 0:
     std::cout << "[ERROR][Participant: " << id
               << "] Take-off rejected: Participant uninitialized!" << std::endl;
-    return false;
+    return 1;
     break;
 
   case 3:
     std::cout << "[ERROR][Participant: " << id
               << "] Take-off rejected: Participant already airborne!"
               << std::endl;
-    return false;
+    return 3;
     break;
 
   default:
     break;
   }
-  // TODO check unkilled? or unkill here?
+  // TODO check unkilled -> return 2
 
+  return 0;
+}
+
+bool Quad::takeOff()
+{
+  switch (checkState()) {
+  case 0:
+    break;
+
+  case 1:
+  case 2:
+    for (int i = 0; i < 10; ++i) {
+      std::cout << "Trying again in 3 ";
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+      std::cout << "2 ";
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+      std::cout << "1" << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+      if (checkState() == 0) {
+        break;
+      }
+    }
+    return false;
+
+  case 3:
+    return false;
+
+  default:
+    assert(false);
+    break;
+  }
+  
   /* ARM */
   /* INFO */
   if (console_state_ <= 1) {
@@ -138,7 +181,8 @@ void Quad::land(Item &stand)
   // back up disarm command
   /* INFO */
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id << "] Safety Disarm." << std::endl;
+    std::cout << "[INFO][Participant: " << id << "] Safety Disarm."
+              << std::endl;
   }
   /* INFO END */
   px4_action_cmd_.id = "disarm";
