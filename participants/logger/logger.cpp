@@ -1,6 +1,10 @@
 #include "logger.h"
 
-void raptorLog(Quad participant)
+enum LogFlag { run, stop, bookmark };
+
+std::atomic<LogFlag> g_log_flag{run};
+
+void startLog(Quad participant)
 {
   // set delay for 10 Hz
   const int DELAY = 100;
@@ -18,7 +22,7 @@ void raptorLog(Quad participant)
   // 'start' the clock
   time_0 = std::chrono::high_resolution_clock::now();
   while (true) {
-    switch (participant.log_flag_.load()) {
+    switch (g_log_flag) {
     case 0: // run
       break;
 
@@ -76,10 +80,10 @@ void raptorLog(Quad participant)
     time_1 = std::chrono::high_resolution_clock::now();
     duration = time_1 - time_0;
     timestamp.push_back(duration.count());
-    // store position data
-    pos_x.push_back(participant.getPose().pose.position.x);
-    pos_y.push_back(participant.getPose().pose.position.y);
-    pos_z.push_back(participant.getPose().pose.position.z);
+    // store position data TODO
+    // pos_x.push_back(participant.getPose().pose.position.x);
+    // pos_y.push_back(participant.getPose().pose.position.y);
+    // pos_z.push_back(participant.getPose().pose.position.z);
 
     // wait for remaining time
     time_2 = std::chrono::high_resolution_clock::now();

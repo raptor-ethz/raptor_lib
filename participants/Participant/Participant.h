@@ -14,8 +14,6 @@
 namespace raptor
 {
 
-enum LogFlag { run, stop, bookmark };
-
 class Participant
 {
 public:
@@ -32,8 +30,6 @@ public:
   virtual const cpp_msg::Mocap &getPose();
 
   virtual const std::string &getId();
-
-  std::atomic<LogFlag> log_flag_{run};
 
 protected:
   std::string id = "N/A";
