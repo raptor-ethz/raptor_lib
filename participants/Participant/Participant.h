@@ -9,6 +9,7 @@
 #include "sensor_msgs/msgs/Mocap.h"
 #include "std_msgs/msgs/Header.h"
 #include "subscriber.h"
+#include <atomic>
 
 namespace raptor
 {
@@ -32,7 +33,7 @@ public:
 
   virtual const std::string &getId();
 
-  LogFlag log_flag_ = run;
+  std::atomic<LogFlag> log_flag_{run};
 
 protected:
   std::string id = "N/A";
