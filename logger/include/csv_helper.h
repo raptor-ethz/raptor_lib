@@ -22,7 +22,8 @@
  **/
 template <typename T>
 void read_csv_to_col_vec(std::vector<std::vector<T>> &data,
-                         const std::string path, const T scaling_factor) {
+                         const std::string path, const T scaling_factor)
+{
   /* ASSERT: column vectors are of size 0 */
   for (auto i = 0; i < data.size(); ++i)
     assert(data.at(i).size() == 0);
@@ -91,12 +92,30 @@ void read_csv_to_col_vec(std::vector<std::vector<T>> &data,
 template <typename T>
 void write_col_vec_to_csv(const std::vector<std::vector<T>> &data,
                           const std::string path, const char separator,
-                          const T scaling_factor) {
+                          const T scaling_factor)
+{
   // create file
+  // find suitable filename
+  std::filesystem::path fs_path{path + ".csv"};
   std::ofstream ofs;
-  ofs.open(path, std::ofstream::trunc);
+  for (int i = 1; std::filesystem::exists(fs_path); ++i) {
+    if (!(i == 1)) {
+      path.pop_back();
+    }
+    path += std::to_string(i);
+    fs_path = path + ".csv";
+    if (i >= 100) {
+      std::cerr << "Problem when creating file: Pathname exists over 100 times"
+                << std::endl;
+      exit(1);
+    }
+  }
+  path += ".csv";
+
+  // create file
+  ofs.open(path);
   if (!ofs.is_open()) {
-    std::cerr << "Problem when creating file!" << std::endl;
+    std::cerr << "Problem when creating file! Couldn't open ofs" << std::endl;
     exit(1);
   }
 
@@ -149,7 +168,8 @@ void extract_data_from_col_vec(const std::vector<std::vector<T>> &raw_data,
                                std::vector<std::vector<T>> &processed_data,
                                const int start_column,
                                const int number_of_columns, const int start_row,
-                               const int number_of_rows) {
+                               const int number_of_rows)
+{
   // assert: number_of_columns matches size of processed_data
   assert(processed_data.size() == number_of_columns);
 

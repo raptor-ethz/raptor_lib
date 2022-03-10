@@ -1,6 +1,6 @@
 #include "Participant.h"
-#include <chrono>
 #include "csv_helper.h"
+#include <chrono>
 
 void log(raptor::Participant participant)
 {
@@ -31,8 +31,39 @@ void log(raptor::Participant participant)
       container.push_back(pos_x);
       container.push_back(pos_y);
       container.push_back(pos_z);
+      // create filename
+      std::time_t timestamp = std::chrono::system_clock::to_time_t(
+          std::chrono::system_clock::now());
+      std::string date = std::ctime(&timestamp);
+      // parse date string
+      std::string year;
+      for (int i = 20; i < 24; ++i) {
+        std::cout << date.at(i) << std::endl;
+        year.push_back(date.at(i));
+      }
+      std::string month;
+      for (int i = 4; i < 7; ++i) {
+        std::cout << date.at(i) << std::endl;
+        month.push_back(date.at(i));
+      }
+      std::string day;
+      for (int i = 8; i < 10; ++i) {
+        std::cout << date.at(i) << std::endl;
+        day.push_back(date.at(i));
+      }
+      std::string time;
+      for (int i = 11; i < 13; ++i) {
+        std::cout << date.at(i) << std::endl;
+        time.push_back(date.at(i));
+      }
+      for (int i = 14; i < 16; ++i) {
+        std::cout << date.at(i) << std::endl;
+        time.push_back(date.at(i));
+      }
+      // concatenate filname
+      std::string filename = month + day + '_' + year + '_' + time;
       // safe to file
-      write_col_vec_to_csv(container, "test.txt", ',', 1.f);
+      write_col_vec_to_csv(container, filename, ',', 1.f);
       // exit
       return;
     }
