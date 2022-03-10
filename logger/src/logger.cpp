@@ -61,7 +61,7 @@ void log(raptor::Participant participant)
         time.push_back(date.at(i));
       }
       // concatenate filname
-      std::string filename = month + day + '_' + year + '_' + time;
+      std::string filename = "log_" + month + day + '_' + year + '_' + time;
       // safe to file
       write_col_vec_to_csv(container, filename, ',', 1.f);
       // exit

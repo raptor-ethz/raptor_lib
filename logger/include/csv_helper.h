@@ -1,9 +1,11 @@
 
 #pragma once
 #include <cassert>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <vector>
+
 
 /**
  * Reads data of type T from a .csv file and stores it in a data-matrix using
@@ -91,7 +93,7 @@ void read_csv_to_col_vec(std::vector<std::vector<T>> &data,
 //      given data to that csv file
 template <typename T>
 void write_col_vec_to_csv(const std::vector<std::vector<T>> &data,
-                          const std::string path, const char separator,
+                          std::string path, const char separator,
                           const T scaling_factor)
 {
   // create file
