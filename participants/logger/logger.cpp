@@ -4,7 +4,7 @@ enum LogFlag { run, stop, bookmark };
 
 std::atomic<LogFlag> g_log_flag{run};
 
-void startLog(Quad participant)
+void startLog()
 {
   // set delay for 10 Hz
   const int DELAY = 100;
