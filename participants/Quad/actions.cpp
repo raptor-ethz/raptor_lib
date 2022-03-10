@@ -11,7 +11,7 @@
  * failsafe
  * landing
  */
-int checkState()
+int Quad::checkState()
 {
   switch (state_) {
   case 0:
