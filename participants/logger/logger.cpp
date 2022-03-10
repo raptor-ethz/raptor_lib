@@ -1,6 +1,8 @@
 #include "logger.h"
 #include "csv_helper.h"
 #include <chrono>
+#include <atomic>
+#include <thread>
 
 enum LogFlag { run, stop, bookmark };
 
