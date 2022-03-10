@@ -131,6 +131,8 @@ public:
    */
   void land(Item &stand);
 
+  bool checkState();
+
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
              float dz, float h0, int time, int grip_angle);
   void quickSwoop(Item &target, Gripper &gripper, float length, float dx,
