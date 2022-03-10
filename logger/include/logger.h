@@ -3,7 +3,4 @@
 #include "csv_helper.h"
 #include <chrono>
 
-namespace raptor
-{
-void log(Quad participant);
-}
+void raptorLog(Quad participant);

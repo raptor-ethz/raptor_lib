@@ -1,9 +1,6 @@
 #include "logger.h"
 
-namespace raptor
-{
-
-void log(Quad participant)
+void raptorLog(Quad participant)
 {
   // set delay for 10 Hz
   const int DELAY = 100;
@@ -92,6 +89,4 @@ void log(Quad participant)
       std::this_thread::sleep_for(std::chrono::milliseconds(wait));
     }
   }
-}
-
 }
