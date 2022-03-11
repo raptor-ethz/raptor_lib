@@ -1,15 +1,21 @@
 #include "logger.h"
+#include "MocapPubSubTypes.h"
 #include "csv_helper.h"
+#include "domain_participant.h"
+#include "sensor_msgs/msgs/Mocap.h"
+#include "subscriber.h"
 #include <chrono>
-#include <atomic>
 #include <thread>
 
-enum LogFlag { run, stop, bookmark };
+void startLog(std::atomic<LogFlag> &log_flag,
+              const std::string sub_topic_name) {
+  std::unique_ptr<DefaultParticipant> dp =
+      std::make_unique<DefaultParticipant>(0, "raptor");
+  DDSSubscriber<idl_msg::MocapPubSubType, cpp_msg::Mocap> *mocap_sub;
+  cpp_msg::Mocap pose{};
+  mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose,
+                                sub_topic_name, dp->participant());
 
-std::atomic<LogFlag> g_log_flag{run};
-
-void startLog()
-{
   // set delay for 10 Hz
   const int DELAY = 100;
   // declare chrono variables
@@ -26,11 +32,13 @@ void startLog()
   // 'start' the clock
   time_0 = std::chrono::high_resolution_clock::now();
   while (true) {
-    switch (g_log_flag) {
+    switch (log_flag.load()) {
     case 0: // run
       break;
 
     case 1: { // stop
+      // delete dynamic variables
+      delete mocap_sub;
       // unite column vectors into container vector
       std::vector<std::vector<float>> container;
       container.push_back(timestamp);
@@ -84,10 +92,10 @@ void startLog()
     time_1 = std::chrono::high_resolution_clock::now();
     duration = time_1 - time_0;
     timestamp.push_back(duration.count());
-    // store position data TODO
-    // pos_x.push_back(participant.getPose().pose.position.x);
-    // pos_y.push_back(participant.getPose().pose.position.y);
-    // pos_z.push_back(participant.getPose().pose.position.z);
+    // store position data
+    pos_x.push_back(pose.pose.position.x);
+    pos_y.push_back(pose.pose.position.y);
+    pos_z.push_back(pose.pose.position.z);
 
     // wait for remaining time
     time_2 = std::chrono::high_resolution_clock::now();

@@ -1,3 +1,6 @@
 #pragma once
+#include <atomic>
 
-void startLog();
+enum LogFlag { run, stop, bookmark };
+
+void startLog(std::atomic<LogFlag> &log_flag);
