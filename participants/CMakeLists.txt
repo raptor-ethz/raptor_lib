@@ -20,8 +20,3 @@ target_sources(raptor_lib PRIVATE
     Quad/go_to_pos.cpp
     Quad/actions.cpp
     Quad/swoop.cpp)
-
-#Logger
-target_include_directories(raptor_lib PUBLIC logger)
-target_sources(raptor_lib PRIVATE
-    logger/logger.cpp)

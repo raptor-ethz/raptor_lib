@@ -15,5 +15,6 @@ yaml-cpp
 
 add_subdirectory(lib)
 add_subdirectory(participants)
+add_subdirectory(logger)
 add_subdirectory(trajectories)
 add_subdirectory(test)
