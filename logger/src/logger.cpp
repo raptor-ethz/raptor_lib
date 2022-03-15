@@ -16,8 +16,8 @@ void startLog(std::atomic<LogFlag> &log_flag,
   mocap_sub = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose,
                                 sub_topic_name, dp->participant());
 
-  // set delay for 10 Hz
-  const int DELAY = 100;
+  // set delay for 100 Hz
+  const int DELAY = 9;
   // declare chrono variables
   std::chrono::time_point<std::chrono::high_resolution_clock> time_0;
   std::chrono::time_point<std::chrono::high_resolution_clock> time_1;
@@ -28,6 +28,9 @@ void startLog(std::atomic<LogFlag> &log_flag,
   std::vector<float> pos_x;
   std::vector<float> pos_y;
   std::vector<float> pos_z;
+
+  // DEBUG
+  std::cout << "Start log" << std::endl;
 
   // 'start' the clock
   time_0 = std::chrono::high_resolution_clock::now();
@@ -52,26 +55,21 @@ void startLog(std::atomic<LogFlag> &log_flag,
       // parse date string
       std::string year;
       for (int i = 20; i < 24; ++i) {
-        std::cout << date.at(i) << std::endl;
         year.push_back(date.at(i));
       }
       std::string month;
       for (int i = 4; i < 7; ++i) {
-        std::cout << date.at(i) << std::endl;
         month.push_back(date.at(i));
       }
       std::string day;
       for (int i = 8; i < 10; ++i) {
-        std::cout << date.at(i) << std::endl;
         day.push_back(date.at(i));
       }
       std::string time;
       for (int i = 11; i < 13; ++i) {
-        std::cout << date.at(i) << std::endl;
         time.push_back(date.at(i));
       }
       for (int i = 14; i < 16; ++i) {
-        std::cout << date.at(i) << std::endl;
         time.push_back(date.at(i));
       }
       // concatenate filname
@@ -79,6 +77,7 @@ void startLog(std::atomic<LogFlag> &log_flag,
       // safe to file
       write_col_vec_to_csv(container, filename, ',', 1.f);
       // exit
+      std::cout << "Successful log" << std::endl;
       return;
     }
 

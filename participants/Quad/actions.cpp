@@ -90,7 +90,7 @@ bool Quad::takeOff()
   state_ = airborne;
 
   // wait during take-off sequence
-  std::this_thread::sleep_for(std::chrono::milliseconds(8000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(12000));
 
   // TODO : check height?
 
