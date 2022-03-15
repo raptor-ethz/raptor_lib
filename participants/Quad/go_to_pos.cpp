@@ -44,6 +44,13 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
   bool result = false;
 
   for (float timer = 0; timer < max_time; timer += delay_time) {
+    // TODO: check mocap
+    // frame number: msg.header.timestamp;
+    // not zero!
+    // TODO: check external message
+    // subscriber->listener->matched?
+    // read data
+    // check if not 'default'
     // check if reference position has been reached
     result = checkReachedPos3D(pose_.pose.position.x, x_ref, x_thresh,
                                   pose_.pose.position.y, y_ref, y_thresh,
