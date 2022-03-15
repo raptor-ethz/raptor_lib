@@ -15,8 +15,7 @@ enum state { uninitialized, initialized, armed, airborne };
 
 enum consoleState { debug, info, warning, error };
 
-class Quad : public raptor::Participant
-{
+class Quad : public raptor::Participant {
 public:
   Quad(const std::string &raptor_participant_id,
        std::unique_ptr<DefaultParticipant> &dp,
@@ -47,10 +46,10 @@ public:
    * @returns True if the position has been reached, false otherwise.
    */
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
-                 const float &yaw_ref, const float &x_thresh,
-                 const float &y_thresh, const float &z_thresh,
-                 const int &delay_time, const float &max_time,
-                 const bool &reached_pos_flag);
+               const float &yaw_ref, const float &x_thresh,
+               const float &y_thresh, const float &z_thresh,
+               const int &delay_time, const float &max_time,
+               const bool &reached_pos_flag);
 
   /**
    * @brief Comand the drone to track a position (no threshold).
@@ -70,8 +69,8 @@ public:
    * @returns True if the position has been reached, false otherwise.
    */
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
-                 const float &yaw_ref, const int &delay_time,
-                 const float &max_time, const bool &reached_pos_flag);
+               const float &yaw_ref, const int &delay_time,
+               const float &max_time, const bool &reached_pos_flag);
 
   /**
    * @brief Comand the drone to track a position (no threshold, delay_time).
@@ -90,9 +89,11 @@ public:
    * @returns True if the position has been reached, false otherwise.
    */
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
-                 const float &yaw_ref, const float &max_time,
-                 const bool &reached_pos_flag);
-
+               const float &yaw_ref, const float &max_time,
+               const bool &reached_pos_flag);
+  bool goToPos(Item &target, const float &x_offset, const float &y_offset,
+               const float &z_offset, const float &yaw_ref,
+               const float &max_time, const bool &reached_pos_flag);
   /**
    * Compute a trajectory between the current state of the drone and the
    * specified reference state during the duration of completion_time.
@@ -111,14 +112,14 @@ public:
 
   /**
    * @brief Arms the quad, performs the take-off and switches to offboard.
-   * 
+   *
    * In the first step, a proper state of the quad is asserted. If the state
-   * is accepted, the quad ist armed. After sleeping for 2 seconds, 
-   * a take off command is sent to the drone and the state is set to ariborne. 
+   * is accepted, the quad ist armed. After sleeping for 2 seconds,
+   * a take off command is sent to the drone and the state is set to ariborne.
    * The thread then waits for 8 seconds for the maneuver to complete. Then
    * it switches to offboard control mode and sleeps for additional 2 seconds
    * for the drone to stabilize before it returns.
-   * 
+   *
    * @return true: If the take off has been successful.
    * @return false: If an error occured.
    */
@@ -126,7 +127,7 @@ public:
 
   /**
    * @brief Commands the drone to fly back to the stand, descend and land.
-   * 
+   *
    * @param stand The instance of the stand to land in.
    */
   void land(Item &stand);
@@ -136,15 +137,14 @@ public:
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
              float dz, float h0, int time, int grip_angle);
   void quickSwoop(Item &target, Gripper &gripper, float length, float dx,
-                   float dy, float dz, float h0, int time, int grip_angle);
+                  float dy, float dz, float h0, int time, int grip_angle);
   void release(Item &target, Gripper &gripper, float length, float h0,
                int time);
   void quickRelease(Item &target, Gripper &gripper, float length, float h0,
-                     int time);
+                    int time);
 
   void setDefaultThreshold(const float x_thresh, const float y_thresh,
-                           const float z_thresh)
-  {
+                           const float z_thresh) {
     x_thresh_ = x_thresh;
     y_thresh_ = y_thresh;
     z_thresh_ = z_thresh;
@@ -153,7 +153,7 @@ public:
   void set_velocity(const Vec3 &velocity) { velocity_ = velocity; }
 
   // temporary (until initialization is ready)
-  void setState(const state new_state) {state_ = new_state;}
+  void setState(const state new_state) { state_ = new_state; }
 
 private:
   consoleState console_state_ = debug;
@@ -188,8 +188,8 @@ private:
  * @param threshold threshold
  */
 inline bool checkReachedPos1D(const float &actual_pos,
-                                 const float &reference_pos,
-                                 const float &threshold);
+                              const float &reference_pos,
+                              const float &threshold);
 
 /**
  * @brief Checks if the actual 3D position lies within a specified thershold of
@@ -206,7 +206,7 @@ inline bool checkReachedPos1D(const float &actual_pos,
  * @param z_thresh
  */
 inline bool checkReachedPos3D(const float &x_actual, const float &x_ref,
-                                 const float &x_thresh, const float &y_actual,
-                                 const float &y_ref, const float &y_thresh,
-                                 const float &z_actual, const float &z_ref,
-                                 const float &z_thresh);
+                              const float &x_thresh, const float &y_actual,
+                              const float &y_ref, const float &y_thresh,
+                              const float &z_actual, const float &z_ref,
+                              const float &z_thresh);
