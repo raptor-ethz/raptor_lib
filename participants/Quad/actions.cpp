@@ -1,5 +1,9 @@
 #include "Quad.h"
 
+int Quad::checkMocapData() {
+  return 0;
+}
+
 /**
  * @brief Checks the state of the drone.
  *
