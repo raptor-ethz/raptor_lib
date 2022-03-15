@@ -1,19 +1,19 @@
 #include "Participant.h"
 
-bool raptor::Participant::checkForData()
-{
+bool raptor::Participant::checkForData() {
   // check if subscriber matched something
-  if (!mocap_sub_->listener->matched()) {
-    std::cout << "[ERROR][Participant: " << id
-              << "] Mocap subscriber is not matched." << std::endl;
-    return false;
-  }
 
   // read 10 data points
   float x;
   for (int i = 0; i < 10; ++i) {
     mocap_sub_->listener->wait_for_data();
     x = pose_.pose.position.x;
+  }
+
+  if (!mocap_sub_->listener->matched()) {
+    std::cout << "[ERROR][Participant: " << id
+              << "] Mocap subscriber is not matched." << std::endl;
+    return false;
   }
 
   // check the last datapoint
