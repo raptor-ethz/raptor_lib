@@ -17,7 +17,7 @@ void startLog(std::atomic<LogFlag> &log_flag,
                                 sub_topic_name, dp->participant());
 
   // set delay for 100 Hz
-  const int DELAY = 9;
+  const int DELAY = 10;
   // declare chrono variables
   std::chrono::time_point<std::chrono::high_resolution_clock> time_0;
   std::chrono::time_point<std::chrono::high_resolution_clock> time_1;
