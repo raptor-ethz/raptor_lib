@@ -33,6 +33,7 @@ public:
 
   DDSPublisher *position_pub_;
   DDSPublisher *px4_action_pub_;
+  DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *px4_info_sub_;
 
   bool checkMocapData();
 
@@ -186,6 +187,7 @@ private:
 
   cpp_msg::QuadPositionCmd pos_cmd_{};
   cpp_msg::Header px4_action_cmd_{};
+  cpp_msg::Header px4_info_{};
 
   // goToPos stuff
   float x_thresh_{0.2};
