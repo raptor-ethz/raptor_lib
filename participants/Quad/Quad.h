@@ -15,7 +15,7 @@ enum state {
   uninitialized,
   initialized,
   armed,
-  offboard,
+  airborne,
   land,
   emg_land,
   hover
@@ -34,7 +34,7 @@ public:
   DDSPublisher *position_pub_;
   DDSPublisher *px4_action_pub_;
 
-  int checkMocapData();
+  bool checkMocapData();
 
   /**
    * @brief Comand the drone to track a position (full configuration).
@@ -141,8 +141,6 @@ public:
    */
   void land(Item &stand);
 
-  int checkState();
-
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
              float dz, float h0, int time, int grip_angle);
   void quickSwoop(Item &target, Gripper &gripper, float length, float dx,
@@ -165,14 +163,31 @@ public:
   // temporary (until initialization is ready)
   void setState(const state new_state) { state_ = new_state; }
 
+  /**
+ * @brief Get the state of the drone.
+ *
+ * @return int:
+ * 0, uninitialized
+ * 1, initialized
+ * 2, armed
+ * 3, airborne
+ * 4, land
+ * 5, emg_land
+ * 6, hover
+ */
+  int getState() {return state_; }
+
 private:
   consoleState console_state_ = debug;
   state state_ = uninitialized;
 
+  int missed_frames_{2};
+  long old_frame_number_{0};
+
   cpp_msg::QuadPositionCmd pos_cmd_{};
   cpp_msg::Header px4_action_cmd_{};
 
-  // got_to_pos stuff
+  // goToPos stuff
   float x_thresh_{0.2};
   float y_thresh_{0.2};
   float z_thresh_{0.2};
