@@ -20,19 +20,19 @@ public:
   DDSSubscriber<idl_msg::MocapPubSubType, cpp_msg::Mocap> *mocap_sub_;
 
   /**
-   * Reads 30 datapoints from the subscriber and
-   * checks for a non-zero last datapoint.
+   * Checks if the subscriber has matched anything and
+   * if the received data is non-zero.
    *
-   * @returns if (position.x != 0.0)
+   * @returns true : if subscriber is matched and received non-zero data.
    **/
-  virtual bool checkForData();
+  bool checkForData();
 
-  virtual const cpp_msg::Mocap &getPose();
+  virtual const cpp_msg::Mocap &getPose() { return pose_; }
 
-  virtual const std::string &getId();
+  virtual const std::string &getId() { return id_; }
 
 protected:
-  std::string id = "N/A";
+  std::string id_ = "N/A";
   cpp_msg::Mocap pose_{};
 };
 
