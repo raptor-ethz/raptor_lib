@@ -161,12 +161,15 @@ void Quad::land(Item &stand)
           stand.getPose().pose.position.z - 0.3,
           stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
-  // wait for the drone to land
-  std::this_thread::sleep_for(std::chrono::milliseconds(4000));
-
   // terminate offboard
   pos_cmd_.header.id = "break";
   position_pub_->publish(pos_cmd_);
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+  // default land command
+  px4_action_cmd_.id = "land";
+  px4_action_pub_->publish(px4_action_cmd_);
+  std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
   // back up disarm command
   /* INFO */
