@@ -23,39 +23,21 @@ bool Quad::checkMocapData()
 
 bool Quad::takeOff()
 {
+  // preflight checks
+
+  // TODO: check state
+
+  // TODO: check killed
+
+  // TODO: check local position
+
+  // check motion capture data quality
   if (!checkMocapData()) {
     // Error
     std::cout << "[ERROR][Participant: " << id_ << "] Take off denied."
               << std::endl;
     return false;
   }
-  // TODO preflight checks
-  // switch (state_) {
-  // case 0:
-  //   break;
-
-  // case 1:
-  // case 2:
-  //   for (int i = 0; i < 10; ++i) {
-  //     std::cout << "Trying again in 3 ";
-  //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  //     std::cout << "2 ";
-  //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  //     std::cout << "1" << std::endl;
-  //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  //     if (checkState() == 0) {
-  //       break;
-  //     }
-  //   }
-  //   return false;
-
-  // case 3:
-  //   return false;
-
-  // default:
-  //   assert(false);
-  //   break;
-  // }
 
   /* ARM */
   // INFO
