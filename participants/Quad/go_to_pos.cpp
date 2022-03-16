@@ -3,17 +3,17 @@
 /* Non-member functions */
 
 inline bool checkReachedPos1D(const float &actual_pos,
-                                 const float &reference_pos,
-                                 const float &threshold)
+                              const float &reference_pos,
+                              const float &threshold)
 {
   return std::abs(reference_pos - actual_pos) <= threshold;
 }
 
 inline bool checkReachedPos3D(const float &x_actual, const float &x_ref,
-                                 const float &x_thresh, const float &y_actual,
-                                 const float &y_ref, const float &y_thresh,
-                                 const float &z_actual, const float &z_ref,
-                                 const float &z_thresh)
+                              const float &x_thresh, const float &y_actual,
+                              const float &y_ref, const float &y_thresh,
+                              const float &z_actual, const float &z_ref,
+                              const float &z_thresh)
 {
   bool x_reach_flag = checkReachedPos1D(x_actual, x_ref, x_thresh);
   bool y_reach_flag = checkReachedPos1D(y_actual, y_ref, y_thresh);
@@ -26,10 +26,10 @@ inline bool checkReachedPos3D(const float &x_actual, const float &x_ref,
 
 // full config
 bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
-                     const float &yaw_ref, const float &x_thresh,
-                     const float &y_thresh, const float &z_thresh,
-                     const int &delay_time, const float &max_time,
-                     const bool &reached_pos_flag)
+                   const float &yaw_ref, const float &x_thresh,
+                   const float &y_thresh, const float &z_thresh,
+                   const int &delay_time, const float &max_time,
+                   const bool &reached_pos_flag)
 {
 
   /* DEBUG */
@@ -40,21 +40,51 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
   }
   /* DEBUG END */
 
+  // timestamp
+  std::chrono::time_point<std::chrono::steady_clock> loop_timer;
   // resulting bool
   bool result = false;
 
-  for (float timer = 0; timer < max_time; timer += delay_time) {
-    // TODO: check mocap
-    // frame number: msg.header.timestamp;
-    // not zero!
+  for (float t = 0; t < max_time; t += delay_time) {
+    // get start time
+    loop_timer = std::chrono::steady_clock::now();
+    // check mocap
+    if (!checkMocapData()) {
+      state_ = hover;
+    }
     // TODO: check external message
     // subscriber->listener->matched?
     // read data
     // check if not 'default'
+
+    // check flag
+    switch (state_) {
+    case 4:
+      // Error
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Activate Failsafe: Land." << std::endl;
+      // TODO: land
+      break;
+
+    case 5:
+      // Error
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Activate Failsafe: Emergency Land." << std::endl;
+      // TODO: emg_land
+      break;
+
+    case 6:
+      // Error
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Activate Failsafe: Hover." << std::endl;
+      // TODO: hover;
+      break;
+    }
+
     // check if reference position has been reached
     result = checkReachedPos3D(pose_.pose.position.x, x_ref, x_thresh,
-                                  pose_.pose.position.y, y_ref, y_thresh,
-                                  pose_.pose.position.z, z_ref, z_thresh);
+                               pose_.pose.position.y, y_ref, y_thresh,
+                               pose_.pose.position.z, z_ref, z_thresh);
 
     if (result && reached_pos_flag) {
       /* DEBUG */
@@ -72,13 +102,13 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       pos_cmd_.position.y = y_ref;
       pos_cmd_.position.z = z_ref;
       pos_cmd_.yaw_angle = yaw_ref;
-
-      // publich pos_cmd
+      // publish pos_cmd
       position_pub_->publish(pos_cmd_);
     }
 
-    // delay
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay_time));
+    // control frequency
+    loop_timer += std::chrono::milliseconds(delay_time);
+    std::this_thread::sleep_until(loop_timer);
   }
 
   /* DEBUG */
@@ -97,20 +127,20 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 
 // using default threshold
 bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
-                     const float &yaw_ref, const int &delay_time,
-                     const float &max_time, const bool &reached_pos_flag)
+                   const float &yaw_ref, const int &delay_time,
+                   const float &max_time, const bool &reached_pos_flag)
 {
-  return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_,
-                   z_thresh_, delay_time, max_time, reached_pos_flag);
+  return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_, z_thresh_,
+                 delay_time, max_time, reached_pos_flag);
 }
 
 // using default threshold and delay
 bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
-                     const float &yaw_ref, const float &max_time,
-                     const bool &reached_pos_flag)
+                   const float &yaw_ref, const float &max_time,
+                   const bool &reached_pos_flag)
 {
-  return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_,
-                   z_thresh_, delay_time_, max_time, reached_pos_flag);
+  return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_, z_thresh_,
+                 delay_time_, max_time, reached_pos_flag);
 }
 
 bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
@@ -168,9 +198,9 @@ bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
   }
 
   // check if reference position has been reached
-  bool result = checkReachedPos3D(
-      pose_.pose.position.x, pos_ref[0], x_thresh_, pose_.pose.position.y,
-      pos_ref[1], y_thresh_, pose_.pose.position.z, pos_ref[2], z_thresh_);
+  bool result = checkReachedPos3D(pose_.pose.position.x, pos_ref[0], x_thresh_,
+                                  pose_.pose.position.y, pos_ref[1], y_thresh_,
+                                  pose_.pose.position.z, pos_ref[2], z_thresh_);
 
   // DEBUG
   if (result) {
