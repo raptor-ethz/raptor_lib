@@ -11,7 +11,7 @@
 
 /* Non-member variables */
 
-enum state {
+enum State {
   uninitialized,
   initialized,
   armed,
@@ -21,7 +21,14 @@ enum state {
   hover
 };
 
-enum consoleState { debug, info, warning, error };
+enum ConsoleState { debug, info, warning, error };
+
+struct Status {
+  bool feedback{false};
+  bool killed{true};
+  bool local_position{false};
+  int battery{0};
+};
 
 class Quad : public raptor::Participant
 {
@@ -36,6 +43,8 @@ public:
   DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *px4_info_sub_;
 
   bool checkMocapData();
+
+  Status getStatus();
 
   /**
    * @brief Comand the drone to track a position (full configuration).
@@ -162,7 +171,7 @@ public:
   void set_velocity(const Vec3 &velocity) { velocity_ = velocity; }
 
   // temporary (until initialization is ready)
-  void setState(const state new_state) { state_ = new_state; }
+  void setState(const State new_state) { state_ = new_state; }
 
   /**
  * @brief Get the state of the drone.
@@ -179,8 +188,8 @@ public:
   int getState() {return state_; }
 
 private:
-  consoleState console_state_ = debug;
-  state state_ = uninitialized;
+  ConsoleState console_state_ = debug;
+  State state_ = uninitialized;
 
   int missed_frames_{2};
   long old_frame_number_{0};
