@@ -239,6 +239,7 @@ bool Quad::takeOff()
 
   // wait for the drone to stabilize
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  state_ = airborne;
 
   // DEBUG
   if (console_state_ == 0) {
