@@ -7,8 +7,8 @@
 #include <chrono>
 #include <thread>
 
-void startLog(std::atomic<LogFlag> &log_flag,
-              const std::string sub_topic_name) {
+void startLog(std::atomic<LogFlag> &log_flag, const std::string sub_topic_name)
+{
   std::unique_ptr<DefaultParticipant> dp =
       std::make_unique<DefaultParticipant>(0, "raptor");
   DDSSubscriber<idl_msg::MocapPubSubType, cpp_msg::Mocap> *mocap_sub;
@@ -76,7 +76,12 @@ void startLog(std::atomic<LogFlag> &log_flag,
       // concatenate filname
       std::string filename = "log_" + month + day + '_' + year + '_' + time;
       // safe to file
-      write_col_vec_to_csv(container, filename, ',', 1.f);
+      // TODO try catch
+      try {
+        write_col_vec_to_csv(container, filename, ',', 1.f);
+      } catch (...) {
+        std::cout << "[ERROR][Logger] File could not be saved." << std::endl;
+      }
       // exit
       std::cout << "Successful log" << std::endl;
       return;
