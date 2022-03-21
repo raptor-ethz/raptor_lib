@@ -19,4 +19,5 @@ target_sources(raptor_lib PRIVATE
     Quad/Quad.cpp
     Quad/go_to_pos.cpp
     Quad/actions.cpp
+    Quad/emergency.cpp
     Quad/swoop.cpp)
