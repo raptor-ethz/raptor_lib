@@ -66,7 +66,7 @@ bool Quad::takeOff()
   }
 
   // check state
-  if (!state_ == initialized) {
+  if (!(state_ == initialized)) {
     // Error
     std::cout << "[ERROR][Participant: " << id_
               << "] Takeoff denied: Participant not initialized." << std::endl;
