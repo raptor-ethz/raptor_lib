@@ -3,7 +3,8 @@
 Quad::Quad(const std::string &raptor_participant_id,
            std::unique_ptr<DefaultParticipant> &dp,
            const std::string &sub_topic_name, const std::string &pub_topic_name,
-           Gripper* const gripper) : gripper_(gripper)
+           Gripper *const gripper, Item *const stand)
+    : gripper_(gripper), stand_(stand)
 {
   id_ = raptor_participant_id;
 
@@ -12,7 +13,7 @@ Quad::Quad(const std::string &raptor_participant_id,
                                  sub_topic_name, dp->participant());
 
   px4_info_sub_ = new DDSSubscriber(idl_msg::HeaderPubSubType(), &px4_info_,
-                                 "px4_status_msgs", dp->participant());
+                                    "px4_status_msgs", dp->participant());
 
   /* Initialize publishers */
   position_pub_ = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),

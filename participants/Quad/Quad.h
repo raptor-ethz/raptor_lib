@@ -36,7 +36,7 @@ public:
   Quad(const std::string &raptor_participant_id,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
-       Gripper *const gripper);
+       Gripper *const gripper, Item *const stand);
   ~Quad();
 
   DDSPublisher *position_pub_;
@@ -197,6 +197,7 @@ public:
 
 private:
   Gripper *gripper_;
+  Stand *stand_;
   ConsoleState console_state_ = debug;
   State state_ = uninitialized;
 
