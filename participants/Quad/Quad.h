@@ -36,7 +36,7 @@ public:
   Quad(const std::string &raptor_participant_id,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
-       Gripper* const gripper);
+       Gripper *const gripper);
   ~Quad();
 
   DDSPublisher *position_pub_;
@@ -152,6 +152,13 @@ public:
    */
   void land(Item &stand);
 
+  /**
+   * @brief Commands the drone to land immediately using the defualt mavsdk land
+   * action. If a gripper is attached, it fully opens the gripper first.
+   *
+   */
+  void emergencyLand();
+
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
              float dz, float h0, int time, int grip_angle);
   void quickSwoop(Item &target, Gripper &gripper, float length, float dx,
@@ -175,18 +182,18 @@ public:
   void setState(const State new_state) { state_ = new_state; }
 
   /**
- * @brief Get the state of the drone.
- *
- * @return int:
- * 0, uninitialized
- * 1, initialized
- * 2, armed
- * 3, airborne
- * 4, land
- * 5, emg_land
- * 6, hover
- */
-  int getState() {return state_; }
+   * @brief Get the state of the drone.
+   *
+   * @return int:
+   * 0, uninitialized
+   * 1, initialized
+   * 2, armed
+   * 3, airborne
+   * 4, land
+   * 5, emg_land
+   * 6, hover
+   */
+  int getState() { return state_; }
 
 private:
   Gripper *gripper_;
