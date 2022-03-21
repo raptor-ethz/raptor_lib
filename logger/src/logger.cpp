@@ -74,16 +74,25 @@ void startLog(std::atomic<LogFlag> &log_flag, const std::string sub_topic_name)
         time.push_back(date.at(i));
       }
       // concatenate filname
-      std::string filename = "log_" + month + day + '_' + year + '_' + time;
+      std::string path = "log_" + month + day + '_' + year + '_' + time;
       // safe to file
-      // TODO try catch
+      // add logs directory path, if it exists
+      std::filesystem::path dir_path{"./logs/"};
+      if (std::filesystem::exists(dir_path)) {
+        path = "./logs/" + path;
+      } else {
+        // warning message
+        std::cout << "[WARNING][Logger] Log directory not found." << std::endl;
+      }
       try {
-        write_col_vec_to_csv(container, filename, ',', 1.f);
+        write_col_vec_to_csv(container, path, ',', 1.f);
       } catch (...) {
+        // error message
         std::cout << "[ERROR][Logger] File could not be saved." << std::endl;
       }
       // exit
-      std::cout << "Successful log" << std::endl;
+      std::cout << "[INFO][Logger] Successful log: Saved to '" << path << "'."
+                << std::endl;
       return;
     }
 
