@@ -1,11 +1,1 @@
-Feedback
-- Check for Kill switch engaged before arming
-
-MOCAP feasability
-
-Battery status
-
-vicon class
-- publishing parameter
-
-change coordinate arguments to arrays
+idea: change coordinate arguments to arrays
