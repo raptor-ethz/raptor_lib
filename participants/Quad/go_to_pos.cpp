@@ -58,21 +58,37 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     // check if not 'default'
 
     // check flag
+    // TODO move out to (reusable) separate function
     switch (state_) {
+    // land
     case 4:
       // Error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Land." << std::endl;
-      // TODO: land
+      if (!(stand_ == nullptr)) {
+        // change state to airborne
+        state_ = airborne;
+        // call land
+        land(*stand_);
+        // exit programm
+        exit(0);
+      } else {
+        std::cout << "[ERROR][Participant: " << id_ << "] No stand registered!"
+                  << std::endl;
+        // TODO: hover and advise!
+      }
+
       break;
 
+    // emg_land
     case 5:
       // Error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Emergency Land." << std::endl;
-      // TODO: emg_land
+      emergencyLand();
       break;
 
+    // hover
     case 6:
       // Error
       std::cout << "[ERROR][Participant: " << id_
