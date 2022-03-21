@@ -6,7 +6,6 @@ Quad::Quad(const std::string &raptor_participant_id,
            Gripper* const gripper) : gripper_(gripper)
 {
   id_ = raptor_participant_id;
-  // gripper_{gripper};
 
   /* Initialize subscribers */
   mocap_sub_ = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
