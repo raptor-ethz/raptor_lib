@@ -20,3 +20,5 @@ void Quad::emergencyLand()
             << "] Default land now. Exiting process." << std::endl;
   exit(0);
 }
+
+// TODO hover advise

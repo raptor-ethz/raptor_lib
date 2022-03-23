@@ -50,12 +50,32 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     loop_timer = std::chrono::steady_clock::now();
     // check mocap
     if (!checkMocapData()) {
-      state_ = hover;
+      state_ = State::hover;
     }
     // TODO: check external message
-    // subscriber->listener->matched?
+    // check if subscriber is connected, otherwise skip
+    if (ui_cmd_.id == "connected") {
+      switch ((int)ui_cmd_.timestamp)
+      {
+      // hover
+      case 1:
+        state_ = State::hover;
+        break;
+
+      // emergency land
+      case 2:
+        state_ = State::emg_land;
+        break;
+
+      // land
+      case 3:
+        state_ = State::land;
+        break;
+      }
+    }
     // read data
     // check if not 'default'
+    
 
     // check flag
     // TODO move out to (reusable) separate function
@@ -67,7 +87,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                 << "] Activate Failsafe: Land." << std::endl;
       if (!(stand_ == nullptr)) {
         // change state to airborne
-        state_ = airborne;
+        state_ = State::airborne;
         // call land
         land(*stand_);
         // exit programm
