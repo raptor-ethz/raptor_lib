@@ -15,6 +15,9 @@ Quad::Quad(const std::string &raptor_participant_id,
   px4_info_sub_ = new DDSSubscriber(idl_msg::HeaderPubSubType(), &px4_info_,
                                     "px4_status_msgs", dp->participant());
 
+  ui_sub_ = new DDSSubscriber(idl_msg::HeaderPubSubType(), &ui_cmd_,
+                                    "ui_commands", dp->participant());
+
   /* Initialize publishers */
   position_pub_ = new DDSPublisher(idl_msg::QuadPositionCmdPubSubType(),
                                    pub_topic_name, dp->participant());
@@ -29,4 +32,5 @@ Quad::~Quad()
   delete position_pub_;
   delete px4_action_pub_;
   delete px4_info_sub_;
+  delete ui_sub_;
 }

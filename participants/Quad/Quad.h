@@ -42,6 +42,7 @@ public:
   DDSPublisher *position_pub_;
   DDSPublisher *px4_action_pub_;
   DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *px4_info_sub_;
+  DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *ui_sub_;
 
   bool checkMocapData();
 
@@ -197,7 +198,7 @@ public:
 
 private:
   Gripper *gripper_;
-  Stand *stand_;
+  Item *stand_;
   ConsoleState console_state_ = debug;
   State state_ = uninitialized;
 
@@ -207,6 +208,7 @@ private:
   cpp_msg::QuadPositionCmd pos_cmd_{};
   cpp_msg::Header px4_action_cmd_{};
   cpp_msg::Header px4_info_{};
+  cpp_msg::Header ui_cmd_{};
 
   // goToPos stuff
   float x_thresh_{0.2};
