@@ -221,6 +221,9 @@ bool Quad::takeOff()
   // wait during take-off sequence
   std::this_thread::sleep_for(std::chrono::milliseconds(12000));
   // TODO : check height?
+  // if (pose_.pose.position.z < TODO) {
+  //   error!
+  // }
 
   // DEBUG
   if (console_state_ == 0) {
@@ -287,11 +290,10 @@ void Quad::land(Item &stand)
           stand.getPose().pose.position.z + 0.0,
           stand.getPose().pose.orientation_euler.yaw, 2000, false);
 
-  /* INFO */
+  // INFO
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Landing." << std::endl;
   }
-  /* INFO END */
 
   goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
           stand.getPose().pose.position.z - 0.3,
@@ -308,12 +310,11 @@ void Quad::land(Item &stand)
   std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
   // back up disarm command
-  /* INFO */
+  // INFO
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Safety Disarm."
               << std::endl;
   }
-  /* INFO END */
   px4_action_cmd_.id = "disarm";
   px4_action_pub_->publish(px4_action_cmd_);
 
