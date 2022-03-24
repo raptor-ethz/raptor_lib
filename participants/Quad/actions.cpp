@@ -189,17 +189,9 @@ bool Quad::takeOff()
 
   // send takeoff request
   px4_action_cmd_.id = "takeoff";
-  for (int i = 0; i < 10; ++i) {
-    px4_action_pub_->publish(px4_action_cmd_);
+  px4_action_pub_->publish(px4_action_cmd_);
+  for (int i = 0;; ++i) {
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    // try 3 times to receive a feedback
-    for (int j = 0; j < 3; ++j) {
-      if (px4_info_.id == "takeoff result") {
-        // feedback received
-        break;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
     if (px4_info_.id == "takeoff result") {
       // feedback received
       if (px4_info_.timestamp == 1) {
@@ -214,7 +206,7 @@ bool Quad::takeOff()
     if (i == 9) {
       // Error
       std::cout << "[ERROR][Participant: " << id_
-                << "] Takeoff failed: No feedback." << std::endl;
+                << "] Takeoff failed: No feedback received." << std::endl;
       return false;
     }
   }
