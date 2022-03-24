@@ -6,7 +6,6 @@
 #include <iostream>
 #include <vector>
 
-
 /**
  * Reads data of type T from a .csv file and stores it in a data-matrix using
  * column-vectors.
@@ -93,31 +92,38 @@ void read_csv_to_col_vec(std::vector<std::vector<T>> &data,
 //      given data to that csv file
 template <typename T>
 void write_col_vec_to_csv(const std::vector<std::vector<T>> &data,
-                          std::string path, const char separator,
-                          const T scaling_factor)
+                          const std::string path, const std::string filename,
+                          const char separator, const T scaling_factor)
 {
-  // create file
+  // create directories if they don't exist already
+  if (!std::filesystem::exists(path)) {
+    std::filesystem::create_directories(path);
+  }
+
+  std::string file_path(path + filename);
+
   // find suitable filename
-  std::filesystem::path fs_path{path + ".csv"};
-  std::ofstream ofs;
+  std::filesystem::path fs_path{file_path + ".csv"};
   for (int i = 1; std::filesystem::exists(fs_path); ++i) {
-    if (!(i == 1)) {
-      path.pop_back();
+    // don't pop-back number the first time
+    if (i != 1) {
+      file_path.pop_back();
     }
-    path += std::to_string(i);
-    fs_path = path + ".csv";
+    file_path += std::to_string(i);
+    fs_path = file_path + ".csv";
     if (i >= 100) {
       std::cerr << "Problem when creating file: Pathname exists over 100 times"
                 << std::endl;
       exit(1);
     }
   }
-  path += ".csv";
+  file_path += ".csv";
 
   // create file
-  ofs.open(path);
+  std::ofstream ofs;
+  ofs.open(file_path);
   if (!ofs.is_open()) {
-    std::cerr << "Problem when creating file! Couldn't open ofs" << std::endl;
+    std::cerr << "Problem when creating file: Couldn't open ofs." << std::endl;
     exit(1);
   }
 
@@ -145,6 +151,7 @@ void write_col_vec_to_csv(const std::vector<std::vector<T>> &data,
   }
 
   ofs.close(); // redundant?
+  std::cout << "File successfully written: " << file_path << std::endl;
 }
 
 /**
