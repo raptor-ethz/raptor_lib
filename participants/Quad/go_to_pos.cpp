@@ -32,13 +32,12 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const bool &reached_pos_flag)
 {
 
-  /* DEBUG */
+  // DEBUG
   if (console_state_ == 0) {
     std::cout << "[DEBUG][Participant: " << id_ << "] Go to position: [\t"
               << x_ref << ",\t" << y_ref << ",\t" << z_ref << "\t] during max "
               << max_time << "ms." << std::endl;
   }
-  /* DEBUG END */
 
   // timestamp
   std::chrono::time_point<std::chrono::steady_clock> loop_timer;
@@ -52,11 +51,11 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     if (!checkMocapData()) {
       state_ = State::hover;
     }
-    // TODO: check external message
+    // check external message
     // check if subscriber is connected, otherwise skip
     if (ui_cmd_.id == "connected") {
-      switch ((int)ui_cmd_.timestamp)
-      {
+      switch ((int)ui_cmd_.timestamp) {
+      // 'default' state 0 -> ignore
       // hover
       case 1:
         state_ = State::hover;
@@ -73,9 +72,6 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
         break;
       }
     }
-    // read data
-    // check if not 'default'
-    
 
     // check flag
     // TODO move out to (reusable) separate function
@@ -85,6 +81,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       // Error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Land." << std::endl;
+      // check if a stand is registered
       if (!(stand_ == nullptr)) {
         // change state to airborne
         state_ = State::airborne;
@@ -93,9 +90,9 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
         // exit programm
         exit(0);
       } else {
-        std::cout << "[ERROR][Participant: " << id_ << "] No stand registered!"
-                  << std::endl;
-        // TODO: hover and advise!
+        std::cout << "[ERROR][Participant: " << id_
+                  << "] No stand registered! Activate hover mode." << std::endl;
+        hover();
       }
 
       break;
@@ -113,7 +110,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       // Error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Hover." << std::endl;
-      // TODO: hover;
+      hover();
       break;
     }
 
@@ -123,12 +120,11 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                                pose_.pose.position.z, z_ref, z_thresh);
 
     if (result && reached_pos_flag) {
-      /* DEBUG */
+      // DEBUG
       if (console_state_ == 0) {
         std::cout << "[DEBUG][Participant: " << id_
                   << "] Position reached before time limit." << std::endl;
       }
-      /* DEBUG END */
 
       // return from the function direclty
       return result;
@@ -147,7 +143,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     std::this_thread::sleep_until(loop_timer);
   }
 
-  /* DEBUG */
+  // DEBUG
   if (console_state_ == 0) {
     std::cout << "[DEBUG][Participant: " << id_ << "] ";
     if (result) {
@@ -156,7 +152,6 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       std::cout << "Position was not reached within time limit." << std::endl;
     }
   }
-  /* DEBUG END */
 
   return result;
 }
@@ -182,7 +177,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 bool Quad::go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
                               const Vec3 &acc_ref, const int &completion_time)
 {
-  // TODO: caluclate current pos, velocity and acceleration
+  // TODO: remove?
 
   // evaluate current position
   position_ =
