@@ -154,15 +154,22 @@ public:
   void land(Item &stand);
 
   /**
-   * @brief Commands the drone to land immediately using the defualt mavsdk land
-   * action. If a gripper is attached, it fully opens the gripper first.
+   * @brief Commands the drone to land immediately at its current position
+   * using the defualt mavsdk land action. If a gripper is attached, it fully
+   * opens the gripper first. After the command is sent, the programm
+   * terminates.
    *
    */
   void emergencyLand();
 
   /**
-   * @brief sends a failsafe hover command to the drone and awaits further
-   * instructions
+   * @brief Commands the drone to hover at its current position using the
+   * default mavsdk command?
+   *
+   * Commands the drone to hover at its current position using the default
+   * mavsdk command? Then it awaits further instructions from the user
+   * (emergency land or quit). Finally, the programm will terminate.
+   * instructions.
    *
    */
   void hover();
