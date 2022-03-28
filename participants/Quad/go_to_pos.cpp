@@ -57,22 +57,22 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       switch (ui_cmd_.command)
       {
       // skip on status
-      case User_cmd::null:
+      case User_cmd::ui_null:
         break;
 
-      case User_cmd::hover:
+      case User_cmd::ui_hover:
         state_ = State::hover;
-        ui_cmd_.command = User_cmd::null;
+        ui_cmd_.command = User_cmd::ui_null;
         break;
       
-      case User_cmd::emg_land:
+      case User_cmd::ui_emg_land:
         state_ = State::emg_land;
-        ui_cmd_.command = User_cmd::null;
+        ui_cmd_.command = User_cmd::ui_null;
         break;
 
-      case User_cmd::land:
+      case User_cmd::ui_land:
         state_ = State::land;
-        ui_cmd_.command = User_cmd::null;
+        ui_cmd_.command = User_cmd::ui_null;
         break;
       
       default:

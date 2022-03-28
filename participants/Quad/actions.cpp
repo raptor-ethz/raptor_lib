@@ -2,14 +2,14 @@
 
 Status Quad::getStatus() {
   // send status request
-  px4_action_cmd_.action = Action_cmd::status;
+  px4_action_cmd_.action = Action_cmd::act_status;
   px4_action_pub_->publish(px4_action_cmd_);
 
   px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
   Status result;
   // check if feedback was received
-  if (px4_feedback_.feedback != FeedbackType::status) {
+  if (px4_feedback_.feedback != FeedbackType::fb_status) {
     return result;
   }
   result.feedback = true;
@@ -92,20 +92,20 @@ bool Quad::takeOff() {
     std::cout << "[INFO][Participant: " << id_ << "] Arming." << std::endl;
   }
   // send arm request
-  px4_action_cmd_.action = Action_cmd::arm;
+  px4_action_cmd_.action = Action_cmd::act_arm;
   px4_action_pub_->publish(px4_action_cmd_);
   // wait max for 2 seconds to receive data
   px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
   // check if feedback was received
-  if (px4_feedback_.feedback != FeedbackType::arm) {
+  if (px4_feedback_.feedback != FeedbackType::fb_arm) {
     std::cout << "[ERROR][Participant: " << id_
               << "] Arming failed: No feedback received from interface."
               << std::endl;
     return false;
   }
   // check Result
-  if (px4_feedback_.result != ResultType::success) {
+  if (px4_feedback_.result != ResultType::res_success) {
     std::cout << "[ERROR][Participant: " << id_ << "] Arming failed: PX4 error."
               << std::endl;
     return false;
@@ -123,20 +123,20 @@ bool Quad::takeOff() {
   }
 
   // send takeoff request
-  px4_action_cmd_.action = Action_cmd::takeoff;
+  px4_action_cmd_.action = Action_cmd::act_takeoff;
   px4_action_pub_->publish(px4_action_cmd_);
   // wait max for 2 seconds to receive data
   px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
   // check if feedback was received
-  if (px4_feedback_.feedback != FeedbackType::takeoff) {
+  if (px4_feedback_.feedback != FeedbackType::fb_takeoff) {
     std::cout << "[ERROR][Participant: " << id_
               << "] Takeoff failed: No feedback received from interface."
               << std::endl;
     return false;
   }
   // check Result
-  if (px4_feedback_.result != ResultType::success) {
+  if (px4_feedback_.result != ResultType::res_success) {
     std::cout << "[ERROR][Participant: " << id_
               << "] Takeoff failed: PX4 error." << std::endl;
     return false;
@@ -164,7 +164,7 @@ bool Quad::takeOff() {
 
   /* OFFBOARD */
   // send offboard request
-  px4_action_cmd_.action = Action_cmd::offboard;
+  px4_action_cmd_.action = Action_cmd::act_offboard;
   px4_action_pub_->publish(px4_action_cmd_);
   // wait max for 2 seconds to receive data
   // px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
@@ -246,7 +246,7 @@ void Quad::land(Item &stand) {
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
   // default land command
-  px4_action_cmd_.action = Action_cmd::land;
+  px4_action_cmd_.action = Action_cmd::act_land;
   px4_action_pub_->publish(px4_action_cmd_);
   std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
@@ -256,7 +256,7 @@ void Quad::land(Item &stand) {
     std::cout << "[INFO][Participant: " << id_ << "] Safety Disarm."
               << std::endl;
   }
-  px4_action_cmd_.action = Action_cmd::disarm;
+  px4_action_cmd_.action = Action_cmd::act_disarm;
   px4_action_pub_->publish(px4_action_cmd_);
 
   state_ = initialized;
