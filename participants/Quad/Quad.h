@@ -227,7 +227,7 @@ private:
   cpp_msg::QuadPosCmd_msg pos_cmd_{};
   cpp_msg::QuadAction_msg px4_action_cmd_{};
   cpp_msg::QuadFeedback_msg px4_feedback_{};
-  cpp_msg::UserCmd_msg ui_cmd_{};
+  cpp_msg::UserCmd_msg ui_cmd_{.command = User_cmd::null};
 
   // goToPos stuff
   float x_thresh_{0.2};

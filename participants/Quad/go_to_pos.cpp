@@ -53,22 +53,29 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     }
     // check external message
     // check if subscriber is connected, otherwise skip
-    if (ui_cmd_.id == "connected") {
-      switch ((int)ui_cmd_.timestamp) {
-      // 'default' state 0 -> ignore
-      // hover
-      case 1:
+    if (ui_sub_->listener->matched()) {
+      switch (ui_cmd_.command)
+      {
+      // skip on status
+      case User_cmd::null:
+        break;
+
+      case User_cmd::hover:
         state_ = State::hover;
+        ui_cmd_.command = User_cmd::null;
         break;
-
-      // emergency land
-      case 2:
+      
+      case User_cmd::emg_land:
         state_ = State::emg_land;
+        ui_cmd_.command = User_cmd::null;
         break;
 
-      // land
-      case 3:
+      case User_cmd::land:
         state_ = State::land;
+        ui_cmd_.command = User_cmd::null;
+        break;
+      
+      default:
         break;
       }
     }
@@ -76,9 +83,8 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     // check flag
     // TODO move out to (reusable) separate function
     switch (state_) {
-    // land
-    case 4:
-      // Error
+    case State::land:
+      // error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Land." << std::endl;
       // check if a stand is registered
@@ -97,16 +103,14 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 
       break;
 
-    // emg_land
-    case 5:
-      // Error
+    case State::emg_land:
+      // error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Emergency Land." << std::endl;
       emergencyLand();
       break;
 
-    // hover
-    case 6:
+    case State::hover:
       // Error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Hover." << std::endl;
@@ -115,9 +119,9 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     }
 
     // check if reference position has been reached
-    result = checkReachedPos3D(pose_.pose.position.x, x_ref, x_thresh,
-                               pose_.pose.position.y, y_ref, y_thresh,
-                               pose_.pose.position.z, z_ref, z_thresh);
+    result = checkReachedPos3D(pose_.position.x, x_ref, x_thresh,
+                               pose_.position.y, y_ref, y_thresh,
+                               pose_.position.z, z_ref, z_thresh);
 
     if (result && reached_pos_flag) {
       // DEBUG
