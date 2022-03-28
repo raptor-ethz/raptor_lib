@@ -21,8 +21,8 @@ public:
    *
    * Checks for a maximum of 2 seconds if the subscriber has matched anything.
    * If something was matched it attempts to receive 10 new datapoints (for a
-   * maximum of 500ms each). checkMocapData is then called three times
-   * internally to check the quality of the data.
+   * maximum of 500ms each). The data quality is then checked using
+   * checkMocapData (max 5 times to receive good data).
    *
    * @see checkMocapData
    *
