@@ -99,6 +99,10 @@ public:
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                const float &yaw_ref, const float &max_time,
                const bool &reached_pos_flag);
+  
+  bool goToPos(Item &target, const float &x_offset, const float &y_offset,
+               const float &z_offset, const float &yaw_ref,
+               const float &max_time, const bool &reached_pos_flag);
 
   /**
    * @brief Arms the quad, performs the take-off and switches to offboard.
@@ -151,6 +155,10 @@ public:
                int time);
   void quickRelease(Item &target, Gripper &gripper, float length, float h0,
                     int time);
+
+  
+  void place(Item &target, Gripper &gripper, float dx, float dy, float dz,
+             float h0);
 
   void setDefaultThreshold(const float x_thresh, const float y_thresh,
                            const float z_thresh) {
