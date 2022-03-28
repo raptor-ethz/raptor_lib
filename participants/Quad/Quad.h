@@ -51,8 +51,6 @@ public:
   // TODO msg type?
   // DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *ui_sub_;s
 
-  bool checkMocapData();
-
   Status getStatus();
 
   /**
@@ -221,9 +219,6 @@ private:
   Item *stand_;
   ConsoleState console_state_ = debug;
   State state_ = uninitialized;
-
-  int missed_frames_{};
-  long old_frame_number_{0};
 
   // messages
   cpp_msg::QuadPosCmd_msg pos_cmd_{};

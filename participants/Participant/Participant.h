@@ -16,12 +16,29 @@ public:
   DDSSubscriber<idl_msg::Mocap_msgPubSubType, cpp_msg::Mocap_msg> *mocap_sub_;
 
   /**
-   * Checks if the subscriber has matched anything and
+   * @brief Checks if the subscriber has matched anything and
    * if the received data is non-zero.
    *
-   * @returns If subscriber is matched and received non-zero data.
+   * Checks for a maximum of 2 seconds if the subscriber has matched anything.
+   * If something was matched it attempts to receive 10 new datapoints (for a
+   * maximum of 500ms each). checkMocapData is then called three times
+   * internally to check the quality of the data.
+   *
+   * @see checkMocapData
+   *
+   * @returns If subscriber is matched and received good data.
    **/
-  bool checkForData();
+  bool initializeMocapSub();
+
+  /**
+   * @brief Checks the current quality of the received mocap data.
+   *
+   * Checks if the the current frame number is zero or equal to the previous
+   * one. An internal counter keeps track of missed frames.
+   *
+   * @return False if more than 2 frames were missed
+   */
+  bool checkMocapData();
 
   virtual const cpp_msg::Mocap_msg &getPose() { return pose_; }
 
@@ -30,6 +47,8 @@ public:
 protected:
   std::string id_ = "N/A";
   cpp_msg::Mocap_msg pose_{};
+  int missed_frames_{0};
+  long old_frame_number_{0};
 };
 
 } // namespace raptor
