@@ -40,7 +40,7 @@ bool Quad::takeOff() {
     Status status = getStatus();
     // check if feedback received
     if (!status.feedback) {
-      // Error
+      // error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Takeoff denied: No feedback received from interface."
                 << std::endl;
@@ -48,7 +48,7 @@ bool Quad::takeOff() {
     }
     // check if local position is available
     if (!status.local_position) {
-      // Error
+      // error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Takeoff denied: No local position available."
                 << std::endl;
@@ -69,7 +69,7 @@ bool Quad::takeOff() {
                 << std::endl;
       // return if it is the last try
       if (i == 1) {
-        // Error
+        // error
         std::cout << "[ERROR][Participant: " << id_
                   << "] Takeoff denied: Participant is killed." << std::endl;
         return false;
