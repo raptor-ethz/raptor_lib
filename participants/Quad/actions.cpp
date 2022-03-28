@@ -5,7 +5,7 @@ Status Quad::getStatus() {
   px4_action_cmd_.action = Action_cmd::status;
   px4_action_pub_->publish(px4_action_cmd_);
 
-  px4_status_sub_->listener->wait_for_data_for_ms(2000);
+  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
   Status result;
   // check if feedback was received
@@ -21,44 +21,21 @@ Status Quad::getStatus() {
 
 bool Quad::takeOff() {
   /* PREFLIGHT CHECKS */
-  // INFO
+  // info
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Running preflight checks."
               << std::endl;
   }
 
-  // check state
-  if (!(state_ == initialized)) {
-    // Error
+  // initialize mocap subscriber
+  if (!initializeMocapSub()) {
+    // error
     std::cout << "[ERROR][Participant: " << id_
-              << "] Takeoff denied: Participant not initialized." << std::endl;
+              << "] Takeoff denied: Initialization failed." << std::endl;
     return false;
   }
 
-  // check mocap and status (for max. 5 tries)
   for (int i = 5;; --i) {
-    // check motion capture data
-    for (int j = 0; j < 2; ++j) {
-      checkMocapData();
-    }
-    if (!checkMocapData()) {
-      // error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Bad motion capture data." << std::endl;
-      // return if it is the last try
-      if (i == 1) {
-        // error
-        std::cout << "[ERROR][Participant: " << id_
-                  << "] Takeoff denied: Bad motion capture data." << std::endl;
-        return false;
-      }
-      // rerun checks
-      std::cout << "Rerunning preflight checks in 3 seconds (remaining tries: "
-                << i - 1 << ")." << std::endl;
-      std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-      continue;
-    }
-
     // check status
     Status status = getStatus();
     // check if feedback received
@@ -107,8 +84,10 @@ bool Quad::takeOff() {
     break;
   }
 
+  state_ = State::initialized;
+
   /* ARM */
-  // INFO
+  // info
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Arming." << std::endl;
   }
@@ -116,23 +95,21 @@ bool Quad::takeOff() {
   px4_action_cmd_.action = Action_cmd::arm;
   px4_action_pub_->publish(px4_action_cmd_);
   // wait max for 2 seconds to receive data
-  px4_status_sub_->listener->wait_for_data_for_ms(2000);
+  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
-  // TODO new message
-  // check feedback
-  // if (px4_feedback_.feedback != arm_result) {
-  //   // Error
-  //   std::cout << "[ERROR][Participant: " << id_
-  //             << "] Arming failed: No feedback." << std::endl;
-  //   return false;
-  // }
-
+  // check if feedback was received
+  if (px4_feedback_.feedback != FeedbackType::arm) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Arming failed: No feedback received from interface."
+              << std::endl;
+    return false;
+  }
   // check Result
-
-  // Error
-  std::cout << "[ERROR][Participant: " << id_ << "] Takeoff failed: PX4 error."
-            << std::endl;
-  return false;
+  if (px4_feedback_.result != ResultType::success) {
+    std::cout << "[ERROR][Participant: " << id_ << "] Arming failed: PX4 error."
+              << std::endl;
+    return false;
+  }
 
   state_ = armed;
 
@@ -140,7 +117,7 @@ bool Quad::takeOff() {
   std::this_thread::sleep_for(std::chrono::milliseconds(1800));
 
   /* TAKEOFF */
-  // INFO
+  // info
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Taking off." << std::endl;
   }
@@ -149,58 +126,71 @@ bool Quad::takeOff() {
   px4_action_cmd_.action = Action_cmd::takeoff;
   px4_action_pub_->publish(px4_action_cmd_);
   // wait max for 2 seconds to receive data
-  px4_status_sub_->listener->wait_for_data_for_ms(2000);
+  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
-  // TODO
-  // check feedback
-  // check result
-
-  for (int i = 0;; ++i) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    if (px4_info_.id == "takeoff result") {
-      // feedback received
-      if (px4_info_.timestamp == 1) {
-        // success
-        break;
-      }
-    }
-    if (i == 9) {
-      // Error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Takeoff failed: No feedback received." << std::endl;
-      return false;
-    }
+  // check if feedback was received
+  if (px4_feedback_.feedback != FeedbackType::takeoff) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Takeoff failed: No feedback received from interface."
+              << std::endl;
+    return false;
   }
+  // check Result
+  if (px4_feedback_.result != ResultType::success) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Takeoff failed: PX4 error." << std::endl;
+    return false;
+  }
+
   // wait during take-off sequence
   std::this_thread::sleep_for(std::chrono::milliseconds(12000));
-  // TODO : check height?
-  // if (pose_.pose.position.z < TODO) {
-  //   error!
+
+  // TODO : check height
+  // if (pose_.position.z < TODO) {
+  //   // error!
   // }
 
-  // DEBUG
+  // debug
   if (console_state_ == 0) {
     std::cout << "[DEBUG][Participant: " << id_
               << "] Take-off sequence completed." << std::endl;
   }
 
-  // INFO
+  // info
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Starting offboard."
               << std::endl;
   }
 
-  px4_action_cmd_.id = "offboard";
+  /* OFFBOARD */
+  // send offboard request
+  px4_action_cmd_.action = Action_cmd::offboard;
   px4_action_pub_->publish(px4_action_cmd_);
+  // wait max for 2 seconds to receive data
+  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
+
+  // check if feedback was received
+  if (px4_feedback_.feedback != FeedbackType::offboard) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Offboard failed: No feedback received from interface."
+              << std::endl;
+    return false;
+  }
+  // check Result
+  if (px4_feedback_.result != ResultType::success) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Offboard failed: PX4 error." << std::endl;
+    return false;
+  }
 
   // wait for the drone to stabilize
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   state_ = airborne;
 
-  // DEBUG
-  if (console_state_ == 0) {
-    std::cout << "[DEBUG][Participant: " << id_ << "] Switched to offboard."
-              << "Ready to fly mission." << std::endl;
+  // info
+  if (console_state_ <= 1) {
+    std::cout << "[INFO][Participant: " << id_
+              << "] Takeoff complete. Ready to fly mission." << std::endl;
   }
 
   return true;
@@ -218,8 +208,8 @@ void Quad::land(Item &stand) {
               << std::endl;
   }
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
-          stand.getPose().position.z + 1.0,
-          stand.getPose().orientation.yaw, 5000, false);
+          stand.getPose().position.z + 1.0, stand.getPose().orientation.yaw,
+          5000, false);
 
   // DEBUG
   if (console_state_ == 0) {
@@ -227,16 +217,16 @@ void Quad::land(Item &stand) {
   }
   // z + 0.5
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
-          stand.getPose().position.z + 0.5,
-          stand.getPose().orientation.yaw, 5000, false);
+          stand.getPose().position.z + 0.5, stand.getPose().orientation.yaw,
+          5000, false);
   // z + 0.2
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
-          stand.getPose().position.z + 0.2,
-          stand.getPose().orientation.yaw, 5000, false);
+          stand.getPose().position.z + 0.2, stand.getPose().orientation.yaw,
+          5000, false);
   // z + 0.0
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
-          stand.getPose().position.z,
-          stand.getPose().orientation.yaw, 5000, false);
+          stand.getPose().position.z, stand.getPose().orientation.yaw, 5000,
+          false);
 
   // INFO
   if (console_state_ <= 1) {
