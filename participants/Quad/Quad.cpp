@@ -8,21 +8,17 @@ Quad::Quad(const std::string &raptor_participant_id,
 {
   id_ = raptor_participant_id;
 
-  /* Initialize subscribers */
+  // initialize subscribers
   mocap_sub_ = new DDSSubscriber(idl_msg::Mocap_msgPubSubType(), &pose_,
                                  sub_topic_name, dp->participant());
-
   px4_feedback_sub_ = new DDSSubscriber(idl_msg::QuadFeedback_msgPubSubType(), &px4_feedback_,
                                     "px4_status_msgs", dp->participant());
+  ui_sub_ = new DDSSubscriber(idl_msg::QuadAction_msgPubSubType(), &ui_cmd_,
+                                    "ui_commands", dp->participant());
 
-  // TODO ui msg type
-  // ui_sub_ = new DDSSubscriber(idl_msg::HeaderPubSubType(), &ui_cmd_,
-  //                                   "ui_commands", dp->participant());
-
-  /* Initialize publishers */
+  // initialize publishers
   position_pub_ = new DDSPublisher(idl_msg::QuadPosCmd_msgPubSubType(),
                                    pub_topic_name, dp->participant());
-
   px4_action_pub_ = new DDSPublisher(idl_msg::QuadAction_msgPubSubType(),
                                      "px4_commands", dp->participant());
 };
@@ -33,6 +29,5 @@ Quad::~Quad()
   delete position_pub_;
   delete px4_action_pub_;
   delete px4_feedback_sub_;
-  // TODO
-  // delete ui_sub_;
+  delete ui_sub_;
 }

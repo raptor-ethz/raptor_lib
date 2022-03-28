@@ -49,9 +49,8 @@ public:
   DDSPublisher *px4_action_pub_;
   DDSSubscriber<idl_msg::QuadFeedback_msgPubSubType, cpp_msg::QuadFeedback_msg>
       *px4_feedback_sub_;
+  DDSSubscriber<idl_msg::QuadAction_msgPubSubType, cpp_msg::QuadAction_msg> *ui_sub_;
   
-  // TODO new ui cmd msg type
-  // DDSSubscriber<idl_msg::QuadFeedback_msgPubSubType, cpp_msg::Header> *ui_sub_;
 
   Status getStatus();
 
@@ -226,9 +225,7 @@ private:
   cpp_msg::QuadPosCmd_msg pos_cmd_{};
   cpp_msg::QuadAction_msg px4_action_cmd_{};
   cpp_msg::QuadFeedback_msg px4_feedback_{};
-  
-  // TODO msg type
-  // cpp_msg::Header ui_cmd_{};
+  cpp_msg::QuadAction_msg ui_cmd_{};
 
   // goToPos stuff
   float x_thresh_{0.2};
