@@ -167,21 +167,21 @@ bool Quad::takeOff() {
   px4_action_cmd_.action = Action_cmd::offboard;
   px4_action_pub_->publish(px4_action_cmd_);
   // wait max for 2 seconds to receive data
-  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
+  // px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
-  // check if feedback was received
-  if (px4_feedback_.feedback != FeedbackType::offboard) {
-    std::cout << "[ERROR][Participant: " << id_
-              << "] Offboard failed: No feedback received from interface."
-              << std::endl;
-    return false;
-  }
-  // check Result
-  if (px4_feedback_.result != ResultType::success) {
-    std::cout << "[ERROR][Participant: " << id_
-              << "] Offboard failed: PX4 error." << std::endl;
-    return false;
-  }
+  // // check if feedback was received
+  // if (px4_feedback_.feedback != FeedbackType::offboard) {
+  //   std::cout << "[ERROR][Participant: " << id_
+  //             << "] Offboard failed: No feedback received from interface."
+  //             << std::endl;
+  //   return false;
+  // }
+  // // check Result
+  // if (px4_feedback_.result != ResultType::success) {
+  //   std::cout << "[ERROR][Participant: " << id_
+  //             << "] Offboard failed: PX4 error." << std::endl;
+  //   return false;
+  // }
 
   // wait for the drone to stabilize
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
