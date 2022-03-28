@@ -25,8 +25,7 @@ bool raptor::Participant::checkMocapData() {
 bool raptor::Participant::initializeMocapSub() {
   // info
   std::cout << "[INFO][Participant: " << id_ << "] "
-            << "Initializing mocap subscriber."
-            << std::endl;
+            << "Initializing mocap subscriber." << std::endl;
 
   // check if subscriber matched for max 10 times
   for (int i = 0;; ++i) {
@@ -54,17 +53,31 @@ bool raptor::Participant::initializeMocapSub() {
     mocap_sub_->listener->wait_for_data_for_ms(500);
   }
 
-  // check data quality
-  for (int j = 0; j < 2; ++j) {
-    checkMocapData();
-    mocap_sub_->listener->wait_for_data_for_ms(200);
-  }
-  if (!checkMocapData()) {
-    // error if bad data
-    std::cout << "[ERROR][Participant: " << id_ << "] "
-              << "Bad data after initializiation of mocap subscriber."
-              << std::endl;
-    return false;
+  for (int i = 0;; ++i) {
+    // check data quality
+    for (int j = 0; j < 2; ++j) {
+      checkMocapData();
+      mocap_sub_->listener->wait_for_data_for_ms(100);
+    }
+    if (!checkMocapData()) {
+      // error
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Bad motion capture data." << std::endl;
+      // return if it is the last try
+      if (i == 4) {
+        // error
+        std::cout << "[ERROR][Participant: " << id_
+                  << "] Initialization failed: Bad motion capture data."
+                  << std::endl;
+        return false;
+      }
+      // rerun checks
+      std::cout
+          << "Rerunning Mocap Initialization in 3 seconds (remaining tries: "
+          << 4 - i << ")." << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+      continue;
+    }
   }
 
   // info for good data
