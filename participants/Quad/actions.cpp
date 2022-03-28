@@ -240,7 +240,7 @@ void Quad::land(Item &stand) {
           stand.getPose().position.z - 0.3, stand.getPose().orientation.yaw, 2000,
           false);
 
-  // TODO terminate offboard -> message?
+  // terminate offboard
   pos_cmd_.header.description = "break";
   position_pub_->publish(pos_cmd_);
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
