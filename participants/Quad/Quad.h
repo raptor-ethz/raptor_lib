@@ -124,22 +124,6 @@ public:
                const bool &reached_pos_flag);
 
   /**
-   * Compute a trajectory between the current state of the drone and the
-   * specified reference state during the duration of completion_time.
-   * Then, send position commands to the drone to follow the trajectory
-   * using the previously defined delay_time in this instance.
-   * @param[in] pos_ref : [m] Reference position
-   * @param[in] vel_ref : [m] Reference velocity
-   * @param[in] acc_ref : [m] Reference acceleration
-   * @param[in] completion_time [s] Reference time for the drone to fly
-   * the trajectory
-   * @returns If the position has been reached when the function ends
-   *
-   **/
-  bool go_to_pos_min_jerk(const Vec3 &pos_ref, const Vec3 &vel_ref,
-                          const Vec3 &acc_ref, const int &completion_time);
-
-  /**
    * @brief Arms the quad, performs the take-off and switches to offboard.
    *
    * In the first step, a proper state of the quad is asserted. If the state
