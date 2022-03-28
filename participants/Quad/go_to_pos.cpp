@@ -98,7 +98,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       } else {
         std::cout << "[ERROR][Participant: " << id_
                   << "] No stand registered! Activate hover mode." << std::endl;
-        hover();
+        // hover(); TODO
       }
 
       break;
@@ -114,7 +114,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       // Error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Hover." << std::endl;
-      hover();
+      // hover(); TODO
       break;
     }
 
