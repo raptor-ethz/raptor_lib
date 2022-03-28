@@ -5,9 +5,11 @@
 #include "Participant.h"
 
 #include "QuadPosCmd_msg.h"
+#include "QuadPosCmd_msgPubSubTypes.h"
 #include "QuadFeedback_msg.h"
 #include "QuadFeedback_msgPubSubTypes.h"
 #include "QuadAction_msg.h"
+#include "QuadAction_msgPubSubTypes.h"
 
 #include "RapidTrajectoryGenerator.h"
 #include "Vec3.h"
@@ -46,10 +48,10 @@ public:
   DDSPublisher *position_pub_;
   DDSPublisher *px4_action_pub_;
   DDSSubscriber<idl_msg::QuadFeedback_msgPubSubType, cpp_msg::QuadFeedback_msg>
-      *px4_status_sub_;
+      *px4_feedback_sub_;
   
-  // TODO msg type?
-  // DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *ui_sub_;s
+  // TODO new ui cmd msg type
+  // DDSSubscriber<idl_msg::QuadFeedback_msgPubSubType, cpp_msg::Header> *ui_sub_;
 
   Status getStatus();
 
