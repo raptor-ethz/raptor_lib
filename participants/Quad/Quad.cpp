@@ -13,7 +13,7 @@ Quad::Quad(const std::string &raptor_participant_id,
                                  sub_topic_name, dp->participant());
   px4_feedback_sub_ = new DDSSubscriber(idl_msg::QuadFeedback_msgPubSubType(), &px4_feedback_,
                                     "px4_status_msgs", dp->participant());
-  ui_sub_ = new DDSSubscriber(idl_msg::QuadAction_msgPubSubType(), &ui_cmd_,
+  ui_sub_ = new DDSSubscriber(idl_msg::UserCmd_msgPubSubType(), &ui_cmd_,
                                     "ui_commands", dp->participant());
 
   // initialize publishers
