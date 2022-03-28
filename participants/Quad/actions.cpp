@@ -1,7 +1,6 @@
 #include "Quad.h"
 
-bool Quad::checkMocapData()
-{
+bool Quad::checkMocapData() {
   long frame_number = getPose().header.timestamp;
   if (frame_number == 0 || frame_number == old_frame_number_) {
     ++missed_frames_;
@@ -10,9 +9,9 @@ bool Quad::checkMocapData()
   }
   // update old frame number
   old_frame_number_ = frame_number;
-  // check error
+  // check for 3 consecutive missed frames
   if (missed_frames_ > 2) {
-    // Error
+    // error
     std::cout << "[ERROR][Participant: " << id_
               << "] Bad motion capture data detected." << std::endl;
     return false;
@@ -21,43 +20,26 @@ bool Quad::checkMocapData()
   return true;
 }
 
-Status Quad::getStatus()
-{
+Status Quad::getStatus() {
+  // send status request
+  px4_action_cmd_.action = Action_cmd::status;
+  px4_action_pub_->publish(px4_action_cmd_);
+
+  px4_status_sub_->listener->wait_for_data_for_ms(2000);
+
   Status result;
-  // try 10 times to get a feedback (total 5s)
-  for (int i = 0; i < 10; ++i) {
-    // send status request 5 times
-    px4_action_cmd_.id = "status";
-    for (int i = 0; i < 5; ++i) {
-      px4_action_pub_->publish(px4_action_cmd_);
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    // check if feedback is received
-    if (px4_info_.id == "status") {
-      result.feedback = true;
-      // check killed
-      int killed = px4_info_.timestamp / 10000;
-      assert(killed == 1 || killed == 0);
-      result.killed = killed;
-      // check local position
-      int local_position = (px4_info_.timestamp % 10000) / 1000;
-      assert(local_position == 1 || local_position == 0);
-      result.local_position = local_position;
-      // check battery
-      int battery = px4_info_.timestamp % 1000;
-      assert(battery <= 100 && battery >= 0);
-      result.battery = battery;
-      // return result
-      return result;
-    }
+  // check if feedback was received
+  if (px4_feedback_.feedback != FeedbackType::status) {
+    return result;
   }
-  // no feedback received after 10 times
-  result.feedback = false;
+  result.feedback = true;
+  result.armable = px4_feedback_.status.armable;
+  result.local_position = px4_feedback_.status.local_position_ok;
+  result.battery = px4_feedback_.status.battery;
   return result;
 }
 
-bool Quad::takeOff()
-{
+bool Quad::takeOff() {
   /* PREFLIGHT CHECKS */
   // INFO
   if (console_state_ <= 1) {
@@ -73,26 +55,30 @@ bool Quad::takeOff()
     return false;
   }
 
-  // check mocap and status
-  for (int i = 5; i > 0; --i) {
+  // check mocap and status (for max. 5 tries)
+  for (int i = 5;; --i) {
     // check motion capture data
+    for (int j = 0; j < 2; ++j) {
+      checkMocapData();
+    }
     if (!checkMocapData()) {
-      // Error
+      // error
       std::cout << "[ERROR][Participant: " << id_
                 << "] Bad motion capture data." << std::endl;
       // return if it is the last try
       if (i == 1) {
-        // Error
+        // error
         std::cout << "[ERROR][Participant: " << id_
                   << "] Takeoff denied: Bad motion capture data." << std::endl;
         return false;
       }
-      // Error
+      // rerun checks
       std::cout << "Rerunning preflight checks in 3 seconds (remaining tries: "
                 << i - 1 << ")." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(3000));
       continue;
     }
+
     // check status
     Status status = getStatus();
     // check if feedback received
@@ -120,8 +106,8 @@ bool Quad::takeOff()
       return false;
     }
     // check killed
-    if (status.killed) {
-      // Error
+    if (!status.armable) {
+      // error
       std::cout << "[ERROR][Participant: " << id_ << "] Is killed."
                 << std::endl;
       // return if it is the last try
@@ -131,7 +117,7 @@ bool Quad::takeOff()
                   << "] Takeoff denied: Participant is killed." << std::endl;
         return false;
       }
-      // Error
+      // rerun checks
       std::cout << "Rerunning preflight checks in 3 seconds (remaining tries: "
                 << i - 1 << ")." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -147,37 +133,29 @@ bool Quad::takeOff()
     std::cout << "[INFO][Participant: " << id_ << "] Arming." << std::endl;
   }
   // send arm request
-  px4_action_cmd_.id = "arm";
-  for (int i = 0; i < 10; ++i) {
-    px4_action_pub_->publish(px4_action_cmd_);
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    // try 3 times to receive a feedback
-    for (int j = 0; j < 3; ++j) {
-      if (px4_info_.id == "arm result") {
-        // feedback received
-        break;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-    if (px4_info_.id == "arm result") {
-      // feedback received
-      if (px4_info_.timestamp == 1) {
-        // success
-        break;
-      }
-      // Error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Arming failed: PX4 error." << std::endl;
-      return false;
-    }
-    if (i == 9) {
-      // Error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Arming failed: No feedback." << std::endl;
-      return false;
-    }
-  }
+  px4_action_cmd_.action = Action_cmd::arm;
+  px4_action_pub_->publish(px4_action_cmd_);
+  // wait max for 2 seconds to receive data
+  px4_status_sub_->listener->wait_for_data_for_ms(2000);
+
+  // TODO new message
+  // check feedback
+  // if (px4_feedback_.feedback != arm_result) {
+  //   // Error
+  //   std::cout << "[ERROR][Participant: " << id_
+  //             << "] Arming failed: No feedback." << std::endl;
+  //   return false;
+  // }
+
+  // check Result
+
+  // Error
+  std::cout << "[ERROR][Participant: " << id_ << "] Takeoff failed: PX4 error."
+            << std::endl;
+  return false;
+
   state_ = armed;
+
   // wait before take-off
   std::this_thread::sleep_for(std::chrono::milliseconds(1800));
 
@@ -188,8 +166,15 @@ bool Quad::takeOff()
   }
 
   // send takeoff request
-  px4_action_cmd_.id = "takeoff";
+  px4_action_cmd_.action = Action_cmd::takeoff;
   px4_action_pub_->publish(px4_action_cmd_);
+  // wait max for 2 seconds to receive data
+  px4_status_sub_->listener->wait_for_data_for_ms(2000);
+
+  // TODO
+  // check feedback
+  // check result
+
   for (int i = 0;; ++i) {
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
     if (px4_info_.id == "takeoff result") {
@@ -198,10 +183,6 @@ bool Quad::takeOff()
         // success
         break;
       }
-      // Error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Takeoff failed: PX4 error." << std::endl;
-      return false;
     }
     if (i == 9) {
       // Error
@@ -245,42 +226,37 @@ bool Quad::takeOff()
   return true;
 }
 
-void Quad::land(Item &stand)
-{
-  /* INFO */
+void Quad::land(Item &stand) {
+  // INFO
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Commence landing sequence."
               << std::endl;
   }
-  /* INFO END */
-  /* DEBUG */
+  // DEBUG
   if (console_state_ == 0) {
     std::cout << "[DEBUG][Participant: " << id_ << "] Go back to stand."
               << std::endl;
   }
-  /* DEBUG END */
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z + 1.0,
+          stand.getPose().orientation.yaw, 5000, false);
 
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 1.0,
-          stand.getPose().pose.orientation_euler.yaw, 5000, false);
-
-  /* DEBUG */
+  // DEBUG
   if (console_state_ == 0) {
     std::cout << "[DEBUG][Participant: " << id_ << "] Descending." << std::endl;
   }
-  /* DEBUG END */
-
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 0.5, //.75
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
-
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 0.2,
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
-
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 0.0,
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
+  // z + 0.5
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z + 0.5,
+          stand.getPose().orientation.yaw, 5000, false);
+  // z + 0.2
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z + 0.2,
+          stand.getPose().orientation.yaw, 5000, false);
+  // z + 0.0
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z,
+          stand.getPose().orientation.yaw, 5000, false);
 
   // INFO
   if (console_state_ <= 1) {
