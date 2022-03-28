@@ -181,9 +181,9 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 bool Quad::goToPos(Item &target, const float &x_offset, const float &y_offset,
                    const float &z_offset, const float &yaw_ref,
                    const float &max_time, const bool &reached_pos_flag) {
-  return goToPos(target.getPose().pose.position.x + x_offset,
-                 target.getPose().pose.position.y + y_offset,
-                 target.getPose().pose.position.z + z_offset, yaw_ref,
+  return goToPos(target.getPose().position.x + x_offset,
+                 target.getPose().position.y + y_offset,
+                 target.getPose().position.z + z_offset, yaw_ref,
                  x_thresh_, y_thresh_, z_thresh_, delay_time_, max_time,
                  reached_pos_flag);
 }
