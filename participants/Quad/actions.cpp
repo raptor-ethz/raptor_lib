@@ -197,12 +197,12 @@ bool Quad::takeOff() {
 }
 
 void Quad::land(Item &stand) {
-  // INFO
+  // info
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Commence landing sequence."
               << std::endl;
   }
-  // DEBUG
+  // debug
   if (console_state_ == 0) {
     std::cout << "[DEBUG][Participant: " << id_ << "] Go back to stand."
               << std::endl;
@@ -211,49 +211,52 @@ void Quad::land(Item &stand) {
           stand.getPose().position.z + 1.0, stand.getPose().orientation.yaw,
           5000, false);
 
-  // DEBUG
+  // debug
   if (console_state_ == 0) {
     std::cout << "[DEBUG][Participant: " << id_ << "] Descending." << std::endl;
   }
   // z + 0.5
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
           stand.getPose().position.z + 0.5, stand.getPose().orientation.yaw,
-          5000, false);
+          2000, false);
   // z + 0.2
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
           stand.getPose().position.z + 0.2, stand.getPose().orientation.yaw,
-          5000, false);
+          2000, false);
   // z + 0.0
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
-          stand.getPose().position.z, stand.getPose().orientation.yaw, 5000,
+          stand.getPose().position.z, stand.getPose().orientation.yaw, 2000,
           false);
 
-  // INFO
+  // TODO check offset!
+
+  // info
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Landing." << std::endl;
   }
 
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z - 0.3,
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
+  // z - 0.3
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z - 0.3, stand.getPose().orientation.yaw, 2000,
+          false);
 
-  // terminate offboard
-  pos_cmd_.header.id = "break";
+  // TODO terminate offboard -> message?
+  pos_cmd_.header.description = "break";
   position_pub_->publish(pos_cmd_);
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
   // default land command
-  px4_action_cmd_.id = "land";
+  px4_action_cmd_.action = Action_cmd::land;
   px4_action_pub_->publish(px4_action_cmd_);
   std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
   // back up disarm command
-  // INFO
+  // info
   if (console_state_ <= 1) {
     std::cout << "[INFO][Participant: " << id_ << "] Safety Disarm."
               << std::endl;
   }
-  px4_action_cmd_.id = "disarm";
+  px4_action_cmd_.action = Action_cmd::disarm;
   px4_action_pub_->publish(px4_action_cmd_);
 
   state_ = initialized;
