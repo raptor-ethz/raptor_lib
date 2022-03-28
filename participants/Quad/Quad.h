@@ -1,12 +1,17 @@
 #pragma once
 
 #include "Gripper.h"
-#include "HeaderPubSubTypes.h"
 #include "Item.h"
 #include "Participant.h"
-#include "QuadPositionCmdPubSubTypes.h"
+
+#include "QuadPosCmd_msg.h"
+#include "QuadFeedback_msg.h"
+#include "QuadFeedback_msgPubSubTypes.h"
+#include "QuadAction_msg.h"
+
 #include "RapidTrajectoryGenerator.h"
 #include "Vec3.h"
+
 #include <chrono>
 
 /* Non-member variables */
@@ -25,13 +30,12 @@ enum ConsoleState { debug, info, warning, error };
 
 struct Status {
   bool feedback{false};
-  bool killed{true};
+  bool armable{false};
   bool local_position{false};
   int battery{0};
 };
 
-class Quad : public raptor::Participant
-{
+class Quad : public raptor::Participant {
 public:
   Quad(const std::string &raptor_participant_id,
        std::unique_ptr<DefaultParticipant> &dp,
@@ -41,8 +45,11 @@ public:
 
   DDSPublisher *position_pub_;
   DDSPublisher *px4_action_pub_;
-  DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *px4_info_sub_;
-  DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *ui_sub_;
+  DDSSubscriber<idl_msg::QuadFeedback_msgPubSubType, cpp_msg::QuadFeedback_msg>
+      *px4_status_sub_;
+  
+  // TODO msg type?
+  // DDSSubscriber<idl_msg::HeaderPubSubType, cpp_msg::Header> *ui_sub_;s
 
   bool checkMocapData();
 
@@ -184,8 +191,7 @@ public:
                     int time);
 
   void setDefaultThreshold(const float x_thresh, const float y_thresh,
-                           const float z_thresh)
-  {
+                           const float z_thresh) {
     x_thresh_ = x_thresh;
     y_thresh_ = y_thresh;
     z_thresh_ = z_thresh;
@@ -216,13 +222,16 @@ private:
   ConsoleState console_state_ = debug;
   State state_ = uninitialized;
 
-  int missed_frames_{2};
+  int missed_frames_{};
   long old_frame_number_{0};
 
-  cpp_msg::QuadPositionCmd pos_cmd_{};
-  cpp_msg::Header px4_action_cmd_{};
-  cpp_msg::Header px4_info_{};
-  cpp_msg::Header ui_cmd_{};
+  // messages
+  cpp_msg::QuadPosCmd_msg pos_cmd_{};
+  cpp_msg::QuadAction_msg px4_action_cmd_{};
+  cpp_msg::QuadFeedback_msg px4_feedback_{};
+  
+  // TODO msg type
+  // cpp_msg::Header ui_cmd_{};
 
   // goToPos stuff
   float x_thresh_{0.2};
