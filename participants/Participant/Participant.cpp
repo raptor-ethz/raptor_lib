@@ -1,37 +1,41 @@
 #include "Participant.h"
 
-bool raptor::Participant::checkForData()
-{
-  // run subscriber function 10 times
-  for (int i = 0; i < 10; ++i) {
-    mocap_sub_->listener->matched();
-  }
-
-  // check if subscriber matched something
-  if (!mocap_sub_->listener->matched()) {
-    std::cout << "[ERROR][Participant: " << id_
-              << "] Mocap subscriber did not match." << std::endl;
-    return false;
+bool raptor::Participant::checkForData() {
+  // check if subscriber matched for 10 times
+  for (int i = 0;; ++i) {
+    // exit loop if matched
+    if (mocap_sub_->listener->matched()) {
+      break;
+    }
+    if (i == 9) {
+      // error if subscriber didn't match after 10 tries
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Mocap subscriber did not match." << std::endl;
+      return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
 
   // read 10 data points
-  float x;
   for (int i = 0; i < 10; ++i) {
-    mocap_sub_->listener->wait_for_data();
-    x = pose_.pose.position.x; // TODO: necessary?
+    if (!mocap_sub_->listener->matched()) {
+      // error if subscriber unmatched
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Mocap subscriber unmatched." << std::endl;
+      return false;
+    }
+    mocap_sub_->listener->wait_for_data_for_ms(2000);
   }
-
+  
   // check the last datapoint
-  const float tolerance = 0.1;
-  if (pose_.header.timestamp == 0) {
+  if (pose_.header.timestamp == 0 ) {
     std::cout << "[ERROR][Participant: " << id_ << "] "
-              << "Bad data after initializiation of mocap_subscriber."
+              << "Bad data after initializiation of mocap subscriber."
               << std::endl;
     return false;
   }
   std::cout << "[INFO][Participant: " << id_ << "] "
-            << "Good data after initializiation of mocap_subscriber."
+            << "Good data after initializiation of mocap subscriber."
             << std::endl;
-
   return true;
 }
