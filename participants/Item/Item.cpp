@@ -3,9 +3,9 @@
 Item::Item(const std::string &raptor_participant_id,
            std::unique_ptr<DefaultParticipant> &dp,
            const std::string &sub_topic_name) {
-  id = raptor_participant_id;
+  id_ = raptor_participant_id;
 
-  mocap_sub_ = new DDSSubscriber(idl_msg::MocapPubSubType(), &pose_,
+  mocap_sub_ = new DDSSubscriber(idl_msg::Mocap_msgPubSubType(), &pose_,
                                 sub_topic_name, dp->participant());
 
 };

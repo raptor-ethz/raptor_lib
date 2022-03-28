@@ -1,39 +1,54 @@
 #pragma once
 
-#include "MocapPubSubTypes.h"
-#include "QuadPositionCmdPubSubTypes.h"
+#include "Mocap_msg.h"
+#include "Mocap_msgPubSubTypes.h"
+
 #include "domain_participant.h"
-#include "geometry_msgs/msgs/Position.h"
 #include "publisher.h"
-#include "quadcopter_msgs/msgs/QuadPositionCmd.h"
-#include "sensor_msgs/msgs/Mocap.h"
-#include "std_msgs/msgs/Header.h"
 #include "subscriber.h"
+
 #include <atomic>
 
-namespace raptor
-{
+namespace raptor {
 
-class Participant
-{
+class Participant {
 public:
-  DDSSubscriber<idl_msg::MocapPubSubType, cpp_msg::Mocap> *mocap_sub_;
+  DDSSubscriber<idl_msg::Mocap_msgPubSubType, cpp_msg::Mocap_msg> *mocap_sub_;
 
   /**
-   * Reads 30 datapoints from the subscriber and
-   * checks for a non-zero last datapoint.
+   * @brief Checks if the subscriber has matched anything and
+   * if the received data is non-zero.
    *
-   * @returns if (position.x != 0.0)
+   * Checks for a maximum of 2 seconds if the subscriber has matched anything.
+   * If something was matched it attempts to receive 10 new datapoints (for a
+   * maximum of 500ms each). The data quality is then checked using
+   * checkMocapData (max 5 times to receive good data).
+   *
+   * @see checkMocapData
+   *
+   * @returns If subscriber is matched and received good data.
    **/
-  virtual bool checkForData();
+  bool initializeMocapSub();
 
-  virtual const cpp_msg::Mocap &getPose();
+  /**
+   * @brief Checks the current quality of the received mocap data.
+   *
+   * Checks if the the current frame number is zero or equal to the previous
+   * one. An internal counter keeps track of missed frames.
+   *
+   * @return False if more than 2 frames were missed
+   */
+  bool checkMocapData();
 
-  virtual const std::string &getId();
+  virtual const cpp_msg::Mocap_msg &getPose() { return pose_; }
+
+  virtual const std::string &getId() { return id_; }
 
 protected:
-  std::string id = "N/A";
-  cpp_msg::Mocap pose_{};
+  std::string id_ = "N/A";
+  cpp_msg::Mocap_msg pose_{};
+  int missed_frames_{0};
+  long old_frame_number_{0};
 };
 
 } // namespace raptor

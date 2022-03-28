@@ -1,191 +1,262 @@
 #include "Quad.h"
 
-/**
- * @brief Checks the state of the drone.
- *
- * @return int:
- * 0, if the drone is ready to fly
- * 1, if the drone is uninitialized
- * 2, if the drone is killed
- * 3, if the drone is already airborne
- * failsafe
- * landing
- */
-int Quad::checkState()
-{
-  switch (state_) {
-  case 0:
-    std::cout << "[ERROR][Participant: " << id
-              << "] Take-off rejected: Participant uninitialized!" << std::endl;
-    return 1;
-    break;
+Status Quad::getStatus() {
+  // send status request
+  px4_action_cmd_.action = Action_cmd::act_status;
+  px4_action_pub_->publish(px4_action_cmd_);
 
-  case 3:
-    std::cout << "[ERROR][Participant: " << id
-              << "] Take-off rejected: Participant already airborne!"
-              << std::endl;
-    return 3;
-    break;
+  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
-  default:
-    break;
+  Status result;
+  // check if feedback was received
+  if (px4_feedback_.feedback != FeedbackType::fb_status) {
+    return result;
   }
-  // TODO check unkilled -> return 2
-
-  return 0;
+  result.feedback = true;
+  result.armable = px4_feedback_.status.armable;
+  result.local_position = px4_feedback_.status.local_position_ok;
+  result.battery = px4_feedback_.status.battery;
+  return result;
 }
 
-bool Quad::takeOff()
-{
-  switch (checkState()) {
-  case 0:
-    break;
-
-  case 1:
-  case 2:
-    for (int i = 0; i < 10; ++i) {
-      std::cout << "Trying again in 3 ";
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      std::cout << "2 ";
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      std::cout << "1" << std::endl;
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      if (checkState() == 0) {
-        break;
-      }
-    }
-    return false;
-
-  case 3:
-    return false;
-
-  default:
-    assert(false);
-    break;
-  }
-  
-  /* ARM */
-  /* INFO */
+bool Quad::takeOff() {
+  /* PREFLIGHT CHECKS */
+  // info
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id << "] Arming." << std::endl;
+    std::cout << "[INFO][Participant: " << id_ << "] Running preflight checks."
+              << std::endl;
   }
-  /* INFO END */
 
-  px4_action_cmd_.id = "arm";
+  // initialize mocap subscriber
+  if (!initializeMocapSub()) {
+    // error
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Takeoff denied: Initialization failed." << std::endl;
+    return false;
+  }
+
+  for (int i = 5;; --i) {
+    // check status
+    Status status = getStatus();
+    // check if feedback received
+    if (!status.feedback) {
+      // error
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Takeoff denied: No feedback received from interface."
+                << std::endl;
+      return false;
+    }
+    // check if local position is available
+    if (!status.local_position) {
+      // error
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Takeoff denied: No local position available."
+                << std::endl;
+      return false;
+    }
+    // check battery level
+    if (status.battery < 30) {
+      // Error
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Takeoff denied: Battery too low (" << status.battery
+                << "%)" << std::endl;
+      return false;
+    }
+    // check killed
+    if (!status.armable) {
+      // error
+      std::cout << "[ERROR][Participant: " << id_ << "] Is killed."
+                << std::endl;
+      // return if it is the last try
+      if (i == 1) {
+        // error
+        std::cout << "[ERROR][Participant: " << id_
+                  << "] Takeoff denied: Participant is killed." << std::endl;
+        return false;
+      }
+      // rerun checks
+      std::cout << "Rerunning preflight checks in 3 seconds (remaining tries: "
+                << i - 1 << ")." << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+      continue;
+    }
+    // all checks passed -> return
+    break;
+  }
+
+  state_ = State::initialized;
+
+  /* ARM */
+  // info
+  if (console_state_ <= 1) {
+    std::cout << "[INFO][Participant: " << id_ << "] Arming." << std::endl;
+  }
+  // send arm request
+  px4_action_cmd_.action = Action_cmd::act_arm;
   px4_action_pub_->publish(px4_action_cmd_);
+  // wait max for 2 seconds to receive data
+  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
+
+  // check if feedback was received
+  if (px4_feedback_.feedback != FeedbackType::fb_arm) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Arming failed: No feedback received from interface."
+              << std::endl;
+    return false;
+  }
+  // check Result
+  if (px4_feedback_.result != ResultType::res_success) {
+    std::cout << "[ERROR][Participant: " << id_ << "] Arming failed: PX4 error."
+              << std::endl;
+    return false;
+  }
+
   state_ = armed;
 
   // wait before take-off
-  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1800));
 
   /* TAKEOFF */
-  /* INFO */
+  // info
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id << "] Taking off." << std::endl;
+    std::cout << "[INFO][Participant: " << id_ << "] Taking off." << std::endl;
   }
-  /* INFO END */
 
-  px4_action_cmd_.id = "takeoff";
+  // send takeoff request
+  px4_action_cmd_.action = Action_cmd::act_takeoff;
   px4_action_pub_->publish(px4_action_cmd_);
-  state_ = airborne;
+  // wait max for 2 seconds to receive data
+  px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
+
+  // check if feedback was received
+  if (px4_feedback_.feedback != FeedbackType::fb_takeoff) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Takeoff failed: No feedback received from interface."
+              << std::endl;
+    return false;
+  }
+  // check Result
+  if (px4_feedback_.result != ResultType::res_success) {
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Takeoff failed: PX4 error." << std::endl;
+    return false;
+  }
 
   // wait during take-off sequence
   std::this_thread::sleep_for(std::chrono::milliseconds(12000));
 
-  // TODO : check height?
+  // TODO : check height
+  // if (pose_.position.z < TODO) {
+  //   // error!
+  // }
 
-  /* DEBUG */
+  // debug
   if (console_state_ == 0) {
-    std::cout << "[DEBUG][Participant: " << id
+    std::cout << "[DEBUG][Participant: " << id_
               << "] Take-off sequence completed." << std::endl;
   }
-  /* DEBUG END */
 
-  /* INFO */
+  // info
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id << "] Starting offboard."
+    std::cout << "[INFO][Participant: " << id_ << "] Starting offboard."
               << std::endl;
   }
-  /* INFO END */
 
-  px4_action_cmd_.id = "offboard";
+  /* OFFBOARD */
+  // send offboard request
+  px4_action_cmd_.action = Action_cmd::act_offboard;
   px4_action_pub_->publish(px4_action_cmd_);
+  // wait max for 2 seconds to receive data
+  // px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
+
+  // // check if feedback was received
+  // if (px4_feedback_.feedback != FeedbackType::offboard) {
+  //   std::cout << "[ERROR][Participant: " << id_
+  //             << "] Offboard failed: No feedback received from interface."
+  //             << std::endl;
+  //   return false;
+  // }
+  // // check Result
+  // if (px4_feedback_.result != ResultType::success) {
+  //   std::cout << "[ERROR][Participant: " << id_
+  //             << "] Offboard failed: PX4 error." << std::endl;
+  //   return false;
+  // }
 
   // wait for the drone to stabilize
   std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  state_ = airborne;
 
-  /* DEBUG */
-  if (console_state_ == 0) {
-    std::cout << "[DEBUG][Participant: " << id << "] Switched to offboard."
-              << "Ready to fly mission." << std::endl;
+  // info
+  if (console_state_ <= 1) {
+    std::cout << "[INFO][Participant: " << id_
+              << "] Takeoff complete. Ready to fly mission." << std::endl;
   }
-  /* DEBUG END */
 
   return true;
 }
 
-void Quad::land(Item &stand)
-{
-  /* INFO */
+void Quad::land(Item &stand) {
+  // info
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id << "] Commence landing sequence."
+    std::cout << "[INFO][Participant: " << id_ << "] Commence landing sequence."
               << std::endl;
   }
-  /* INFO END */
-  /* DEBUG */
+  // debug
   if (console_state_ == 0) {
-    std::cout << "[DEBUG][Participant: " << id << "] Go back to stand."
+    std::cout << "[DEBUG][Participant: " << id_ << "] Go back to stand."
               << std::endl;
   }
-  /* DEBUG END */
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z + 1.0, stand.getPose().orientation.yaw,
+          5000, false);
 
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 1.0,
-          stand.getPose().pose.orientation_euler.yaw, 5000, false);
-
-  /* DEBUG */
+  // debug
   if (console_state_ == 0) {
-    std::cout << "[DEBUG][Participant: " << id << "] Descending." << std::endl;
+    std::cout << "[DEBUG][Participant: " << id_ << "] Descending." << std::endl;
   }
-  /* DEBUG END */
+  // z + 0.5
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z + 0.5, stand.getPose().orientation.yaw,
+          2000, false);
+  // z + 0.2
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z + 0.2, stand.getPose().orientation.yaw,
+          2000, false);
+  // z + 0.0
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z, stand.getPose().orientation.yaw, 2000,
+          false);
 
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 0.5, //.75
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
+  // TODO check offset!
 
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 0.2,
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
-
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z + 0.0,
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
-
-  /* INFO */
+  // info
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id << "] Landing." << std::endl;
+    std::cout << "[INFO][Participant: " << id_ << "] Landing." << std::endl;
   }
-  /* INFO END */
 
-  goToPos(stand.getPose().pose.position.x, stand.getPose().pose.position.y,
-          stand.getPose().pose.position.z - 0.3,
-          stand.getPose().pose.orientation_euler.yaw, 2000, false);
-
-  // wait for the drone to land
-  std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+  // z - 0.3
+  goToPos(stand.getPose().position.x, stand.getPose().position.y,
+          stand.getPose().position.z - 0.3, stand.getPose().orientation.yaw, 2000,
+          false);
 
   // terminate offboard
-  pos_cmd_.header.id = "break";
+  pos_cmd_.header.description = "break";
   position_pub_->publish(pos_cmd_);
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+  // default land command
+  px4_action_cmd_.action = Action_cmd::act_land;
+  px4_action_pub_->publish(px4_action_cmd_);
+  std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
   // back up disarm command
-  /* INFO */
+  // info
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id << "] Safety Disarm."
+    std::cout << "[INFO][Participant: " << id_ << "] Safety Disarm."
               << std::endl;
   }
-  /* INFO END */
-  px4_action_cmd_.id = "disarm";
+  px4_action_cmd_.action = Action_cmd::act_disarm;
   px4_action_pub_->publish(px4_action_cmd_);
 
   state_ = initialized;

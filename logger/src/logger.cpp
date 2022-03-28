@@ -7,8 +7,8 @@
 #include <chrono>
 #include <thread>
 
-void startLog(std::atomic<LogFlag> &log_flag,
-              const std::string sub_topic_name) {
+void startLog(std::atomic<LogFlag> &log_flag, const std::string sub_topic_name)
+{
   std::unique_ptr<DefaultParticipant> dp =
       std::make_unique<DefaultParticipant>(0, "raptor");
   DDSSubscriber<idl_msg::MocapPubSubType, cpp_msg::Mocap> *mocap_sub;
@@ -17,11 +17,11 @@ void startLog(std::atomic<LogFlag> &log_flag,
                                 sub_topic_name, dp->participant());
 
   // set delay for 100 Hz
-  const int DELAY = 9;
+  const int DELAY = 10;
   // declare chrono variables
   std::chrono::time_point<std::chrono::high_resolution_clock> time_0;
   std::chrono::time_point<std::chrono::high_resolution_clock> time_1;
-  std::chrono::time_point<std::chrono::high_resolution_clock> time_2;
+  std::chrono::time_point<std::chrono::high_resolution_clock> loop_timer;
   std::chrono::duration<float, std::milli> duration;
   // declare container vectors
   std::vector<float> timestamp;
@@ -35,6 +35,7 @@ void startLog(std::atomic<LogFlag> &log_flag,
   // 'start' the clock
   time_0 = std::chrono::high_resolution_clock::now();
   while (true) {
+    loop_timer = std::chrono::high_resolution_clock::now();
     switch (log_flag.load()) {
     case 0: // run
       break;
@@ -75,9 +76,13 @@ void startLog(std::atomic<LogFlag> &log_flag,
       // concatenate filname
       std::string filename = "log_" + month + day + '_' + year + '_' + time;
       // safe to file
-      write_col_vec_to_csv(container, filename, ',', 1.f);
-      // exit
-      std::cout << "Successful log" << std::endl;
+      std::string path = "./logs/";
+      try {
+        write_col_vec_to_csv(container, path, filename, ',', 1.f);
+      } catch (...) {
+        // error message
+        std::cout << "[ERROR][Logger] File could not be saved." << std::endl;
+      }
       return;
     }
 
@@ -97,11 +102,7 @@ void startLog(std::atomic<LogFlag> &log_flag,
     pos_z.push_back(pose.pose.position.z);
 
     // wait for remaining time
-    time_2 = std::chrono::high_resolution_clock::now();
-    duration = time_2 - time_1;
-    int wait = DELAY - duration.count();
-    if (wait > 5) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(wait));
-    }
+    loop_timer += std::chrono::milliseconds(DELAY);
+    std::this_thread::sleep_until(loop_timer);
   }
 }

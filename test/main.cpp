@@ -6,7 +6,7 @@ int main() {
       std::make_unique<DefaultParticipant>(0, "raptor");
 
   // create instance of quad
-  Quad quad("Quad", dp, "mocap_srl_quad", "pos_cmd");
+  Quad quad("Quad", dp, "mocap_srl_quad", "pos_cmd", NULL);
   Gripper gripper("Gripper", dp, "grip_cmd");
 
   // These parameters will be moved to the Quad class

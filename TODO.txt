@@ -1,11 +1,27 @@
-Feedback
-- Check for Kill switch engaged before arming
+Check gripper implementation with aurel
+- max angle?
 
-MOCAP feasability
+add hover action message
 
-Battery status
+Implement raptor msgs in
+- logger
+- emergency
 
-vicon class
-- publishing parameter
+Check integration in interface
+- how is the feedback sent?
 
-change coordinate arguments to arrays
+Quad::land sequence
+- actions.243 -> message to terminate offboard
+- actions.231 -> check offset, and wait if not within tolerance
+
+Failsafe Tests:
+- recordings
+- protocol
+
+Make command messages private
+-> setter with assertion
+
+Idea: Move initialization inside of constructor?
+Problem: feedback?
+
+idea: change coordinate arguments to arrays
