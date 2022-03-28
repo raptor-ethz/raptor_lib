@@ -1,25 +1,5 @@
 #include "Quad.h"
 
-bool Quad::checkMocapData() {
-  long frame_number = getPose().header.timestamp;
-  if (frame_number == 0 || frame_number == old_frame_number_) {
-    ++missed_frames_;
-  } else {
-    missed_frames_ = 0;
-  }
-  // update old frame number
-  old_frame_number_ = frame_number;
-  // check for 3 consecutive missed frames
-  if (missed_frames_ > 2) {
-    // error
-    std::cout << "[ERROR][Participant: " << id_
-              << "] Bad motion capture data detected." << std::endl;
-    return false;
-  }
-
-  return true;
-}
-
 Status Quad::getStatus() {
   // send status request
   px4_action_cmd_.action = Action_cmd::status;
