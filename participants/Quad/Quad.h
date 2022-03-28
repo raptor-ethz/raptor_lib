@@ -84,40 +84,17 @@ public:
 
   /**
    * @brief Comand the drone to track a position (no threshold).
-   *
-   * Command the drone to track a position using continuously sent position
-   * commands at a specified frequency. Returns latest after the time limit or,
-   * if the reached_pos_flag is set to true, once the position has been reached
-   * within a specified threshold.
-   * @param[in] x_ref [m] Reference position - x coordinate
-   * @param[in] y_ref [m] Reference position - y coordinate
-   * @param[in] z_ref [m] Reference position - z coordinate
-   * @param[in] delay_time [ms] Delay between commands
-   * @param[in] max_time [ms] Time after which the function latest ends
-   * @param[in] reached_pos_flag Flag if the function should end once
-   * the position was reached. If false, the function always waits for
-   * max_time before ending
-   * @returns True if the position has been reached, false otherwise.
+   * 
+   * @overload (no threshold)
    */
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                const float &yaw_ref, const int &delay_time,
                const float &max_time, const bool &reached_pos_flag);
 
   /**
-   * @brief Comand the drone to track a position (no threshold, delay_time).
+   * @brief Comand the drone to track a position (no threshold, no delay_time).
    *
-   * Command the drone to track a position using continuously sent position
-   * commands at a specified frequency. Returns latest after the time limit or,
-   * if the reached_pos_flag is set to true, once the position has been reached
-   * within a specified threshold.
-   * @param[in] x_ref [m] Reference position - x coordinate
-   * @param[in] y_ref [m] Reference position - y coordinate
-   * @param[in] z_ref [m] Reference position - z coordinate
-   * @param[in] max_time [ms] Time after which the function latest ends
-   * @param[in] reached_pos_flag Flag if the function should end once
-   * the position was reached. If false, the function always waits for
-   * max_time before ending
-   * @returns True if the position has been reached, false otherwise.
+   * @overload no threshold, no delay time
    */
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                const float &yaw_ref, const float &max_time,
