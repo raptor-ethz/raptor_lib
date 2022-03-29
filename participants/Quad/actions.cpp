@@ -22,22 +22,28 @@ Status Quad::getStatus() {
 bool Quad::initializeInterfacePub() {
   // info
   std::cout << "[INFO][Participant: " << id_ << "] "
-            << "Initializing publisher." << std::endl;
+            << "Initializing interface-publisher." << std::endl;
 
-  // check if publisher matched for max 10 times (ca 2 seconds)
+  // check if publisher matched for max 5 times (3 seconds each)
   for (int i = 0; !px4_action_pub_->listener.matched() ||
                   !position_pub_->listener.matched();
        ++i) {
     // exit loop if both matched
-    if (i == 9) {
+    if (i == 4) {
+      // warning
+      std::cout
+          << "[WARNING][Participant: " << id_
+          << "] Interface-Publisher did not match (check that position control "
+             "interface is running)."
+          << std::endl;
       // error if subscriber didn't match after 10 tries
       std::cout << "[ERROR][Participant: " << id_
-                << "] Interface-Publisher did not match (check that position control "
-                   "interface is running)."
-                << std::endl;
+                << "] Interface-Publisher did not match." << std::endl;
       return false;
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    std::cout << "Rerunning initialization in 3 seconds (remaining tries: "
+              << 4 - i << ")." << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   }
 
   // info

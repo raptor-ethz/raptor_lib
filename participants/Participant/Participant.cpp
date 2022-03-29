@@ -25,20 +25,24 @@ bool raptor::Participant::checkMocapData() {
 bool raptor::Participant::initializeMocapSub() {
   // info
   std::cout << "[INFO][Participant: " << id_ << "] "
-            << "Initializing mocap subscriber." << std::endl;
+            << "Initializing mocap-subscriber." << std::endl;
 
-  // check if subscriber matched for max 10 times (ca 2 seconds)
+  // check if subscriber matched for max 5 times (3 seconds each)
   for (int i = 0; !mocap_sub_->listener->matched(); ++i) {
-    // exit loop if matched
-    if (i == 9) {
+    // warning
+    std::cout
+        << "[WARNING][Participant: " << id_
+        << "] Mocap-Subscriber did not match (check that mocap pub is running)."
+        << std::endl;
+    if (i == 4) {
       // error if subscriber didn't match after 10 tries
       std::cout << "[ERROR][Participant: " << id_
-                << "] Mocap-Subscriber did not match (check that mocap pub is "
-                   "running)."
-                << std::endl;
+                << "] Mocap-Subscriber did not match." << std::endl;
       return false;
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    std::cout << "Rerunning initialization in 3 seconds (remaining tries: "
+              << 4 - i << ")." << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   }
 
   // attempt to receive 10 data points (for max 500ms each)
@@ -53,13 +57,13 @@ bool raptor::Participant::initializeMocapSub() {
     mocap_sub_->listener->wait_for_data();
   }
 
+  for (int j = 0; j < 2; ++j) {
+    checkMocapData();
+    // mocap_sub_->listener->wait_for_data_for_ms(100);
+    mocap_sub_->listener->wait_for_data();
+  }
   for (int i = 0;; ++i) {
     // check data quality
-    for (int j = 0; j < 2; ++j) {
-      checkMocapData();
-      // mocap_sub_->listener->wait_for_data_for_ms(100);
-      mocap_sub_->listener->wait_for_data();
-    }
     if (!checkMocapData()) {
       // error
       std::cout << "[ERROR][Participant: " << id_
@@ -75,7 +79,7 @@ bool raptor::Participant::initializeMocapSub() {
       }
       // rerun checks
       std::cout
-          << "Rerunning Mocap Initialization in 3 seconds (remaining tries: "
+          << "Rerunning mocap initialization in 3 seconds (remaining tries: "
           << 4 - i << ")." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(3000));
       continue;
