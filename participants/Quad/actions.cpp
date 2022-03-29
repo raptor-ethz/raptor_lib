@@ -19,6 +19,34 @@ Status Quad::getStatus() {
   return result;
 }
 
+bool Quad::initializeInterfacePub() {
+  // info
+  std::cout << "[INFO][Participant: " << id_ << "] "
+            << "Initializing publisher." << std::endl;
+
+  // check if publisher matched for max 10 times (ca 2 seconds)
+  for (int i = 0; !px4_action_pub_->listener.matched() ||
+                  !position_pub_->listener.matched();
+       ++i) {
+    // exit loop if both matched
+    if (i == 9) {
+      // error if subscriber didn't match after 10 tries
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Interface-Publisher did not match (check that position control "
+                   "interface is running)."
+                << std::endl;
+      return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  }
+
+  // info
+  std::cout << "[INFO][Participant: " << id_ << "] "
+            << "Interface publisher matched." << std::endl;
+
+  return true;
+}
+
 bool Quad::takeOff() {
   /* PREFLIGHT CHECKS */
   // info
@@ -31,7 +59,17 @@ bool Quad::takeOff() {
   if (!initializeMocapSub()) {
     // error
     std::cout << "[ERROR][Participant: " << id_
-              << "] Takeoff denied: Initialization failed." << std::endl;
+              << "] Takeoff denied: Mocap-Subscriber initialization failed."
+              << std::endl;
+    return false;
+  }
+
+  // initialize interface publisher
+  if (!initializeInterfacePub()) {
+    // error
+    std::cout << "[ERROR][Participant: " << id_
+              << "] Takeoff denied: Interface-Publisher initialization failed."
+              << std::endl;
     return false;
   }
 
@@ -237,8 +275,8 @@ void Quad::land(Item &stand) {
 
   // z - 0.3
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
-          stand.getPose().position.z - 0.3, stand.getPose().orientation.yaw, 2000,
-          false);
+          stand.getPose().position.z - 0.3, stand.getPose().orientation.yaw,
+          2000, false);
 
   // terminate offboard
   pos_cmd_.header.description = "break";

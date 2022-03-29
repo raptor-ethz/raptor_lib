@@ -56,6 +56,8 @@ public:
 
   Status getStatus();
 
+  bool initializeInterfacePub();
+
   /**
    * @brief Comand the drone to track a position (full configuration).
    *
