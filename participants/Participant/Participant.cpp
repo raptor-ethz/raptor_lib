@@ -13,8 +13,8 @@ bool raptor::Participant::checkMocapData() {
   old_frame_number_ = frame_number;
   // check for 3 consecutive missed frames
   if (missed_frames_ > 2) {
-    // error
-    std::cout << "[ERROR][Participant: " << id_
+    // warning
+    std::cout << "[WARNING][Participant: " << id_
               << "] Bad motion capture data detected." << std::endl;
     return false;
   }
@@ -29,18 +29,17 @@ bool raptor::Participant::initializeMocapSub() {
 
   // check if subscriber matched for max 5 times (3 seconds each)
   for (int i = 0; !mocap_sub_->listener->matched(); ++i) {
-    // warning
-    std::cout
-        << "[WARNING][Participant: " << id_
-        << "] Mocap-Subscriber did not match (check that mocap pub is running)."
-        << std::endl;
     if (i == 4) {
       // error if subscriber didn't match after 10 tries
       std::cout << "[ERROR][Participant: " << id_
                 << "] Mocap-Subscriber did not match." << std::endl;
       return false;
     }
-    std::cout << "Rerunning initialization in 3 seconds (remaining tries: "
+    // warning -> rerun checks
+    std::cout << "[WARNING][Participant: " << id_
+              << "] Mocap-Subscriber did not match (check that mocap pub is "
+                 "running). \n \t Rerunning initialization in 3 seconds "
+                 "(remaining tries: "
               << 4 - i << ")." << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   }
@@ -53,38 +52,38 @@ bool raptor::Participant::initializeMocapSub() {
                 << "] Mocap subscriber unmatched." << std::endl;
       return false;
     }
-    // mocap_sub_->listener->wait_for_data_for_ms(500);
-    mocap_sub_->listener->wait_for_data();
+    mocap_sub_->listener->wait_for_data_for_ms(500);
+    // mocap_sub_->listener->wait_for_data(); TODO
   }
 
   for (int j = 0; j < 2; ++j) {
-    mocap_sub_->listener->wait_for_data();
+    // mocap_sub_->listener->wait_for_data(); TODO
+    mocap_sub_->listener->wait_for_data_for_ms(100);
     checkMocapData();
-    // mocap_sub_->listener->wait_for_data_for_ms(100); TODO
   }
   for (int i = 0;; ++i) {
-    mocap_sub_->listener->wait_for_data(); // TODO
+    mocap_sub_->listener->wait_for_data_for_ms(100);
+    // mocap_sub_->listener->wait_for_data(); // TODO
     // check data quality
-    if (!checkMocapData()) {
+    if (checkMocapData()) {
+      break;
+    }
+    // return if it is the last try
+    if (i == 4) {
       // error
       std::cout << "[ERROR][Participant: " << id_
-                << "] Bad motion capture data." << std::endl;
-      // return if it is the last try
-      if (i == 4) {
-        // error
-        std::cout << "[ERROR][Participant: " << id_
-                  << "] Initialization failed: Bad motion capture data (check "
-                     "that vicon stream is live)."
-                  << std::endl;
-        return false;
-      }
-      // rerun checks
-      std::cout
-          << "Rerunning mocap initialization in 3 seconds (remaining tries: "
-          << 4 - i << ")." << std::endl;
-      std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-      continue;
+                << "] Initialization failed: Bad motion capture data (check "
+                   "that vicon stream is live)."
+                << std::endl;
+      return false;
     }
+    // warning -> rerun checks
+    std::cout
+        << "[WARNING][Participant: " << id_
+        << "] Bad motion capture data (check that vicon stream is live). "
+           "Rerunning mocap initialization in 3 seconds (remaining tries: "
+        << 4 - i << ")." << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   }
 
   // info for good data

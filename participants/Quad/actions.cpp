@@ -130,7 +130,7 @@ bool Quad::takeOff() {
 
   // info
   if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id_ << "] PReflight checks complete."
+    std::cout << "[INFO][Participant: " << id_ << "] Preflight checks complete."
               << std::endl;
   }
   state_ = State::initialized;
