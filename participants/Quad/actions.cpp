@@ -128,6 +128,11 @@ bool Quad::takeOff() {
     break;
   }
 
+  // info
+  if (console_state_ <= 1) {
+    std::cout << "[INFO][Participant: " << id_ << "] PReflight checks complete."
+              << std::endl;
+  }
   state_ = State::initialized;
 
   /* ARM */
