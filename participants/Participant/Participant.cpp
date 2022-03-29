@@ -27,16 +27,15 @@ bool raptor::Participant::initializeMocapSub() {
   std::cout << "[INFO][Participant: " << id_ << "] "
             << "Initializing mocap subscriber." << std::endl;
 
-  // check if subscriber matched for max 10 times
-  for (int i = 0;; ++i) {
+  // check if subscriber matched for max 10 times (ca 2 seconds)
+  for (int i = 0; !mocap_sub_->listener->matched(); ++i) {
     // exit loop if matched
-    if (mocap_sub_->listener->matched()) {
-      break;
-    }
     if (i == 9) {
       // error if subscriber didn't match after 10 tries
       std::cout << "[ERROR][Participant: " << id_
-                << "] Mocap subscriber did not match." << std::endl;
+                << "] Mocap-Subscriber did not match (check that mocap pub is "
+                   "running)."
+                << std::endl;
       return false;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -50,14 +49,16 @@ bool raptor::Participant::initializeMocapSub() {
                 << "] Mocap subscriber unmatched." << std::endl;
       return false;
     }
-    mocap_sub_->listener->wait_for_data_for_ms(500);
+    // mocap_sub_->listener->wait_for_data_for_ms(500);
+    mocap_sub_->listener->wait_for_data();
   }
 
   for (int i = 0;; ++i) {
     // check data quality
     for (int j = 0; j < 2; ++j) {
       checkMocapData();
-      mocap_sub_->listener->wait_for_data_for_ms(100);
+      // mocap_sub_->listener->wait_for_data_for_ms(100);
+      mocap_sub_->listener->wait_for_data();
     }
     if (!checkMocapData()) {
       // error
@@ -67,7 +68,8 @@ bool raptor::Participant::initializeMocapSub() {
       if (i == 4) {
         // error
         std::cout << "[ERROR][Participant: " << id_
-                  << "] Initialization failed: Bad motion capture data."
+                  << "] Initialization failed: Bad motion capture data (check "
+                     "that vicon stream is live)."
                   << std::endl;
         return false;
       }
