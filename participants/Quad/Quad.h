@@ -4,12 +4,12 @@
 #include "Item.h"
 #include "Participant.h"
 
-#include "QuadPosCmd_msg.h"
-#include "QuadPosCmd_msgPubSubTypes.h"
-#include "QuadFeedback_msg.h"
-#include "QuadFeedback_msgPubSubTypes.h"
 #include "QuadAction_msg.h"
 #include "QuadAction_msgPubSubTypes.h"
+#include "QuadFeedback_msg.h"
+#include "QuadFeedback_msgPubSubTypes.h"
+#include "QuadPosCmd_msg.h"
+#include "QuadPosCmd_msgPubSubTypes.h"
 #include "UserCmd_msg.h"
 #include "UserCmd_msgPubSubTypes.h"
 
@@ -43,8 +43,18 @@ class Quad : public raptor::Participant {
 public:
   Quad(const std::string &raptor_participant_id,
        std::unique_ptr<DefaultParticipant> &dp,
+       const std::string &sub_topic_name, const std::string &pub_topic_name);
+
+  Quad(const std::string &raptor_participant_id,
+       std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
        Gripper *const gripper, Item *const stand);
+
+  Quad(const std::string &raptor_participant_id,
+       std::unique_ptr<DefaultParticipant> &dp,
+       const std::string &sub_topic_name, const std::string &pub_topic_name,
+       Item *const stand);
+
   ~Quad();
 
   DDSPublisher *position_pub_;
@@ -52,7 +62,6 @@ public:
   DDSSubscriber<idl_msg::QuadFeedback_msgPubSubType, cpp_msg::QuadFeedback_msg>
       *px4_feedback_sub_;
   DDSSubscriber<idl_msg::UserCmd_msgPubSubType, cpp_msg::UserCmd_msg> *ui_sub_;
-  
 
   Status getStatus();
 
@@ -86,7 +95,7 @@ public:
 
   /**
    * @brief Comand the drone to track a position (no threshold).
-   * 
+   *
    * @overload (no threshold)
    */
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
@@ -101,7 +110,7 @@ public:
   bool goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                const float &yaw_ref, const float &max_time,
                const bool &reached_pos_flag);
-  
+
   bool goToPos(Item &target, const float &x_offset, const float &y_offset,
                const float &z_offset, const float &yaw_ref,
                const float &max_time, const bool &reached_pos_flag);
@@ -158,7 +167,6 @@ public:
   void quickRelease(Item &target, Gripper &gripper, float length, float h0,
                     int time);
 
-  
   void place(Item &target, Gripper &gripper, float dx, float dy, float dz,
              float h0);
 
@@ -189,8 +197,8 @@ public:
   int getState() { return state_; }
 
 private:
-  Gripper *gripper_;
-  Item *stand_;
+  Gripper *gripper_{nullptr};
+  Item *stand_{nullptr};
   ConsoleState console_state_ = debug;
   State state_ = uninitialized;
 
