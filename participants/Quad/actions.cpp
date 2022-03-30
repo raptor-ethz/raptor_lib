@@ -117,7 +117,8 @@ bool Quad::takeOff() {
       }
       // warning TODO
       std::cout << "[WARNING][Participant: " << id_
-                << "] Is killed (check remote). Rerunning preflight checks in 3 seconds "
+                << "] Is killed (check remote). Rerunning preflight checks in "
+                   "3 seconds "
                    "(remaining tries: "
                 << i - 1 << ")." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -278,6 +279,15 @@ void Quad::land(Item &stand) {
           false);
 
   // TODO check offset!
+  // TODO offsets
+  while (!checkReachedPos3D(pose_.position.x, stand.getPose().position.x, 0.08,
+                            pose_.position.y, stand.getPose().position.y, 0.08,
+                            pose_.position.z, stand.getPose().position.z,
+                            0.3)) {
+    std::cout << "[WARNING][Participant: " << id_ << "] Offset too big."
+              << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  }
 
   // info
   if (console_state_ <= 1) {
