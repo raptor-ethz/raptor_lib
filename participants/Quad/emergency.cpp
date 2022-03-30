@@ -23,7 +23,11 @@ void Quad::emergencyLand()
 // TODO hover advise
 void Quad::hover()
 {
-  // TODO hover
+  // terminate offboard
+  pos_cmd_.header.description = "break";
+  position_pub_->publish(pos_cmd_);
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  
   // send hover command
   px4_action_cmd_.action = Action_cmd::act_hover;
   position_pub_->publish(pos_cmd_);
