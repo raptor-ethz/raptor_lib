@@ -9,7 +9,7 @@ inline bool checkReachedPos1D(const float &actual_pos,
   return std::abs(reference_pos - actual_pos) <= threshold;
 }
 
-inline bool checkReachedPos3D(const float &x_actual, const float &x_ref,
+bool checkReachedPos3D(const float &x_actual, const float &x_ref,
                               const float &x_thresh, const float &y_actual,
                               const float &y_ref, const float &y_thresh,
                               const float &z_actual, const float &z_ref,
