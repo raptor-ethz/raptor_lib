@@ -80,6 +80,8 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       }
     }
 
+    // TODO check if interface is matched
+
     // check flag
     // TODO move out to (reusable) separate function
     switch (state_) {
@@ -98,7 +100,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       } else {
         std::cout << "[ERROR][Participant: " << id_
                   << "] No stand registered! Activate hover mode." << std::endl;
-        // hover(); TODO
+        hover();
       }
 
       break;
@@ -108,6 +110,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       std::cout << "[ERROR][Participant: " << id_
                 << "] Activate Failsafe: Emergency Land." << std::endl;
       emergencyLand();
+      exit(0);
       break;
 
     case State::hover:

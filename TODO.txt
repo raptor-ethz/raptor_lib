@@ -1,14 +1,19 @@
 Check gripper implementation with aurel
 - max angle?
 
-add hover action message
-
 Implement raptor msgs in
 - logger
 - emergency
 
+Gripper
+- getter of max angle
+- use that in emergency land 
+
 Check integration in interface
 - how is the feedback sent?
+- check action in offboard loop
+
+Check interface is connected
 
 Quad::land sequence
 - actions.243 -> message to terminate offboard

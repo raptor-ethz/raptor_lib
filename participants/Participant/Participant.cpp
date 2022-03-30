@@ -57,13 +57,11 @@ bool raptor::Participant::initializeMocapSub() {
   }
 
   for (int j = 0; j < 2; ++j) {
-    // mocap_sub_->listener->wait_for_data(); TODO
     mocap_sub_->listener->wait_for_data_for_ms(100);
     checkMocapData();
   }
   for (int i = 0;; ++i) {
     mocap_sub_->listener->wait_for_data_for_ms(100);
-    // mocap_sub_->listener->wait_for_data(); // TODO
     // check data quality
     if (checkMocapData()) {
       break;

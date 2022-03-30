@@ -19,6 +19,8 @@ public:
 
   void setAngleAsym(int front_angle, int back_angle);
 
+  int getMaxAngle() {return MAX_ANGLE;};
+
 private:
   std::string id_ = "N/A";
   cpp_msg::RotGripCmd_msg grip_action_cmd_{};
