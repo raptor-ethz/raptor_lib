@@ -1,13 +1,5 @@
-Check gripper implementation with aurel
-- max angle?
-
 Implement raptor msgs in
 - logger
-- emergency
-
-Gripper
-- getter of max angle
-- use that in emergency land 
 
 Check integration in interface
 - how is the feedback sent?
@@ -18,6 +10,8 @@ Check interface is connected
 Quad::land sequence
 - actions.243 -> message to terminate offboard
 - actions.231 -> check offset, and wait if not within tolerance
+
+Check interface conversion long to int
 
 Failsafe Tests:
 - recordings
