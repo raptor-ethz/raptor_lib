@@ -108,9 +108,6 @@ bool Quad::takeOff() {
     }
     // check killed
     if (!status.armable) {
-      // error
-      std::cout << "[ERROR][Participant: " << id_ << "] Is killed."
-                << std::endl;
       // return if it is the last try
       if (i == 1) {
         // error
@@ -118,21 +115,24 @@ bool Quad::takeOff() {
                   << "] Takeoff denied: Participant is killed." << std::endl;
         return false;
       }
-      // rerun checks
-      std::cout << "Rerunning preflight checks in 3 seconds (remaining tries: "
+      // warning TODO
+      std::cout << "[WARNING][Participant: " << id_
+                << "] Is killed (check remote). Rerunning preflight checks in 3 seconds "
+                   "(remaining tries: "
                 << i - 1 << ")." << std::endl;
       std::this_thread::sleep_for(std::chrono::milliseconds(3000));
       continue;
     }
     // all checks passed -> return
+    // info
+    if (console_state_ <= 1) {
+      std::cout << "[INFO][Participant: " << id_
+                << "] Preflight checks complete (battery: " << status.battery
+                << "%)." << std::endl;
+    }
     break;
   }
 
-  // info
-  if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id_ << "] Preflight checks complete."
-              << std::endl;
-  }
   state_ = State::initialized;
 
   /* ARM */
