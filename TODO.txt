@@ -5,7 +5,9 @@ Check integration in interface
 - how is the feedback sent?
 - check action in offboard loop
 
-Check interface is connected
+Check interface is connected (and try to reconnect) in gotopos loop
+
+mocap checks in onboard px4_mocap_pub
 
 Quad::land sequence
 - actions.243 -> message to terminate offboard
