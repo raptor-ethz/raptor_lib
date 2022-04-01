@@ -26,16 +26,17 @@ Quad::Quad(const std::string &raptor_participant_id,
            std::unique_ptr<DefaultParticipant> &dp,
            const std::string &sub_topic_name, const std::string &pub_topic_name,
            Gripper *const gripper, Item *const stand)
-    : gripper_(gripper), stand_(stand) {
-  Quad(raptor_participant_id, dp, sub_topic_name, pub_topic_name);
+    : Quad(raptor_participant_id, dp, sub_topic_name, pub_topic_name) {
+  gripper_ = gripper;
+  stand_ = stand;
 };
 
 Quad::Quad(const std::string &raptor_participant_id,
            std::unique_ptr<DefaultParticipant> &dp,
            const std::string &sub_topic_name, const std::string &pub_topic_name,
            Item *const stand)
-    : stand_(stand) {
-  Quad(raptor_participant_id, dp, sub_topic_name, pub_topic_name);
+    : Quad(raptor_participant_id, dp, sub_topic_name, pub_topic_name) {
+  stand_ = stand;
 };
 
 Quad::~Quad() {
