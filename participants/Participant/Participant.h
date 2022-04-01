@@ -48,7 +48,7 @@ protected:
   std::string id_ = "N/A";
   cpp_msg::Mocap_msg pose_{};
   int missed_frames_{0};
-  long old_frame_number_{0};
+  int old_frame_number_{0};
 };
 
 } // namespace raptor

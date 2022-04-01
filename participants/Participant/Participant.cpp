@@ -2,7 +2,7 @@
 
 bool raptor::Participant::checkMocapData() {
   // read frame number
-  long frame_number = pose_.header.timestamp;
+  int frame_number = pose_.header.timestamp;
   // run checks
   if (frame_number == 0 || frame_number == old_frame_number_) {
     ++missed_frames_; // increment if bad data
