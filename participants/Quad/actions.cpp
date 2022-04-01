@@ -280,8 +280,8 @@ void Quad::land(Item &stand) {
 
   // TODO check offset!
   // TODO offsets
-  while (!checkReachedPos3D(pose_.position.x, stand.getPose().position.x, 0.08,
-                            pose_.position.y, stand.getPose().position.y, 0.08,
+  while (!checkReachedPos3D(pose_.position.x, stand.getPose().position.x, 0.1,
+                            pose_.position.y, stand.getPose().position.y, 0.1,
                             pose_.position.z, stand.getPose().position.z,
                             0.3)) {
     std::cout << "[WARNING][Participant: " << id_ << "] Offset too big."
