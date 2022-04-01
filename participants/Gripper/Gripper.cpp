@@ -17,7 +17,7 @@ void Gripper::setAngleSym(int angle) {
 
   grip_action_cmd_.front_arm_deg = angle;
   grip_action_cmd_.back_arm_deg = angle;
-  grip_action_cmd_.trigger_gripper = false;
+  // grip_action_cmd_.trigger_gripper = false;
   grip_action_pub_->publish(grip_action_cmd_);
 
   if (debug) {
@@ -35,7 +35,7 @@ void Gripper::setAngleAsym(int front_angle, int back_angle) {
 
   grip_action_cmd_.front_arm_deg = front_angle;
   grip_action_cmd_.back_arm_deg = back_angle;
-  grip_action_cmd_.trigger_gripper = false;
+  // grip_action_cmd_.trigger_gripper = false;
   grip_action_pub_->publish(grip_action_cmd_);
 
   if (debug) {
