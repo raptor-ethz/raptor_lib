@@ -21,7 +21,7 @@ void Gripper::setAngleSym(int angle)
 
   grip_action_cmd_.front_arm_deg = angle;
   grip_action_cmd_.back_arm_deg = angle;
-  // grip_action_cmd_.trigger_gripper = false;
+  grip_action_cmd_.trigger_gripper = false;
   grip_action_pub_->publish(grip_action_cmd_);
 
   if (debug)
@@ -41,7 +41,7 @@ void Gripper::setAngleAsym(int front_angle, int back_angle)
 
   grip_action_cmd_.front_arm_deg = front_angle;
   grip_action_cmd_.back_arm_deg = back_angle;
-  // grip_action_cmd_.trigger_gripper = false;
+  grip_action_cmd_.trigger_gripper = false;
   grip_action_pub_->publish(grip_action_cmd_);
 
   if (debug)
@@ -56,17 +56,16 @@ void Gripper::triggerGripper()
 {
   grip_action_cmd_.trigger_gripper = true;
   grip_action_pub_->publish(grip_action_cmd_);
-  grip_action_cmd_.trigger_gripper = false; // only publish once
 }
 
 void Gripper::updateSensor()
 {
-  grip_action_cmd_.get_sensor_val = true;
+  // just send a command to trigger the "wait_for_data()" in the gripper interface
   grip_action_pub_->publish(grip_action_cmd_);
-  grip_action_cmd_.get_sensor_val = false; // only publish once
 }
 
-std::vector<int> Gripper::getSensorVal()
-{
-  return std::vector<int>{grip_sensor_msg_.force_back_left, grip_sensor_msg_.force_back_right, grip_sensor_msg_.force_front_left, grip_sensor_msg_.force_front_right};
-}
+// sensor value getter functions
+int Gripper::getSensorBackLeft() { return grip_sensor_msg_.force_back_left; }
+int Gripper::getSensorBackRight() { return grip_sensor_msg_.force_back_right; }
+int Gripper::getSensorFrontLeft() { return grip_sensor_msg_.force_front_left; }
+int Gripper::getSensorFrontRight() { return grip_sensor_msg_.force_front_right; }

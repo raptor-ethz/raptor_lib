@@ -28,7 +28,10 @@ public:
 
   void updateSensor();
 
-  std::vector<int> getSensorVal();
+  int getSensorBackLeft();
+  int getSensorBackRight();
+  int getSensorFrontLeft();
+  int getSensorFrontRight();
 
   int getMaxAngle() { return MAX_ANGLE; };
 
