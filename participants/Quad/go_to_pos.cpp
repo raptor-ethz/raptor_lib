@@ -80,7 +80,12 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       }
     }
 
-    // TODO check if interface is matched
+    // check if interface is matched
+    while(!px4_action_pub_->listener.matched()) {
+      std::cout << "[ERROR][Participant: " << id_
+                << "] Connection to PX4-Interface lost. Reconnecting..." << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
 
     // check flag
     // TODO move out to (reusable) separate function
