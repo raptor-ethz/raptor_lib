@@ -177,8 +177,6 @@ public:
     z_thresh_ = z_thresh;
   }
 
-  void set_velocity(const Vec3 &velocity) { velocity_ = velocity; }
-
   // temporary (until initialization is ready)
   void setState(const State new_state) { state_ = new_state; }
 
@@ -214,13 +212,6 @@ private:
   float z_thresh_{0.2};
 
   int delay_time_{20};
-
-  // MM stuff
-  Vec3 position_{0, 0, 0};
-  Vec3 velocity_{0, 0, 0};
-  Vec3 acceleration_{0, 0, 0};
-
-  const Vec3 gravity_{0, 0, -9.81};
 };
 
 /* Non-member functions */
