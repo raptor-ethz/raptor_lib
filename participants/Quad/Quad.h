@@ -68,6 +68,19 @@ public:
   bool initializeInterfacePub();
 
   /**
+   * @brief Runs feasability checks of the input and sets the position command.
+   * 
+   * TODO
+   * 
+   * @param x 
+   * @param y 
+   * @param z 
+   * @param yaw 
+   * @return 
+   */
+  bool sendPosCmd(int (&position)[3], int yaw);
+
+  /**
    * @brief Comand the drone to track a position (full configuration).
    *
    * Command the drone to track a position using continuously sent position
