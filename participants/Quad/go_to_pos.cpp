@@ -39,6 +39,8 @@ bool Quad::sendPosCmd(int (&position)[3], int yaw) {
   pos_cmd_.yaw_angle = yaw;
   // publish pos_cmd
   position_pub_->publish(pos_cmd_);
+
+  return true;
 }
 
 // full config
