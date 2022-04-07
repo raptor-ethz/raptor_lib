@@ -41,16 +41,16 @@ struct Status {
 
 class Quad : public raptor::Participant {
 public:
-  Quad(const std::string &raptor_participant_id,
+  Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name);
 
-  Quad(const std::string &raptor_participant_id,
+  Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
        Gripper *const gripper, Item *const stand);
 
-  Quad(const std::string &raptor_participant_id,
+  Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
        Item *const stand);
@@ -69,14 +69,14 @@ public:
 
   /**
    * @brief Runs feasability checks of the input and sets the position command.
-   * 
+   *
    * TODO
-   * 
-   * @param x 
-   * @param y 
-   * @param z 
-   * @param yaw 
-   * @return 
+   *
+   * @param x
+   * @param y
+   * @param z
+   * @param yaw
+   * @return
    */
   bool sendPosCmd(int (&position)[3], int yaw);
 
@@ -256,7 +256,7 @@ inline bool checkReachedPos1D(const float &actual_pos,
  * @param z_thresh
  */
 bool checkReachedPos3D(const float &x_actual, const float &x_ref,
-                              const float &x_thresh, const float &y_actual,
-                              const float &y_ref, const float &y_thresh,
-                              const float &z_actual, const float &z_ref,
-                              const float &z_thresh);
+                       const float &x_thresh, const float &y_actual,
+                       const float &y_ref, const float &y_thresh,
+                       const float &z_actual, const float &z_ref,
+                       const float &z_thresh);
