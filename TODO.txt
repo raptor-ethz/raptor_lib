@@ -4,6 +4,7 @@ Implement raptor msgs in
 Check integration in interface
 - how is the feedback sent?
 - check action in offboard loop
+- reset action command when offboard is trigerred
 
 Check interface is connected (and try to reconnect) in gotopos loop
 
