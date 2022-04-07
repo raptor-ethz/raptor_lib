@@ -2,34 +2,22 @@
 
 void Quad::emergencyLand()
 {
-  if (!(gripper_ == nullptr)) {
+  if (gripper_ != nullptr) {
     gripper_->setAngleSym(gripper_->getMaxAngle());
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
-  // terminate offboard
-  pos_cmd_.header.description = "break";
-  position_pub_->publish(pos_cmd_);
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
   // default land command
   px4_action_cmd_.action = Action_cmd::act_land;
   px4_action_pub_->publish(px4_action_cmd_);
-
-  // exit this process
   std::cout << "[WARNING][Participand: " << id_
-            << "] Default land now. Exiting process." << std::endl;
+            << "] Default land now." << std::endl;
 }
 
-// TODO hover advise
 void Quad::hover()
 {
-  // terminate offboard
-  pos_cmd_.header.description = "break";
-  position_pub_->publish(pos_cmd_);
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
-  
   // send hover command
-  px4_action_cmd_.action = Action_cmd::act_hover;
+  px4_action_cmd_.action = Action_cmd::act_hover; // TODO -> does it work?
   position_pub_->publish(pos_cmd_);
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
   // advise
