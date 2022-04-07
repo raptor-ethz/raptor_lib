@@ -13,6 +13,8 @@ comm_lib
 yaml-cpp
 )
 
+target_include_directories(raptor_lib PUBLIC include)
+
 add_subdirectory(lib)
 add_subdirectory(participants)
 # add_subdirectory(logger) TODO

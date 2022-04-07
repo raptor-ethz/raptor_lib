@@ -6,8 +6,6 @@ Check integration in interface
 - check action in offboard loop
 - reset action command when offboard is trigerred
 
-Check interface is connected (and try to reconnect) in gotopos loop
-
 mocap checks in onboard px4_mocap_pub
 
 Quad::land sequence

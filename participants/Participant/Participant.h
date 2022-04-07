@@ -46,6 +46,7 @@ public:
 
 protected:
   std::string id_ = "N/A";
+  std::string *log_{nullptr};
   cpp_msg::Mocap_msg pose_{};
   int missed_frames_{0};
   int old_frame_number_{0};
