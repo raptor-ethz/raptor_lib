@@ -2,7 +2,8 @@
 
 void Quad::emergencyLand()
 {
-  if (gripper_ != nullptr) {
+  if (gripper_ != nullptr)
+  {
     gripper_->setAngleSym(gripper_->getMaxAngle());
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
@@ -18,23 +19,26 @@ void Quad::hover()
 {
   // send hover command
   px4_action_cmd_.action = Action_cmd::act_hover; // TODO -> does it work?
-  position_pub_->publish(pos_cmd_);
+  px4_action_pub_->publish(px4_action_cmd_);
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
   // advise
   std::string input;
-  while (true) {
+  while (true)
+  {
     std::cout << "Advise next action [e = emergency land, q = quit]: ";
     getline(std::cin, input);
-    if (input.length() > 1) {
+    if (input.length() > 1)
+    {
       std::cout << "Enter 1 character only!" << std::endl;
       continue;
     }
-    switch (input.at(0)) {
+    switch (input.at(0))
+    {
     // emergency land
     case 'e':
       std::cout << "Sending emergency land command." << std::endl;
       emergencyLand();
-
+      // break;
     // quit
     case 'q':
       std::cout << "Exiting programm." << std::endl;
