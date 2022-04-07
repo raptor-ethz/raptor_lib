@@ -57,3 +57,21 @@ std::string getPath(const std::string &path, const std::string &filename,
 
   return file_path;
 }
+
+bool saveLog(const std::string &text) {
+  // check length
+  if (text.length() < 2) {
+    return false;
+  }
+  // create file
+  std::ofstream ofs;
+  ofs.open(getPath("./logs/console/", "consoleLog_" + parseDateAndTime(), ".txt"));
+  // check
+  if (!ofs.is_open()) {
+    std::cerr << "Problem when creating file: Couldn't open ofs." << std::endl;
+    return false;
+  }
+  ofs << text;
+  ofs.close();
+  return true;
+}
