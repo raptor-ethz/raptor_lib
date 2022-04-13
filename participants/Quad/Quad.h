@@ -30,8 +30,6 @@ enum State {
   hover
 };
 
-enum ConsoleState { debug, info, warning, error };
-
 struct Status {
   bool feedback{false};
   bool armable{false};
@@ -210,7 +208,6 @@ public:
 private:
   Gripper *gripper_{nullptr};
   Item *stand_{nullptr};
-  ConsoleState console_state_ = debug;
   State state_ = uninitialized;
 
   // messages

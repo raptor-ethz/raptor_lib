@@ -9,6 +9,8 @@
 
 #include <atomic>
 
+enum ConsoleState { debug, info, warning, error };
+
 namespace raptor {
 
 class Participant {
@@ -47,6 +49,8 @@ public:
 protected:
   std::string id_ = "N/A";
   std::string *log_{nullptr};
+  ConsoleState console_state_{debug};
+
   cpp_msg::Mocap_msg pose_{};
   int missed_frames_{0};
   int old_frame_number_{0};
