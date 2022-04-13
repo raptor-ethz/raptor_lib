@@ -78,7 +78,7 @@ public:
    * @param yaw
    * @return
    */
-  bool sendPosCmd(int (&position)[3], int yaw);
+  bool sendPosCmd(const int x, const int y, const int z, const int yaw);
 
   /**
    * @brief Comand the drone to track a position (full configuration).

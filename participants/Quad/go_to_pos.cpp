@@ -22,20 +22,25 @@ bool checkReachedPos3D(const float &x_actual, const float &x_ref,
 
 /* Member functions */
 
-bool Quad::sendPosCmd(int (&position)[3], int yaw) {
+bool Quad::sendPosCmd(const int x, const int y, const int z, const int yaw) {
   // TODO feasibility checks
-  int X_MIN, X_MAX, Y_MIN, Y_MAX, Z_MIN, Z_MAX;
+  // int X_MIN, X_MAX, Y_MIN, Y_MAX, Z_MIN, Z_MAX;
 
-  if (position[0] < X_MIN || position[0] > X_MAX || position[1] < Y_MIN ||
-      position[1] > Y_MAX || position[3] < Z_MIN || position[3] > Z_MAX) {
+  // if (x < X_MIN || x > X_MAX || y < Y_MIN || y > Y_MAX || z < Z_MIN ||
+  //     z > Z_MAX) {
+  //   std::cout << "[ERROR][Participant: " << id_
+  //             << "] Position Command not feasible." << std::endl;
+  //   return false;
+  // } 
+  if (x < 0.001 && y < 0.001 && z < 0.001) {
     std::cout << "[ERROR][Participant: " << id_
               << "] Position Command not feasible." << std::endl;
     return false;
   }
 
-  pos_cmd_.position.x = position[0];
-  pos_cmd_.position.y = position[1];
-  pos_cmd_.position.z = position[2];
+  pos_cmd_.position.x = x;
+  pos_cmd_.position.y = y;
+  pos_cmd_.position.z = z;
   pos_cmd_.yaw_angle = yaw;
   // publish pos_cmd
   position_pub_->publish(pos_cmd_);
@@ -109,9 +114,9 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     // TODO move out to (reusable) separate function
     switch (state_) {
     case State::land:
-      // error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Activate Failsafe: Land." << std::endl;
+      // warning
+      std::cout << "[WARNING][Participant: " << id_
+                << "] Interruption: Land in stand." << std::endl;
       // check if a stand is registered
       if (!(stand_ == nullptr)) {
         // change state to airborne
@@ -123,23 +128,23 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       } else {
         std::cout << "[ERROR][Participant: " << id_
                   << "] No stand registered! Activate hover mode." << std::endl;
-        hover();
+        hover(); // TODO
       }
 
       break;
 
     case State::emg_land:
-      // error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Activate Failsafe: Emergency Land." << std::endl;
+      // warning
+      std::cout << "[WARNING][Participant: " << id_
+                << "] Interruption: Emergency Land." << std::endl;
       emergencyLand();
       exit(0);
       break;
 
     case State::hover:
       // Error
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Activate Failsafe: Hover." << std::endl;
+      std::cout << "[WARNING][Participant: " << id_
+                << "] Interruption: Hover." << std::endl;
       hover();
       break;
     }
@@ -159,13 +164,15 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
       // return from the function direclty
       return result;
     } else {
+      // TODO send pos cmd
+      sendPosCmd(x_ref, y_ref, z_ref, yaw_ref);
       // send new pos_cmd if position hasn't been reached
-      pos_cmd_.position.x = x_ref;
-      pos_cmd_.position.y = y_ref;
-      pos_cmd_.position.z = z_ref;
-      pos_cmd_.yaw_angle = yaw_ref;
-      // publish pos_cmd
-      position_pub_->publish(pos_cmd_);
+      // pos_cmd_.position.x = x_ref;
+      // pos_cmd_.position.y = y_ref;
+      // pos_cmd_.position.z = z_ref;
+      // pos_cmd_.yaw_angle = yaw_ref;
+      // // publish pos_cmd
+      // position_pub_->publish(pos_cmd_);
     }
 
     // control frequency
