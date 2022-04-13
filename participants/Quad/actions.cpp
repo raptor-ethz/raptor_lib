@@ -136,6 +136,9 @@ bool Quad::takeOff() {
 
   state_ = State::initialized;
 
+  // TODO DEBUG
+  std::cout << "Stand height: " << pose_.position.z << std::endl;
+
   /* ARM */
   // info
   if (console_state_ <= 1) {
@@ -298,11 +301,6 @@ void Quad::land(Item &stand) {
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
           stand.getPose().position.z - 0.3, stand.getPose().orientation.yaw,
           2000, false);
-
-  // terminate offboard
-  pos_cmd_.header.description = "break";
-  position_pub_->publish(pos_cmd_);
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
   // default land command
   px4_action_cmd_.action = Action_cmd::act_land;
