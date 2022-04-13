@@ -1,16 +1,16 @@
-Implement raptor msgs in
-- logger
+First priority:
+- test home position
+- test offboard break
+- test px4 automatic failsafe if local pos is lost
+- mocap checks in px4 mocap pub
+- failsafe tests
+- discuss flight mode change necessity?
 
-Check integration in interface
-- how is the feedback sent?
-- check action in offboard loop
-- reset action command when offboard is trigerred
 
-mocap checks in onboard px4_mocap_pub
-
-Quad::land sequence
-- actions.243 -> message to terminate offboard
-- actions.231 -> check offset, and wait if not within tolerance
+Second priority:
+- tune landing offset limit
+- console log implementation
+- add raptor messages in logger
 
 Check interface conversion long to int
 
