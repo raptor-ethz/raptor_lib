@@ -17,6 +17,11 @@ void Quad::emergencyLand()
 
 void Quad::hover()
 {
+  // TODO temporary fix
+  px4_action_cmd_.action = Action_cmd::act_land; // TODO -> does it work?
+  px4_action_pub_->publish(px4_action_cmd_);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  exit(0);
   // send hover command
   px4_action_cmd_.action = Action_cmd::act_hover; // TODO -> does it work?
   px4_action_pub_->publish(px4_action_cmd_);
