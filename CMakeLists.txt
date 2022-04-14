@@ -20,3 +20,4 @@ add_subdirectory(participants)
 # add_subdirectory(logger) TODO
 add_subdirectory(trajectories)
 # add_subdirectory(test)
+add_subdirectory(include)

@@ -20,53 +20,38 @@ Status Quad::getStatus() {
 }
 
 bool Quad::initializeInterfacePub() {
-  // info
-  std::cout << "[INFO][Participant: " << id_ << "] "
-            << "Initializing interface-publisher." << std::endl;
+  consoleInformation("Initializing interface publisher");
+  // define max tries
+  const int n = 5;
 
-  // check if publisher matched for max 5 times (3 seconds each)
-  for (int i = 0; !px4_action_pub_->listener.matched() ||
+  // check if publisher matched for max n times (3 seconds each)
+  // exit loop if both matched
+  for (int i = 1; !px4_action_pub_->listener.matched() ||
                   !position_pub_->listener.matched();
        ++i) {
-    // exit loop if both matched
-    if (i == 4) {
-      // warning
-      std::cout
-          << "[WARNING][Participant: " << id_
-          << "] Interface-Publisher did not match (check that position control "
-             "interface is running)."
-          << std::endl;
-      // error if subscriber didn't match after 10 tries
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Interface-Publisher did not match." << std::endl;
+    if (i == n) {
+      // error if subscriber didn't match after n tries
+      consoleError("Failed to match interface publisher.");
       return false;
     }
-    std::cout << "Rerunning initialization in 3 seconds (remaining tries: "
-              << 4 - i << ")." << std::endl;
+    consoleWarning("Interface publisher did not match. Check that position "
+                   "control interface is running.");
+    consoleWarning("Rerunning initialization in 3 seconds (remaining tries: "
+                   + std::to_string(n - i) + ").");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   }
 
-  // info
-  std::cout << "[INFO][Participant: " << id_ << "] "
-            << "Interface publisher matched." << std::endl;
-
+  consoleInformation("Interface publisher matched.");
   return true;
 }
 
 bool Quad::takeOff() {
   /* PREFLIGHT CHECKS */
-  // info
-  if (console_state_ <= 1) {
-    std::cout << "[INFO][Participant: " << id_ << "] Running preflight checks."
-              << std::endl;
-  }
+  consoleInformation("Running prefilght checks.");
 
   // initialize mocap subscriber
   if (!initializeMocapSub()) {
-    // error
-    std::cout << "[ERROR][Participant: " << id_
-              << "] Takeoff denied: Mocap-Subscriber initialization failed."
-              << std::endl;
+    consoleError("Takeoff denied: Motion Capture Subscriber Initialization failed.");
     return false;
   }
 
