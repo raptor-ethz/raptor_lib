@@ -9,7 +9,13 @@
 
 #include <atomic>
 
-enum ConsoleState { debug, info, warning, error };
+enum ConsoleState {
+  console_debug,
+  console_info,
+  console_warning,
+  console_error,
+  console_none
+};
 
 namespace raptor {
 
@@ -42,14 +48,22 @@ public:
    */
   bool checkMocapData();
 
+  // getters
+
   virtual const cpp_msg::Mocap_msg &getPose() { return pose_; }
 
   virtual const std::string &getId() { return id_; }
 
+  // console
+  void consoleDebug(std::string &log, const std::string &message);
+  void consoleInformation(std::string &log, const std::string &message);
+  void consoleWarningTest(std::string &log, const std::string &message);
+  void consoleErrorTest(std::string &log, const std::string &message);
+
 protected:
   std::string id_ = "N/A";
   std::string *log_{nullptr};
-  ConsoleState console_state_{debug};
+  ConsoleState console_state_{console_debug};
 
   cpp_msg::Mocap_msg pose_{};
   int missed_frames_{0};
