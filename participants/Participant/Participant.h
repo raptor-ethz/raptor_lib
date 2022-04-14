@@ -55,10 +55,10 @@ public:
   virtual const std::string &getId() { return id_; }
 
   // console
-  void consoleDebug(std::string &log, const std::string &message);
-  void consoleInformation(std::string &log, const std::string &message);
-  void consoleWarning(std::string &log, const std::string &message);
-  void consoleError(std::string &log, const std::string &message);
+  void consoleDebug(std::string *const log, const std::string &message);
+  void consoleInformation(std::string *const log, const std::string &message);
+  void consoleWarning(std::string *const log, const std::string &message);
+  void consoleError(std::string *const log, const std::string &message);
 
 protected:
   std::string id_ = "N/A";
