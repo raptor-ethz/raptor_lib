@@ -18,7 +18,7 @@ void raptor::Participant::consoleInformation(std::string &log, const std::string
   }
 }
 
-void raptor::Participant::consoleWarningTest(std::string &log, const std::string &message) {
+void raptor::Participant::consoleWarning(std::string &log, const std::string &message) {
   log += "[" + getTime() + "|WARNING][" + id_ + "] " + message + '\n';
 
   if (console_state <= 2) {
@@ -27,7 +27,7 @@ void raptor::Participant::consoleWarningTest(std::string &log, const std::string
   }
 }
 
-void raptor::Participant::consoleErrorTest(std::string &log, const std::string &message)
+void raptor::Participant::consoleError(std::string &log, const std::string &message)
 {
   log += "[" + getTime() + "|ERROR][" + id_ + "] " + message + '\n';
 

@@ -57,8 +57,8 @@ public:
   // console
   void consoleDebug(std::string &log, const std::string &message);
   void consoleInformation(std::string &log, const std::string &message);
-  void consoleWarningTest(std::string &log, const std::string &message);
-  void consoleErrorTest(std::string &log, const std::string &message);
+  void consoleWarning(std::string &log, const std::string &message);
+  void consoleError(std::string &log, const std::string &message);
 
 protected:
   std::string id_ = "N/A";
