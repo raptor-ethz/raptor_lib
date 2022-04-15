@@ -1,9 +1,8 @@
 #include "Quad.h"
 
-void Quad::emergencyLand()
-{
-  if (gripper_ != nullptr)
-  {
+void Quad::emergencyLand() {
+  if (gripper_ != nullptr) {
+    consoleDebug("Opening gripper.");
     gripper_->setAngleSym(gripper_->getMaxAngle());
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
@@ -11,43 +10,44 @@ void Quad::emergencyLand()
   // default land command
   px4_action_cmd_.action = Action_cmd::act_land;
   px4_action_pub_->publish(px4_action_cmd_);
-  std::cout << "[WARNING][Participand: " << id_
-            << "] Default land now." << std::endl;
+  consoleDebug("Default land.");
+  std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 }
 
 void Quad::hover()
 {
-  // TODO temporary fix
-  px4_action_cmd_.action = Action_cmd::act_land; // TODO -> does it work?
-  px4_action_pub_->publish(px4_action_cmd_);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  exit(0);
-  // send hover command
-  px4_action_cmd_.action = Action_cmd::act_hover; // TODO -> does it work?
-  px4_action_pub_->publish(px4_action_cmd_);
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
-  // advise
+  // stay at current position
+  goToPos(pose_.position.x, pose_.position.y, pose_.position.z,
+          pose_.orientation.yaw, 4000, false);
+
+  // advise next action
   std::string input;
-  while (true)
-  {
-    std::cout << "Advise next action [e = emergency land, q = quit]: ";
+  while (true) {
+    std::cout << "Advise next action [c = continue, e = emergency land, q = "
+                 "quit]: ";
     getline(std::cin, input);
-    if (input.length() > 1)
-    {
-      std::cout << "Enter 1 character only!" << std::endl;
+
+    // check input length
+    if (input.length() != 1) {
+      std::cout << "Enter exactly 1 character!" << std::endl;
       continue;
     }
-    switch (input.at(0))
-    {
+    
+    switch (input.at(0)) {
     // emergency land
     case 'e':
-      std::cout << "Sending emergency land command." << std::endl;
+      consoleWarning("Sending emergency land command.");
       emergencyLand();
-      // break;
-    // quit
-    case 'q':
-      std::cout << "Exiting programm." << std::endl;
       exit(0);
+      // break;
+
+    case 'q':
+      consoleWarning("Exiting programm.");
+      exit(0);
+
+    case 'c':
+      consoleWarning("Continue mission.");
+      return;
 
     default:
       std::cout << "Unknown command: " << input << std::endl;
