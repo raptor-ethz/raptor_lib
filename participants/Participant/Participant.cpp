@@ -56,8 +56,7 @@ bool raptor::Participant::initializeMocapSub() {
   }
 
   // check data quality for max n times (3 seconds each)
-  // define max tries
-  const int n = 5;
+  // use max tries from above
   for (int i = 1;; ++i) {
     mocap_sub_->listener->wait_for_data_for_ms(100);
     // break if data is good

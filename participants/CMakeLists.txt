@@ -7,7 +7,8 @@ target_sources(raptor_lib PRIVATE
 #Gripper
 target_include_directories(raptor_lib PUBLIC Gripper)
 target_sources(raptor_lib PRIVATE
-    Gripper/Gripper.cpp)
+    Gripper/Gripper.cpp
+    Gripper/console.cpp)
 
 #Item
 target_include_directories(raptor_lib PUBLIC Item)

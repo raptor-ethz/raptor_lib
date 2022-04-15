@@ -1,9 +1,10 @@
 #include "Gripper.h"
 
-Gripper::Gripper(const std::string &raptor_participant_id,
+Gripper::Gripper(const std::string &raptor_participant_id, std::string *const log,
                  std::unique_ptr<DefaultParticipant> &dp,
                  const std::string &pub_topic_name) {
   id_ = raptor_participant_id;
+  log_ = log;
   grip_action_pub_ = new DDSPublisher(idl_msg::RotGripCmd_msgPubSubType(),
                                       pub_topic_name, dp->participant());
   grip_sensor_sub_ =
@@ -18,7 +19,7 @@ void Gripper::setAngleSym(int angle) {
   // TODO change to feedback
   if (angle <= 0 || angle >= MAX_ANGLE) {
     consoleError("Requested angle is invalid (requested " +
-                 std::to_string(front_angle) + ", must be between [0, " +
+                 std::to_string(angle) + ", must be between [0, " +
                  std::to_string(MAX_ANGLE) + "]).");
     return;
   }
