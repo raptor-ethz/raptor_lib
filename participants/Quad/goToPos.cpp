@@ -31,10 +31,9 @@ bool Quad::sendPosCmd(const int x, const int y, const int z, const int yaw) {
   //   std::cout << "[ERROR][Participant: " << id_
   //             << "] Position Command not feasible." << std::endl;
   //   return false;
-  // } 
+  // }
   if (x < 0.001 && y < 0.001 && z < 0.001) {
-    std::cout << "[ERROR][Participant: " << id_
-              << "] Position Command not feasible." << std::endl;
+    consoleError("Position command not feasible (0).");
     return false;
   }
 
@@ -54,13 +53,10 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const float &y_thresh, const float &z_thresh,
                    const int &delay_time, const float &max_time,
                    const bool &reached_pos_flag) {
-
-  // DEBUG
-  if (console_state_ == 0) {
-    std::cout << "[DEBUG][Participant: " << id_ << "] Go to position: [\t"
-              << x_ref << ",\t" << y_ref << ",\t" << z_ref << "\t] during max "
-              << max_time << "ms." << std::endl;
-  }
+  consoleDebug("Going to position: [" + std::to_string(x_ref) + ", " +
+               std::to_string(y_ref) + ", " + std::to_string(z_ref) + ", " +
+               std::to_string(yaw_ref) + "] during max" +
+               std::to_string(max_time) + "ms.");
 
   // timestamp
   std::chrono::time_point<std::chrono::steady_clock> loop_timer;
@@ -104,9 +100,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 
     // check if interface is matched
     while (!px4_action_pub_->listener.matched()) {
-      std::cout << "[ERROR][Participant: " << id_
-                << "] Connection to PX4-Interface lost. Reconnecting..."
-                << std::endl;
+      consoleError("Connection to PX4 interface lost. Reconnecting...");
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
@@ -114,11 +108,9 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     // TODO move out to (reusable) separate function
     switch (state_) {
     case State::land:
-      // warning
-      std::cout << "[WARNING][Participant: " << id_
-                << "] Interruption: Land in stand." << std::endl;
+      consoleWarning("Flag interruption: Land in stand.");
       // check if a stand is registered
-      if (!(stand_ == nullptr)) {
+      if (stand_ != nullptr) {
         // change state to airborne
         state_ = State::airborne;
         // call land
@@ -126,25 +118,20 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
         // exit programm
         exit(0);
       } else {
-        std::cout << "[ERROR][Participant: " << id_
-                  << "] No stand registered! Activate hover mode." << std::endl;
-        hover(); // TODO
+        consoleError("No stand registered. Activate hover mode.");
+        state_ = State::hover;
+        hover();
       }
-
       break;
 
     case State::emg_land:
-      // warning
-      std::cout << "[WARNING][Participant: " << id_
-                << "] Interruption: Emergency Land." << std::endl;
+      consoleWarning("Flag interruption: Emergency land.");
       emergencyLand();
       exit(0);
       break;
 
     case State::hover:
-      // Error
-      std::cout << "[WARNING][Participant: " << id_
-                << "] Interruption: Hover." << std::endl;
+      consoleWarning("Flag interruption: Hover.");
       hover();
       break;
     }
@@ -154,14 +141,11 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
         checkReachedPos3D(pose_.position.x, x_ref, x_thresh, pose_.position.y,
                           y_ref, y_thresh, pose_.position.z, z_ref, z_thresh);
 
+    // return if position is reached and return is desired
     if (result && reached_pos_flag) {
-      // DEBUG
       if (console_state_ == 0) {
-        std::cout << "[DEBUG][Participant: " << id_
-                  << "] Position reached before time limit." << std::endl;
+        consoleDebug("Position reached before time limit.");
       }
-
-      // return from the function direclty
       return result;
     } else {
       // TODO send pos cmd
@@ -180,34 +164,29 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     std::this_thread::sleep_until(loop_timer);
   }
 
-  // DEBUG
-  if (console_state_ == 0) {
-    std::cout << "[DEBUG][Participant: " << id_ << "] ";
-    if (result) {
-      std::cout << "Position reached after time limit." << std::endl;
-    } else {
-      std::cout << "Position was not reached within time limit." << std::endl;
-    }
+  if (result) {
+    consoleDebug("Position reached after time limit.");
+  } else {
+    consoleDebug("Position not reached within time limit.");
   }
-
   return result;
 }
 
-// using default threshold
 bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const float &yaw_ref, const int &delay_time,
                    const float &max_time, const bool &reached_pos_flag) {
   return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_, z_thresh_,
                  delay_time, max_time, reached_pos_flag);
 }
+// using default threshold
 
-// using default threshold and delay
 bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const float &yaw_ref, const float &max_time,
                    const bool &reached_pos_flag) {
   return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_, z_thresh_,
                  delay_time_, max_time, reached_pos_flag);
 }
+// using default threshold and delay
 
 bool Quad::goToPos(Item &target, const float &x_offset, const float &y_offset,
                    const float &z_offset, const float &yaw_ref,
@@ -217,3 +196,4 @@ bool Quad::goToPos(Item &target, const float &x_offset, const float &y_offset,
                  target.getPose().position.z + z_offset, yaw_ref, x_thresh_,
                  y_thresh_, z_thresh_, delay_time_, max_time, reached_pos_flag);
 }
+// go to target object with offset, default thresh and delay
