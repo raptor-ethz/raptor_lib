@@ -23,19 +23,18 @@ bool raptor::Participant::checkMocapData() {
 bool raptor::Participant::initializeMocapSub() {
   consoleInformation("Initializing motion capture subscriber");
 
+  // check if subscriber matched for max n times (3 seconds each)
   // define max tries
   const int n = 5;
-
-  // check if subscriber matched for max n times (3 seconds each)
   for (int i = 1; !mocap_sub_->listener->matched(); ++i) {
-    // return after the n-th try
+    // return error after the n-th try
     if (i == n) {
       consoleError("Initialization failed: Failed to match motion capture subscriber.");
       return false;
     }
     // rerun checks
     consoleWarning("Motion capture subscriber did not match (check that "
-                   "mocap_pub is running).");
+                   "mocap_publisher is running).");
     consoleWarning("Rerunning initialization in 3 seconds (remaining tries: " +
                    std::to_string(n - i) + ").");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -56,19 +55,18 @@ bool raptor::Participant::initializeMocapSub() {
     checkMocapData();
   }
 
+  // check data quality for max n times (3 seconds each)
   // define max tries
   const int n = 5;
-
-  // check data quality for max n times (3 seconds each)
   for (int i = 1;; ++i) {
     mocap_sub_->listener->wait_for_data_for_ms(100);
     // break if data is good
     if (checkMocapData()) {
       break;
     }
-    // return after the n-th try
+    // return error after the n-th try
     if (i == n) {
-      consoleError("Initialization failed: Bbad motion capture data.");
+      consoleError("Initialization failed: Bad motion capture data.");
       return false;
     }
     // rerun checks
