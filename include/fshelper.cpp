@@ -72,7 +72,7 @@ std::string getPath(const std::string &path, const std::string &filename,
     }
   }
   file_path += type;
-
+  std::cout << file_path << std::endl; // TODO
   return file_path;
 }
 
@@ -87,5 +87,6 @@ bool saveLog(const std::string &text) {
   }
   ofs << text;
   ofs.close();
+  std::cout << "Saving successful." << std::endl; // TODO
   return true;
 }
