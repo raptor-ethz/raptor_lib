@@ -167,7 +167,7 @@ bool Quad::takeOff() {
   }
   // wait until at least 1m height was reached
   for(int i = 1; pose_.position.z < 1; ++i) {
-    consoleWarning("Insufficient height for offboard activation. Retry in 3 seconds");
+    consoleWarning("Insufficient height for offboard (" + std::to_string(pose_.position.z) + "). Retry in 3 seconds");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   }
 

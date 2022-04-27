@@ -55,7 +55,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const bool &reached_pos_flag) {
   consoleDebug("Going to position: [" + std::to_string(x_ref) + ", " +
                std::to_string(y_ref) + ", " + std::to_string(z_ref) + ", " +
-               std::to_string(yaw_ref) + "] during max" +
+               std::to_string(yaw_ref) + "] during max " +
                std::to_string(max_time) + "ms.");
 
   // timestamp
@@ -119,7 +119,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
         exit(0);
       } else {
         consoleError("No stand registered. Activate hover mode.");
-        state_ = State::hover;
+        state_ = State::airborne;
         hover();
       }
       break;
@@ -132,6 +132,7 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 
     case State::hover:
       consoleWarning("Flag interruption: Hover.");
+      state_ = State::airborne;
       hover();
       break;
     }
