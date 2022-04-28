@@ -22,7 +22,7 @@ bool checkReachedPos3D(const float &x_actual, const float &x_ref,
 
 /* Member functions */
 
-bool Quad::sendPosCmd(const int x, const int y, const int z, const int yaw) {
+bool Quad::sendPosCmd(const float x_ref, const float y_ref, const float z_ref, const float yaw) {
   // TODO feasibility checks
   // int X_MIN, X_MAX, Y_MIN, Y_MAX, Z_MIN, Z_MAX;
 
@@ -32,14 +32,20 @@ bool Quad::sendPosCmd(const int x, const int y, const int z, const int yaw) {
   //             << "] Position Command not feasible." << std::endl;
   //   return false;
   // }
+
+  // get absolute values
+  const float x = (x_ref > 0) ? x_ref : -x_ref;
+  const float y = (y_ref > 0) ? y_ref : -y_ref;
+  const float z = (z_ref > 0) ? z_ref : -z_ref;
+
   if (x < 0.001 && y < 0.001 && z < 0.001) {
     consoleError("Position command not feasible (0).");
     return false;
   }
 
-  pos_cmd_.position.x = x;
-  pos_cmd_.position.y = y;
-  pos_cmd_.position.z = z;
+  pos_cmd_.position.x = x_ref;
+  pos_cmd_.position.y = y_ref;
+  pos_cmd_.position.z = z_ref;
   pos_cmd_.yaw_angle = yaw;
   // publish pos_cmd
   position_pub_->publish(pos_cmd_);
@@ -66,9 +72,9 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
   for (float t = 0; t < max_time; t += delay_time) {
     // get start time
     loop_timer = std::chrono::steady_clock::now();
-    // check mocap
+    // check mocap TODO
     if (!checkMocapData()) {
-      state_ = State::hover;
+      // state_ = State::hover;
     }
     // check external message
     // check if subscriber is connected, otherwise skip
