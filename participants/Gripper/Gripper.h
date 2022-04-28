@@ -9,7 +9,8 @@
 #include "subscriber.h"
 
 // TODO
-enum GripperConsoleState {
+enum GripperConsoleState
+{
   gripper_console_debug,
   gripper_console_info,
   gripper_console_warning,
@@ -34,6 +35,7 @@ public:
   void setAngleAsym(int front_angle, int back_angle);
 
   void triggerGripper();
+  void stopTriggerGripper();
 
   void updateSensor();
 
@@ -60,6 +62,6 @@ private:
   // sensor values
 
   // TODO
-  const int MAX_ANGLE = 85;
+  const int MAX_ANGLE = 90;
   const std::string SENSOR_TOPIC_ = "gripper_sensor_msg";
 };
