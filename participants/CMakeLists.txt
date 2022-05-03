@@ -20,6 +20,11 @@ target_include_directories(raptor_lib PUBLIC Obstacle)
 target_sources(raptor_lib PRIVATE
     Obstacle/Obstacle.cpp)
 
+#a star
+target_include_directories(raptor_lib PUBLIC Planner)
+target_sources(raptor_lib PRIVATE
+    Planner/Astar.cpp)
+
 #Quad
 target_include_directories(raptor_lib PUBLIC Quad)
 target_sources(raptor_lib PRIVATE

@@ -3,6 +3,7 @@
 #include "Gripper.h"
 #include "Item.h"
 #include "Participant.h"
+#include "Astar.h"
 
 #include "QuadAction_msg.h"
 #include "QuadAction_msgPubSubTypes.h"
@@ -17,10 +18,12 @@
 #include "Vec3.h"
 
 #include <chrono>
+#include <vector>
 
 /* Non-member variables */
 
-enum State {
+enum State
+{
   uninitialized,
   initialized,
   armed,
@@ -30,14 +33,16 @@ enum State {
   hover
 };
 
-struct Status {
+struct Status
+{
   bool feedback{false};
   bool armable{false};
   bool local_position{false};
   int battery{0};
 };
 
-class Quad : public raptor::Participant {
+class Quad : public raptor::Participant
+{
 public:
   Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
@@ -181,8 +186,11 @@ public:
   void place(Item &target, Gripper &gripper, float dx, float dy, float dz,
              float h0);
 
+  void goToPosAstar(std::vector<float> start_coords, std::vector<float> end_coords, std::vector<std::vector<float>> obs_coords);
+
   void setDefaultThreshold(const float x_thresh, const float y_thresh,
-                           const float z_thresh) {
+                           const float z_thresh)
+  {
     x_thresh_ = x_thresh;
     y_thresh_ = y_thresh;
     z_thresh_ = z_thresh;

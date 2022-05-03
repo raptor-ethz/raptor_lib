@@ -27,10 +27,10 @@ bool checkReachedPos3D(const float &x_actual, const float &x_ref,
 bool Quad::sendPosCmd(const float x_ref, const float y_ref, const float z_ref, const float yaw)
 {
   // TODO feasibility checks
-  // int X_MIN, X_MAX, Y_MIN, Y_MAX, Z_MIN, Z_MAX;
+  // int X_std::MIN, X_std::MAX, Y_std::MIN, Y_std::MAX, Z_std::MIN, Z_std::MAX;
 
-  // if (x < X_MIN || x > X_MAX || y < Y_MIN || y > Y_MAX || z < Z_MIN ||
-  //     z > Z_MAX) {
+  // if (x < X_std::MIN || x > X_std::MAX || y < Y_std::MIN || y > Y_std::MAX || z < Z_std::MIN ||
+  //     z > Z_std::MAX) {
   //   std::cout << "[ERROR][Participant: " << id_
   //             << "] Position Command not feasible." << std::endl;
   //   return false;
@@ -229,3 +229,159 @@ bool Quad::goToPos(Item &target, const float &x_offset, const float &y_offset,
                  y_thresh_, z_thresh_, delay_time_, max_time, reached_pos_flag);
 }
 // go to target object with offset, default thresh and delay
+
+///////////////////////////////////////////////////////////////////////TEMP -> will go to astar constructor
+
+int gridx_size = 4, gridy_size = 4, gridz_size = 4;
+
+// TODO: floor might not be imported yet, test
+std::vector<int> convertPositionToGrid(std::vector<float> grid_start, std::vector<float> grid_end, std::vector<float> point)
+{
+  float x_0 = grid_start[0], x_1 = grid_end[0], y_0 = grid_start[1], y_1 = grid_end[1], z_0 = grid_start[2], z_1 = grid_end[2];
+  float step_x = (x_1 - x_0) / gridx_size, step_y = (y_1 - y_0) / gridy_size, step_z = (z_1 - z_0) / gridz_size;
+  return {(int)floor((point[0] + 0.01 - x_0) / step_x), (int)floor((point[1] + 0.01 - y_0) / step_y), (int)floor((point[2] + 0.01 - z_0) / step_z)};
+}
+
+std::vector<float> convertGridToPosition(std::vector<float> grid_start, std::vector<float> grid_end, std::vector<int> point)
+{
+  float x_0 = grid_start[0], x_1 = grid_end[0], y_0 = grid_start[1], y_1 = grid_end[1], z_0 = grid_start[2], z_1 = grid_end[2];
+  float step_x = (x_1 - x_0) / gridx_size, step_y = (y_1 - y_0) / gridy_size, step_z = (z_1 - z_0) / gridz_size;
+  return {x_0 + point[0] * step_x, y_0 + point[1] * step_y, z_0 + point[2] * step_z};
+}
+
+int pointToVertex(const std::vector<int> &point)
+{
+  return point[0] * gridy_size + point[1];
+}
+
+int pointToVertex3D(const std::vector<int> &point)
+{
+  return point[0] * gridy_size * gridz_size + point[1] * gridz_size + point[2];
+}
+
+std::vector<int> vertexToPoint(int vertex)
+{
+  std::vector<int> result = {vertex / gridy_size, vertex % gridy_size};
+  return result;
+}
+
+std::vector<int> vertexToPoint3D(int vertex)
+{
+  std::vector<int> result = {vertex / (gridz_size * gridy_size), (vertex / gridz_size) % gridy_size, vertex % gridz_size};
+  return result;
+}
+
+/// TODO assert if drone is in blocked position
+void initializeGrid(const std::vector<std::vector<int>> &points,
+                    std::vector<std::vector<int>> &grid)
+{
+  for (int i = 0; i < gridx_size; ++i)
+  {
+    std::vector<int> row;
+    for (int j = 0; j < gridy_size; ++j)
+    {
+      row.push_back(0);
+    }
+    grid.push_back(row);
+  }
+
+  for (int i = 0, n = points.size(); i < n; ++i)
+  {
+    int x = points[i][0];
+    int y = points[i][1];
+    grid[x][y] = 1;
+  }
+}
+
+void initializeGrid(const std::vector<std::vector<int>> &points,
+                    std::vector<std::vector<std::vector<int>>> &grid)
+{
+  // initialize grid
+  for (int i = 0; i < gridx_size; ++i)
+  {
+    std::vector<std::vector<int>> row;
+    for (int j = 0; j < gridy_size; ++j)
+    {
+      std::vector<int> height;
+      for (int k = 0; k < gridz_size; ++k)
+      {
+        height.push_back(0);
+      }
+      row.push_back(height);
+    }
+    grid.push_back(row);
+  }
+
+  for (int i = 0, n = points.size(); i < n; ++i)
+  {
+    int x = points[i][0], y = points[i][1], z = points[i][2];
+    grid[x][y][z] = 1;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////TEMP
+
+// go to position with a_star pathplanning
+void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_coords, std::vector<std::vector<float>> obs_coords)
+{
+  // grid
+  std::vector<std::vector<std::vector<int>>> grid;
+
+  // start / ending
+  std::vector<float>
+      grid_start = {std::min(start_coords[0], end_coords[0]) - 1, std::min(start_coords[1], end_coords[1]) - 1, std::min(start_coords[2], end_coords[2]) - 1};
+  std::vector<float> grid_end = {std::max(start_coords[0], end_coords[0]) + 1, std::max(start_coords[1], end_coords[1]) + 1, std::max(start_coords[2], end_coords[2]) + 1};
+
+  std::vector<int> start = convertPositionToGrid(grid_start, grid_end, start_coords);
+  std::vector<int> end = convertPositionToGrid(grid_start, grid_end, end_coords);
+
+  std::vector<std::vector<int>> coords;
+  for (int i = 0, n = obs_coords.size(); i < n; ++i)
+    coords.push_back(convertPositionToGrid(grid_start, grid_end, obs_coords[i]));
+
+  for (int i = 0; i < gridx_size; i++)
+  {
+    std::vector<std::vector<int>> tmp2D;
+    for (int j = 0; j < gridy_size; j++)
+    {
+      std::vector<int> tmp1D;
+      for (int k = 0; k < gridz_size; k++)
+      {
+        tmp1D.push_back(0);
+      }
+      tmp2D.push_back(tmp1D);
+    }
+    grid.push_back(tmp2D);
+  }
+
+  initializeGrid(coords, grid);
+
+  // graph
+  Astar solver(grid, false);
+
+  // std::chrono::steady_clock::time_point start_astar =
+  // std::chrono::steady_clock::now();
+  std::vector<int> vertices_astar =
+      solver.astarPath(pointToVertex3D(start), pointToVertex3D(end));
+  // std::chrono::steady_clock::time_point end_astar =
+  // std::chrono::steady_clock::now(); std::cout << "A* time difference: " <<
+  // std::chrono::duration_cast<std::chrono::milliseconds>(end_astar -
+  // start_astar).count() << " milliseconds.\n";
+  // assert(vertices_astar == vertices_dijkstra);
+  std::vector<int> prev = vertexToPoint3D(vertices_astar[0]);
+  for (int i = 1, n = vertices_astar.size(); i < n; ++i)
+  {
+    std::vector<int> point_grid = vertexToPoint3D(vertices_astar[i]);
+    if (abs(point_grid[0] - prev[0]) + abs(point_grid[1] - prev[1]) + abs(point_grid[2] - prev[2]) == 1)
+    {
+      prev = {point_grid[0], point_grid[1], point_grid[2]};
+      continue;
+    }
+    std::vector<float> point = convertGridToPosition(grid_start, grid_end, point_grid);
+    // std::cout<<"x: "<<x_0 + point[0]*stepSize<<std::endl;
+    // std::cout<<"y: "<<y_0 + point[1]*stepSize<<std::endl;
+    // std::cout<<"z: "<<z_0 + point[2]*stepSize<<std::endl;
+    goToPos(point[0], point[1], point[2], 0,
+            3000, false);
+  }
+}

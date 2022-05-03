@@ -17,7 +17,9 @@ public:
     ~Obstacle();
 
     const cpp_msg::MocapMarker_msg &getMarkers() { return markers_; }
+    const std::string &getId() { return id_; }
 
 private:
+    std::string id_ = "N/A";
     cpp_msg::MocapMarker_msg markers_{};
 };
