@@ -322,8 +322,16 @@ void initializeGrid(const std::vector<std::vector<int>> &points,
 ///////////////////////////////////////////////////////////////////////TEMP
 
 // go to position with a_star pathplanning
-void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_coords, std::vector<std::vector<float>> obs_coords)
+void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_coords, Obstacle obstacle)
 {
+  // put
+  std::vector<std::vector<float>> obs_coords;
+  for (int i = 0; i < obstacle.getMarkers().length; i++)
+  {
+    std::vector<float> coord{obstacle.getMarkers().marker_x[i], obstacle.getMarkers().marker_y[i], obstacle.getMarkers().marker_z[i]};
+    obs_coords.push_back(coord);
+  }
+
   // grid
   std::vector<std::vector<std::vector<int>>> grid;
 

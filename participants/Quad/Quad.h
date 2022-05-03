@@ -4,6 +4,7 @@
 #include "Item.h"
 #include "Participant.h"
 #include "Astar.h"
+#include "Obstacle.h"
 
 #include "QuadAction_msg.h"
 #include "QuadAction_msgPubSubTypes.h"
@@ -186,7 +187,7 @@ public:
   void place(Item &target, Gripper &gripper, float dx, float dy, float dz,
              float h0);
 
-  void goToPosAstar(std::vector<float> start_coords, std::vector<float> end_coords, std::vector<std::vector<float>> obs_coords);
+  void goToPosAstar(std::vector<float> start_coords, std::vector<float> end_coords, Obstacle obstacle);
 
   void setDefaultThreshold(const float x_thresh, const float y_thresh,
                            const float z_thresh)
