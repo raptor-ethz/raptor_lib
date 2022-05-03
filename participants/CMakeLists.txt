@@ -15,6 +15,11 @@ target_include_directories(raptor_lib PUBLIC Item)
 target_sources(raptor_lib PRIVATE
     Item/Item.cpp)
 
+#Obstacle
+target_include_directories(raptor_lib PUBLIC Obstacle)
+target_sources(raptor_lib PRIVATE
+    Obstacle/Obstacle.cpp)
+
 #Quad
 target_include_directories(raptor_lib PUBLIC Quad)
 target_sources(raptor_lib PRIVATE
