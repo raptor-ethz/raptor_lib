@@ -369,8 +369,8 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
 
   // start / ending
   std::vector<float>
-      grid_start = {std::min(start_coords[0], std::min(end_coords[0], min_values[0])) - 1, std::min(start_coords[1], std::min(end_coords[1], min_values[1])) - 1, std::min(start_coords[2], std::min(end_coords[2], min_values[2])) - 1};
-  std::vector<float> grid_end = {std::max(start_coords[0], std::max(end_coords[0], max_values[0])) + 1, std::max(start_coords[1], std::max(end_coords[1], max_values[1])) + 1, std::max(start_coords[2], std::max(end_coords[2], max_values[2])) + 1};
+      grid_start = {std::min(start_coords[0], std::min(end_coords[0], min_values[0])) - 5, std::min(start_coords[1], std::min(end_coords[1], min_values[1])) - 5, std::min(start_coords[2], std::min(end_coords[2], min_values[2])) - 5};
+  std::vector<float> grid_end = {std::max(start_coords[0], std::max(end_coords[0], max_values[0])) + 5, std::max(start_coords[1], std::max(end_coords[1], max_values[1])) + 5, std::max(start_coords[2], std::max(end_coords[2], max_values[2])) + 5};
 
   std::vector<int> start = convertPositionToGrid(grid_start, grid_end, start_coords);
   std::vector<int> end = convertPositionToGrid(grid_start, grid_end, end_coords);
@@ -408,15 +408,19 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
   // std::chrono::duration_cast<std::chrono::milliseconds>(end_astar -
   // start_astar).count() << " milliseconds.\n";
   // assert(vertices_astar == vertices_dijkstra);
+  if (vertices_astar.size() == 0) {
+    return;
+  }
   std::vector<int> prev = vertexToPoint3D(vertices_astar[0]);
   for (int i = 1, n = vertices_astar.size(); i < n; ++i)
   {
+    std::cout << "sending a pos cmd \n";
     std::vector<int> point_grid = vertexToPoint3D(vertices_astar[i]);
-    if (abs(point_grid[0] - prev[0]) + abs(point_grid[1] - prev[1]) + abs(point_grid[2] - prev[2]) == 1)
-    {
-      prev = {point_grid[0], point_grid[1], point_grid[2]};
-      continue;
-    }
+    // if (abs(point_grid[0] - prev[0]) + abs(point_grid[1] - prev[1]) + abs(point_grid[2] - prev[2]) == 1)
+    // {
+    //   prev = {point_grid[0], point_grid[1], point_grid[2]};
+    //   continue;
+    // }
     std::vector<float> point = convertGridToPosition(grid_start, grid_end, point_grid);
     // std::cout<<"x: "<<x_0 + point[0]*stepSize<<std::endl;
     // std::cout<<"y: "<<y_0 + point[1]*stepSize<<std::endl;
