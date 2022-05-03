@@ -1,4 +1,5 @@
 #include "Quad.h"
+#include <climits>
 
 /* Non-member functions */
 
@@ -332,20 +333,51 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
     obs_coords.push_back(coord);
   }
 
+  std::vector<float> min_values, max_values;
+  for (int j = 0; j < 3; ++j)
+  {
+    float min_value = INT_MAX, max_value = INT_MIN;
+    for (int i = 0, n = obs_coords.size(); i < n; ++i)
+    {
+      min_value = std::min(min_value, obs_coords[i][j]);
+      max_value = std::max(max_value, obs_coords[i][j]);
+    }
+    min_values.push_back(min_value);
+    max_values.push_back(max_value);
+  }
+
+  std::vector<std::vector<float>> constraints;
+  float i = min_values[0];
+  while (i <= max_values[0])
+  {
+    float j = min_values[1];
+    while (j <= max_values[1])
+    {
+      float k = min_values[2];
+      while (k <= max_values[2])
+      {
+        constraints.push_back({i, j, k});
+        k += (max_values[2] - min_values[2]) / (2 * gridz_size);
+      }
+      j += (max_values[1] - min_values[1]) / (2 * gridy_size);
+    }
+    i += (max_values[0] - min_values[0]) / (2 * gridx_size);
+  }
+
   // grid
   std::vector<std::vector<std::vector<int>>> grid;
 
   // start / ending
   std::vector<float>
-      grid_start = {std::min(start_coords[0], end_coords[0]) - 1, std::min(start_coords[1], end_coords[1]) - 1, std::min(start_coords[2], end_coords[2]) - 1};
-  std::vector<float> grid_end = {std::max(start_coords[0], end_coords[0]) + 1, std::max(start_coords[1], end_coords[1]) + 1, std::max(start_coords[2], end_coords[2]) + 1};
+      grid_start = {std::min(start_coords[0], std::min(end_coords[0], min_values[0])) - 1, std::min(start_coords[1], std::min(end_coords[1], min_values[1])) - 1, std::min(start_coords[2], std::min(end_coords[2], min_values[2])) - 1};
+  std::vector<float> grid_end = {std::max(start_coords[0], std::max(end_coords[0], max_values[0])) + 1, std::max(start_coords[1], std::max(end_coords[1], max_values[1])) + 1, std::max(start_coords[2], std::max(end_coords[2], max_values[2])) + 1};
 
   std::vector<int> start = convertPositionToGrid(grid_start, grid_end, start_coords);
   std::vector<int> end = convertPositionToGrid(grid_start, grid_end, end_coords);
 
   std::vector<std::vector<int>> coords;
-  for (int i = 0, n = obs_coords.size(); i < n; ++i)
-    coords.push_back(convertPositionToGrid(grid_start, grid_end, obs_coords[i]));
+  for (int i = 0, n = constraints.size(); i < n; ++i)
+    coords.push_back(convertPositionToGrid(grid_start, grid_end, constraints[i]));
 
   for (int i = 0; i < gridx_size; i++)
   {
