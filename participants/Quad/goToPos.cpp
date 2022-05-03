@@ -51,7 +51,7 @@ bool Quad::sendPosCmd(const float x_ref, const float y_ref, const float z_ref, c
   pos_cmd_.position.y = y_ref;
   pos_cmd_.position.z = z_ref;
   pos_cmd_.yaw_angle = yaw;
-  std::cout << pos_cmd_.position.x << " " << pos_cmd_.position.y << pos_cmd_.position.z << std::endl;
+  // std::cout << pos_cmd_.position.x << " " << pos_cmd_.position.y << pos_cmd_.position.z << std::endl;
   // publish pos_cmd
   position_pub_->publish(pos_cmd_);
 
