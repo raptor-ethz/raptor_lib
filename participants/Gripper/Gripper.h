@@ -1,7 +1,7 @@
 #pragma once
 
-#include "RotGripCmd_msg.h"
-#include "RotGripCmd_msgPubSubTypes.h"
+#include "GripCmd_msg.h"
+#include "GripCmd_msgPubSubTypes.h"
 #include "GripperSensor_msg.h"
 #include "GripperSensor_msgPubSubTypes.h"
 #include "domain_participant.h"
@@ -23,7 +23,7 @@ class Gripper
 public:
   Gripper(const std::string &raptor_participant_id, std::string *const log,
           std::unique_ptr<DefaultParticipant> &dp,
-          const std::string &pub_topic_name);
+          const std::string &pub_topic_name, GripperType type);
 
   ~Gripper();
 
@@ -55,7 +55,7 @@ public:
 private:
   std::string id_ = "N/A";
   std::string *log_{nullptr};
-  cpp_msg::RotGripCmd_msg grip_action_cmd_{};
+  cpp_msg::GripCmd_msg grip_action_cmd_{};
   cpp_msg::GripperSensor_msg grip_sensor_msg_{};
   GripperConsoleState console_state_{gripper_console_debug};
 
