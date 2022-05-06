@@ -37,7 +37,8 @@ public:
   void triggerGripper();
   void stopTriggerGripper();
 
-  void updateSensor();
+  void sensorRequest();
+  void stopSensorRequest();
 
   int getSensorBackLeft();
   int getSensorBackRight();

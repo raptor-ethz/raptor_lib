@@ -58,7 +58,6 @@ void Gripper::setAngleAsym(int front_angle, int back_angle)
   grip_action_cmd_.servo_1_deg = front_angle;
   grip_action_cmd_.servo_2_deg = back_angle;
   grip_action_cmd_.trigger_gripper = false;
-  grip_action_cmd_.request_sensor = false;
   grip_action_pub_->publish(grip_action_cmd_);
 
   consoleDebug("Setting asymmetric angle: [" + std::to_string(front_angle) + ", " + std::to_string(back_angle) + "]");
@@ -78,11 +77,19 @@ void Gripper::stopTriggerGripper()
   grip_action_pub_->publish(grip_action_cmd_);
 }
 
-void Gripper::updateSensor()
+void Gripper::sensorRequest()
 {
   // just send a command to trigger the "wait_for_data()" in the gripper
   // interface
   grip_action_cmd_.request_sensor = true;
+  grip_action_pub_->publish(grip_action_cmd_);
+}
+
+void Gripper::stopSensorRequest()
+{
+  // just send a command to trigger the "wait_for_data()" in the gripper
+  // interface
+  grip_action_cmd_.request_sensor = false;
   grip_action_pub_->publish(grip_action_cmd_);
 }
 
