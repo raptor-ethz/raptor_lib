@@ -37,6 +37,15 @@ Quad::Quad(const std::string &raptor_participant_id, std::string *const log,
 Quad::Quad(const std::string &raptor_participant_id, std::string *const log,
            std::unique_ptr<DefaultParticipant> &dp,
            const std::string &sub_topic_name, const std::string &pub_topic_name,
+           Gripper *const gripper)
+    : Quad(raptor_participant_id, log, dp, sub_topic_name, pub_topic_name)
+{
+  gripper_ = gripper;
+};
+
+Quad::Quad(const std::string &raptor_participant_id, std::string *const log,
+           std::unique_ptr<DefaultParticipant> &dp,
+           const std::string &sub_topic_name, const std::string &pub_topic_name,
            Item *const stand)
     : Quad(raptor_participant_id, log, dp, sub_topic_name, pub_topic_name)
 {
