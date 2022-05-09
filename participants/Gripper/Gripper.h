@@ -63,6 +63,6 @@ private:
   // sensor values
 
   // TODO
-  const int MAX_ANGLE = 120;
+  const int MAX_ANGLE = 110;
   const std::string SENSOR_TOPIC_ = "gripper_sensor_msg";
 };

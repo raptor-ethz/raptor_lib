@@ -20,7 +20,7 @@ void Gripper::setAngleSym(int angle)
 {
   // check argument feasability
   // TODO change to feedback
-  if (angle <= 0 || angle >= MAX_ANGLE)
+  if (angle < 0 || angle > MAX_ANGLE)
   {
     consoleError("Requested angle is invalid (requested " +
                  std::to_string(angle) + ", must be between [0, " +
