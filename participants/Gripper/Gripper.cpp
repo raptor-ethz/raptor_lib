@@ -40,14 +40,14 @@ void Gripper::setAngleAsym(int front_angle, int back_angle)
 {
   // check argument feasability
   // TODO change to feedback
-  if (front_angle <= 0 || front_angle >= MAX_ANGLE)
+  if (front_angle < 0 || front_angle > MAX_ANGLE)
   {
     consoleError("Requested front angle is invalid (requested " +
                  std::to_string(front_angle) + ", must be between [0, " +
                  std::to_string(MAX_ANGLE) + "]).");
     return;
   }
-  if (back_angle <= 0 || back_angle >= MAX_ANGLE)
+  if (back_angle < 0 || back_angle > MAX_ANGLE)
   {
     consoleError("Requested back angle is invalid (requested " +
                  std::to_string(back_angle) + ", must be between [0, " +
@@ -97,7 +97,4 @@ void Gripper::stopSensorRequest()
 int Gripper::getSensorBackLeft() { return grip_sensor_msg_.force_back_left; }
 int Gripper::getSensorBackRight() { return grip_sensor_msg_.force_back_right; }
 int Gripper::getSensorFrontLeft() { return grip_sensor_msg_.force_front_left; }
-int Gripper::getSensorFrontRight()
-{
-  return grip_sensor_msg_.force_front_right;
-}
+int Gripper::getSensorFrontRight() { return grip_sensor_msg_.force_front_right; }
