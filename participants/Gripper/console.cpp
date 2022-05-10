@@ -3,7 +3,7 @@
 #include <iostream>
 
 void Gripper::consoleDebug(const std::string &message) {
-  if (log != nullptr) {
+  if (log_ != nullptr) {
     *log_ += "[" + getTime() + "|DEBUG][" + id_ + "] " + message + '\n';
   }
 
@@ -14,7 +14,7 @@ void Gripper::consoleDebug(const std::string &message) {
 }
 
 void Gripper::consoleInformation(const std::string &message) {
-  if (log != nullptr) {
+  if (log_ != nullptr) {
     *log_ += "[" + getTime() + "|INFO][" + id_ + "] " + message + '\n';
   }
   
@@ -25,7 +25,7 @@ void Gripper::consoleInformation(const std::string &message) {
 }
 
 void Gripper::consoleWarning(const std::string &message) {
-  if (log != nullptr) {
+  if (log_ != nullptr) {
     *log_ += "[" + getTime() + "|WARNING][" + id_ + "] " + message + '\n';
   }
 
@@ -36,7 +36,7 @@ void Gripper::consoleWarning(const std::string &message) {
 }
 
 void Gripper::consoleError(const std::string &message) {
-  if (log != nullptr) {
+  if (log_ != nullptr) {
     *log_ += "[" + getTime() + "|ERROR][" + id_ + "] " + message + '\n';
   }
 
