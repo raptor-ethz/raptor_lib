@@ -2,11 +2,13 @@
 
 #include "Participant.h"
 
-class Item : public raptor::Participant{
-    public:
-
-    Item(   const std::string &raptor_participant_id, 
-            std::unique_ptr<DefaultParticipant> &dp, 
-            const std::string &sub_topic_name);
-    ~Item();
+class Item : public raptor::Participant {
+public:
+  Item(const std::string &raptor_participant_id,
+       std::unique_ptr<DefaultParticipant> &dp,
+       const std::string &sub_topic_name);
+  Item(const std::string &raptor_participant_id, std::string *const log,
+       std::unique_ptr<DefaultParticipant> &dp,
+       const std::string &sub_topic_name);
+  ~Item();
 };
