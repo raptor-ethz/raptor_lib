@@ -112,9 +112,6 @@ bool Quad::takeOff() {
 
   state_ = State::initialized;
 
-  // TODO DEBUG
-  consoleDebug("Stand height: " + std::to_string(pose_.position.z));
-
   // ARM
   consoleInformation("Arming.");
   // send arm request
