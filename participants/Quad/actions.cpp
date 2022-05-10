@@ -165,7 +165,7 @@ bool Quad::takeOff() {
   std::this_thread::sleep_for(std::chrono::milliseconds(12000));
 
   // check height (and wait) TODO
-  if (pose_.position.z < 0.5) {
+  if (pose_.position.z < 1) {
     consoleError("Takeoff failed: Insufficient height reached.");
   }
   // wait until at least 1m height was reached
