@@ -384,7 +384,7 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
 
   std::vector<std::vector<int>> coords;
   for (int i = 0, n = constraints.size(); i < n; ++i) {
-    std::cout << convertPositionToGrid(grid_start, grid_end, constraints[i]) << std::endl;
+    // std::cout << convertPositionToGrid(grid_start, grid_end, constraints[i]) << std::endl;
     coords.push_back(convertPositionToGrid(grid_start, grid_end, constraints[i]));
   }
   
@@ -444,8 +444,31 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
 const float stepSize = 0.5; 
 int gridSize = 8;
 
+// Starting position in grid
+const float x_0 = -1;
+const float y_0 = -1;
+const float z_0 = 0;
+
+// Global log string (TODO: remove?)
+// std::string g_log;
+
 void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end, std::vector<std::vector<int>> coords)
 {
+  
+//   std::string log;
+
+//   /* FASTDDS DEFAULT PARTICIPANT  */
+//   std::unique_ptr<DefaultParticipant> dp =
+//       std::make_unique<DefaultParticipant>(0, "raptor");
+
+//   /* CREATE PARTICIPANTS */
+//   Item stand("Stand", dp, "mocap_srl_stand");
+//   Item box("box", dp, "mocap_srl_box");
+//   Item drop("drop", dp, "mocap_srl_drop");
+//   // TODO: change gripper type?
+//   Gripper gripper("Gripper", &g_log, dp, "grip_cmd",GripperType::grip_rot);
+
+  std::vector<std::vector<std::vector<int>>> grid;
   for (int i = 0; i < gridSize; i++)
   {
     std::vector<std::vector<int>> tmp2D;
@@ -474,18 +497,7 @@ void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end, std:
     std::cout << "x: " << x_0 + point[0] * stepSize << std::endl;
     std::cout << "y: " << y_0 + point[1] * stepSize << std::endl;
     std::cout << "z: " << z_0 + point[2] * stepSize << std::endl;
-    quad.goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 + point[2] * stepSize, 0,
+    goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 + point[2] * stepSize, 0,
                  3000, true);
   }
-
-  // // go to drop position
-  quad.goToPos(drop.getPose().position.x, drop.getPose().position.y, 1.5, 0, 3000, false);
-
-  // TODO: include landing or not?
-  gripper.setAngleSym(60);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  gripper.setAngleSym(grip_angle);
-
-  // // LAND
-  quad.land(stand);
 }
