@@ -87,6 +87,9 @@ bool Quad::takeOff() {
                    std::to_string(status.battery) + "%).");
       return false;
     }
+    if (status.battery < 60) {
+      consoleWarning("Battery low: Charge soon!");
+    }
     // check killed
     if (!status.armable) {
       // return error after the n-th try
