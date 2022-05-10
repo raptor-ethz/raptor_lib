@@ -82,7 +82,7 @@ bool Quad::takeOff() {
       return false;
     }
     // check battery level
-    if (status.battery < 30) {
+    if (status.battery < 55) {
       consoleError("Takeoff denied: Battery too low (" +
                    std::to_string(status.battery) + "%).");
       return false;
