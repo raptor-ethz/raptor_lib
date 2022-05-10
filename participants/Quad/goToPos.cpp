@@ -233,42 +233,43 @@ bool Quad::goToPos(Item &target, const float &x_offset, const float &y_offset,
 
 ///////////////////////////////////////////////////////////////////////TEMP -> will go to astar constructor
 
-int gridx_size = 4, gridy_size = 4, gridz_size = 4;
+// int gridSize = 15, gridSize = 15, gridSize = 15;
+int gridSize = 15;
 
 // TODO: floor might not be imported yet, test
 std::vector<int> convertPositionToGrid(std::vector<float> grid_start, std::vector<float> grid_end, std::vector<float> point)
 {
   float x_0 = grid_start[0], x_1 = grid_end[0], y_0 = grid_start[1], y_1 = grid_end[1], z_0 = grid_start[2], z_1 = grid_end[2];
-  float step_x = (x_1 - x_0) / gridx_size, step_y = (y_1 - y_0) / gridy_size, step_z = (z_1 - z_0) / gridz_size;
+  float step_x = (x_1 - x_0) / gridSize, step_y = (y_1 - y_0) / gridSize, step_z = (z_1 - z_0) / gridSize;
   return {(int)floor((point[0] + 0.01 - x_0) / step_x), (int)floor((point[1] + 0.01 - y_0) / step_y), (int)floor((point[2] + 0.01 - z_0) / step_z)};
 }
 
 std::vector<float> convertGridToPosition(std::vector<float> grid_start, std::vector<float> grid_end, std::vector<int> point)
 {
   float x_0 = grid_start[0], x_1 = grid_end[0], y_0 = grid_start[1], y_1 = grid_end[1], z_0 = grid_start[2], z_1 = grid_end[2];
-  float step_x = (x_1 - x_0) / gridx_size, step_y = (y_1 - y_0) / gridy_size, step_z = (z_1 - z_0) / gridz_size;
+  float step_x = (x_1 - x_0) / gridSize, step_y = (y_1 - y_0) / gridSize, step_z = (z_1 - z_0) / gridSize;
   return {x_0 + point[0] * step_x, y_0 + point[1] * step_y, z_0 + point[2] * step_z};
 }
 
 int pointToVertex(const std::vector<int> &point)
 {
-  return point[0] * gridy_size + point[1];
+  return point[0] * gridSize + point[1];
 }
 
 int pointToVertex3D(const std::vector<int> &point)
 {
-  return point[0] * gridy_size * gridz_size + point[1] * gridz_size + point[2];
+  return point[0] * gridSize * gridSize + point[1] * gridSize + point[2];
 }
 
 std::vector<int> vertexToPoint(int vertex)
 {
-  std::vector<int> result = {vertex / gridy_size, vertex % gridy_size};
+  std::vector<int> result = {vertex / gridSize, vertex % gridSize};
   return result;
 }
 
 std::vector<int> vertexToPoint3D(int vertex)
 {
-  std::vector<int> result = {vertex / (gridz_size * gridy_size), (vertex / gridz_size) % gridy_size, vertex % gridz_size};
+  std::vector<int> result = {vertex / (gridSize * gridSize), (vertex / gridSize) % gridSize, vertex % gridSize};
   return result;
 }
 
@@ -276,10 +277,10 @@ std::vector<int> vertexToPoint3D(int vertex)
 void initializeGrid(const std::vector<std::vector<int>> &points,
                     std::vector<std::vector<int>> &grid)
 {
-  for (int i = 0; i < gridx_size; ++i)
+  for (int i = 0; i < gridSize; ++i)
   {
     std::vector<int> row;
-    for (int j = 0; j < gridy_size; ++j)
+    for (int j = 0; j < gridSize; ++j)
     {
       row.push_back(0);
     }
@@ -298,13 +299,13 @@ void initializeGrid(const std::vector<std::vector<int>> &points,
                     std::vector<std::vector<std::vector<int>>> &grid)
 {
   // initialize grid
-  for (int i = 0; i < gridx_size; ++i)
+  for (int i = 0; i < gridSize; ++i)
   {
     std::vector<std::vector<int>> row;
-    for (int j = 0; j < gridy_size; ++j)
+    for (int j = 0; j < gridSize; ++j)
     {
       std::vector<int> height;
-      for (int k = 0; k < gridz_size; ++k)
+      for (int k = 0; k < gridSize; ++k)
       {
         height.push_back(0);
       }
@@ -361,11 +362,11 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
       {
         constraints.push_back({i, j, k});
         std::cout << "constraint: " << i << " " <<  j << " " << k << std::endl;
-        k += std::max((max_values[2] - min_values[2]) / (2 * gridz_size),0.001f);
+        k += std::max((max_values[2] - min_values[2]) / (2 * gridSize),0.001f);
       }
-      j += std::max((max_values[1] - min_values[1]) / (2 * gridy_size),0.001f);
+      j += std::max((max_values[1] - min_values[1]) / (2 * gridSize),0.001f);
     }
-    i += std::max((max_values[0] - min_values[0]) / (2 * gridx_size),0.001f);
+    i += std::max((max_values[0] - min_values[0]) / (2 * gridSize),0.001f);
   }
 
   // grid
@@ -389,13 +390,13 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
   }
   
 
-  for (int i = 0; i < gridx_size; i++)
+  for (int i = 0; i < gridSize; i++)
   {
     std::vector<std::vector<int>> tmp2D;
-    for (int j = 0; j < gridy_size; j++)
+    for (int j = 0; j < gridSize; j++)
     {
       std::vector<int> tmp1D;
-      for (int k = 0; k < gridz_size; k++)
+      for (int k = 0; k < gridSize; k++)
       {
         tmp1D.push_back(0);
       }
@@ -442,11 +443,11 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
 
 // TODO: can easily change this to grid_x, grid_y, grid_z
 const float stepSize = 0.5; 
-int gridSize = 8;
+
 
 // Starting position in grid
-const float x_0 = -1;
-const float y_0 = -1;
+const float x_0 = 0;
+const float y_0 = 0;
 const float z_0 = 0;
 
 // Global log string (TODO: remove?)
@@ -483,7 +484,6 @@ void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end, std:
     }
     grid.push_back(tmp2D);
   }
-
   initializeGrid(coords, grid);
   Astar solver(grid, false);
 
@@ -497,7 +497,7 @@ void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end, std:
     std::cout << "x: " << x_0 + point[0] * stepSize << std::endl;
     std::cout << "y: " << y_0 + point[1] * stepSize << std::endl;
     std::cout << "z: " << z_0 + point[2] * stepSize << std::endl;
-    goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 + point[2] * stepSize, 0,
-                 3000, true);
+    // goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 + point[2] * stepSize, 0,
+    //              3000, true);
   }
 }
