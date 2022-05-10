@@ -11,4 +11,15 @@ public:
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name);
   ~Item();
+
+  bool setInitialPosition();
+
+  float getInitialPositionX();
+  float getInitialPositionY();
+  float getInitialPositionZ();
+
+private:
+  float initial_position_x_ = 0;
+  float initial_position_y_ = 0;
+  float initial_position_z_ = 1.5;
 };
