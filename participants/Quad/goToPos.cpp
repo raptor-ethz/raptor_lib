@@ -234,7 +234,7 @@ bool Quad::goToPos(Item &target, const float &x_offset, const float &y_offset,
 ///////////////////////////////////////////////////////////////////////TEMP -> will go to astar constructor
 
 // int gridSize = 15, gridSize = 15, gridSize = 15;
-int gridSize = 15;
+int gridSize = 20;
 
 // TODO: floor might not be imported yet, test
 std::vector<int> convertPositionToGrid(std::vector<float> grid_start, std::vector<float> grid_end, std::vector<float> point)
@@ -442,13 +442,13 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
 }
 
 // TODO: can easily change this to grid_x, grid_y, grid_z
-const float stepSize = 0.5; 
+const float stepSize = 0.25; 
 
 
 // Starting position in grid
-const float x_0 = 0;
-const float y_0 = 0;
-const float z_0 = 0;
+const float x_0 = -2;
+const float y_0 = -2;
+const float z_0 = 0.5;
 
 // Global log string (TODO: remove?)
 // std::string g_log;
@@ -497,6 +497,7 @@ void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end, std:
     std::cout << "x: " << x_0 + point[0] * stepSize << std::endl;
     std::cout << "y: " << y_0 + point[1] * stepSize << std::endl;
     std::cout << "z: " << z_0 + point[2] * stepSize << std::endl;
+    // TODO
     // goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 + point[2] * stepSize, 0,
     //              3000, true);
   }
