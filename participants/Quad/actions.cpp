@@ -99,14 +99,16 @@ bool Quad::takeOff() {
       }
       // rerun checks
       consoleWarning("Participant is killed (check remote).");
-      consoleWarning("Rerunning preflight checks in 3 seconds (remaining tires: " +
-                     std::to_string(n - i) + ").");
+      consoleWarning(
+          "Rerunning preflight checks in 3 seconds (remaining tires: " +
+          std::to_string(n - i) + ").");
       std::this_thread::sleep_for(std::chrono::milliseconds(3000));
       continue;
     }
 
     // all checks successfull -> break loop
-    consoleInformation("Preflight checks complete (battery: " + std::to_string(status.battery) + "%).");
+    consoleInformation("Preflight checks complete (battery: " +
+                       std::to_string(status.battery) + "%).");
     break;
   }
 
@@ -122,7 +124,8 @@ bool Quad::takeOff() {
 
   // check if feedback was received
   if (px4_feedback_.feedback != FeedbackType::fb_arm) {
-    consoleError("Takeoff denied: Arming failed (received no feedback from interface).");
+    consoleError(
+        "Takeoff denied: Arming failed (received no feedback from interface).");
     return false;
   }
   // check arming result
@@ -166,8 +169,9 @@ bool Quad::takeOff() {
     consoleError("Takeoff failed: Insufficient height reached.");
   }
   // wait until at least 1m height was reached
-  for(int i = 1; pose_.position.z < 1; ++i) {
-    consoleWarning("Insufficient height for offboard (" + std::to_string(pose_.position.z) + "). Retry in 3 seconds");
+  for (int i = 1; pose_.position.z < 1; ++i) {
+    consoleWarning("Insufficient height for offboard (" +
+                   std::to_string(pose_.position.z) + "). Retry in 3 seconds");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   }
 
