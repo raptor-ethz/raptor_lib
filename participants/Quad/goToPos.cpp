@@ -331,6 +331,7 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
   {
     std::vector<float> coord{obstacle.getMarkers().marker_x[i], obstacle.getMarkers().marker_y[i], obstacle.getMarkers().marker_z[i]};
     obs_coords.push_back(coord);
+    std::cout << "Obstacle: " << obstacle.getMarkers().marker_x[i] << " " << obstacle.getMarkers().marker_y[i] << " " << obstacle.getMarkers().marker_z[i] << std::endl;
   }
 
   std::vector<float> min_values, max_values;
@@ -342,6 +343,8 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
       min_value = std::min(min_value, obs_coords[i][j]);
       max_value = std::max(max_value, obs_coords[i][j]);
     }
+    std::cout << "Min value: " << min_value << std::endl;
+    std::cout << "Max value: " << max_value << std::endl;
     min_values.push_back(min_value);
     max_values.push_back(max_value);
   }
@@ -357,27 +360,34 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
       while (k <= max_values[2])
       {
         constraints.push_back({i, j, k});
-        k += (max_values[2] - min_values[2]) / (2 * gridz_size);
+        std::cout << "constraint: " << i << " " <<  j << " " << k << std::endl;
+        k += std::max((max_values[2] - min_values[2]) / (2 * gridz_size),0.001f);
       }
-      j += (max_values[1] - min_values[1]) / (2 * gridy_size);
+      j += std::max((max_values[1] - min_values[1]) / (2 * gridy_size),0.001f);
     }
-    i += (max_values[0] - min_values[0]) / (2 * gridx_size);
+    i += std::max((max_values[0] - min_values[0]) / (2 * gridx_size),0.001f);
   }
 
   // grid
   std::vector<std::vector<std::vector<int>>> grid;
 
-  // start / ending
+  // TODO: add minimum and maximum coordinates for the room
   std::vector<float>
-      grid_start = {std::min(start_coords[0], std::min(end_coords[0], min_values[0])) - 5, std::min(start_coords[1], std::min(end_coords[1], min_values[1])) - 5, std::min(start_coords[2], std::min(end_coords[2], min_values[2])) - 5};
-  std::vector<float> grid_end = {std::max(start_coords[0], std::max(end_coords[0], max_values[0])) + 5, std::max(start_coords[1], std::max(end_coords[1], max_values[1])) + 5, std::max(start_coords[2], std::max(end_coords[2], max_values[2])) + 5};
+      grid_start = {std::min(start_coords[0], std::min(end_coords[0], min_values[0])) - 1, std::min(start_coords[1], std::min(end_coords[1], min_values[1])) - 1, std::min(start_coords[2], std::min(end_coords[2], min_values[2])) - 1};
+  std::vector<float> grid_end = {std::max(start_coords[0], std::max(end_coords[0], max_values[0])) + 1, std::max(start_coords[1], std::max(end_coords[1], max_values[1])) + 1, std::max(start_coords[2], std::max(end_coords[2], max_values[2])) + 1};
+
+  std::cout << "Grid start: " << grid_start[0] << " " << grid_start[1] << " " << grid_start[2] << std::endl;
+  std::cout << "Grid end: " << grid_end[0] << " " << grid_end[1] << " " << grid_end[2] << std::endl;
 
   std::vector<int> start = convertPositionToGrid(grid_start, grid_end, start_coords);
   std::vector<int> end = convertPositionToGrid(grid_start, grid_end, end_coords);
 
   std::vector<std::vector<int>> coords;
-  for (int i = 0, n = constraints.size(); i < n; ++i)
+  for (int i = 0, n = constraints.size(); i < n; ++i) {
+    std::cout << convertPositionToGrid(grid_start, grid_end, constraints[i]) << std::endl;
     coords.push_back(convertPositionToGrid(grid_start, grid_end, constraints[i]));
+  }
+  
 
   for (int i = 0; i < gridx_size; i++)
   {
@@ -408,11 +418,11 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
   // std::chrono::duration_cast<std::chrono::milliseconds>(end_astar -
   // start_astar).count() << " milliseconds.\n";
   // assert(vertices_astar == vertices_dijkstra);
-  if (vertices_astar.size() == 0) {
-    return;
-  }
+//   if (vertices_astar.size() == 0) {
+//     return;
+//   }
   std::vector<int> prev = vertexToPoint3D(vertices_astar[0]);
-  for (int i = 1, n = vertices_astar.size(); i < n; ++i)
+  for (int i = 0, n = vertices_astar.size(); i < n; ++i)
   {
     std::cout << "sending a pos cmd \n";
     std::vector<int> point_grid = vertexToPoint3D(vertices_astar[i]);
@@ -422,10 +432,60 @@ void Quad::goToPosAstar(std::vector<float> start_coords, std::vector<float> end_
     //   continue;
     // }
     std::vector<float> point = convertGridToPosition(grid_start, grid_end, point_grid);
-    // std::cout<<"x: "<<x_0 + point[0]*stepSize<<std::endl;
-    // std::cout<<"y: "<<y_0 + point[1]*stepSize<<std::endl;
-    // std::cout<<"z: "<<z_0 + point[2]*stepSize<<std::endl;
-    goToPos(point[0], point[1], point[2], 0,
-            3000, false);
+    std::cout<<"x: "<<point[0]<<std::endl;
+    std::cout<<"y: "<<point[1]<<std::endl;
+    std::cout<<"z: "<<point[2]<<std::endl;
+    // goToPos(point[0], point[1], point[2], 0,
+    //         3000, false);
   }
+}
+
+// TODO: can easily change this to grid_x, grid_y, grid_z
+const float stepSize = 0.5; 
+int gridSize = 8;
+
+void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end, std::vector<std::vector<int>> coords)
+{
+  for (int i = 0; i < gridSize; i++)
+  {
+    std::vector<std::vector<int>> tmp2D;
+    for (int j = 0; j < gridSize; j++)
+    {
+      std::vector<int> tmp1D;
+      for (int k = 0; k < gridSize; k++)
+      {
+        tmp1D.push_back(0);
+      }
+      tmp2D.push_back(tmp1D);
+    }
+    grid.push_back(tmp2D);
+  }
+
+  initializeGrid(coords, grid);
+  Astar solver(grid, false);
+
+  std::vector<int> vertices_astar =
+      solver.astarPath(pointToVertex3D(start), pointToVertex3D(end));
+
+  for (int i = 0, n = vertices_astar.size(); i < n; ++i)
+  {
+    std::vector<int> point = vertexToPoint3D(vertices_astar[i]);
+    std::cout << "===================" << std::endl;
+    std::cout << "x: " << x_0 + point[0] * stepSize << std::endl;
+    std::cout << "y: " << y_0 + point[1] * stepSize << std::endl;
+    std::cout << "z: " << z_0 + point[2] * stepSize << std::endl;
+    quad.goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 + point[2] * stepSize, 0,
+                 3000, true);
+  }
+
+  // // go to drop position
+  quad.goToPos(drop.getPose().position.x, drop.getPose().position.y, 1.5, 0, 3000, false);
+
+  // TODO: include landing or not?
+  gripper.setAngleSym(60);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  gripper.setAngleSym(grip_angle);
+
+  // // LAND
+  quad.land(stand);
 }

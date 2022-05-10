@@ -53,12 +53,12 @@ public:
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
        Gripper *const gripper, Item *const stand);
-
+    
   Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
        Gripper *const gripper);
-
+    
   Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
@@ -193,6 +193,8 @@ public:
              float h0);
 
   void goToPosAstar(std::vector<float> start_coords, std::vector<float> end_coords, Obstacle obstacle);
+
+  void goToPosAstarStatic(std::vector<int> start, std::vector<int> end, std::vector<std::vector<int>> coords);
 
   void setDefaultThreshold(const float x_thresh, const float y_thresh,
                            const float z_thresh)
