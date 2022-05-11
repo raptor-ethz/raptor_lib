@@ -53,12 +53,12 @@ public:
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
        Gripper *const gripper, Item *const stand);
-    
+
   Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
        Gripper *const gripper);
-    
+
   Quad(const std::string &raptor_participant_id, std::string *const log,
        std::unique_ptr<DefaultParticipant> &dp,
        const std::string &sub_topic_name, const std::string &pub_topic_name,
@@ -137,6 +137,9 @@ public:
                const float &z_offset, const float &yaw_ref,
                const float &max_time, const bool &reached_pos_flag);
 
+  bool goToPos(std::vector<float> ref, const float &x_offset, const float &y_offset,
+               const float &z_offset, const float &yaw_ref,
+               const float &max_time, const bool &reached_pos_flag);
   /**
    * @brief Arms the quad, performs the take-off and switches to offboard.
    *
@@ -183,6 +186,8 @@ public:
   void swoop(Item &target, Gripper &gripper, float length, float dx, float dy,
              float dz, float h0, int time, int grip_angle);
   void quickSwoop(Item &target, Gripper &gripper, float length, float dx,
+                  float dy, float dz, float h0, int time, int grip_angle);
+  void quickSwoop(std::vector<float> target_vec, Gripper &gripper, float length, float dx,
                   float dy, float dz, float h0, int time, int grip_angle);
   void release(Item &target, Gripper &gripper, float length, float h0,
                int time);

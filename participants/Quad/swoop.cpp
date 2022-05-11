@@ -3,46 +3,46 @@
 void Quad::swoop(Item &target, Gripper &gripper, float length, float dx,
                  float dy, float dz, float h0, int time, int grip_angle)
 {
-  gripper.setAngleSym(45);
-  // start position
-  goToPos(target.getPose().position.x + dx - length,
-          target.getPose().position.y + dy, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  // swoop to object
-  goToPos(target.getPose().position.x + dx - 0.2,
-          target.getPose().position.y + dy,
-          target.getPose().position.z + dz + 0.45, 0, 4500, true);
-  goToPos(target.getPose().position.x + dx,
-          target.getPose().position.y + dy,
-          target.getPose().position.z + dz + 0.28, 0, time, false);
-  gripper.setAngleSym(grip_angle);
-  std::this_thread::sleep_for(std::chrono::milliseconds(350));
+        gripper.setAngleSym(45);
+        // start position
+        goToPos(target.getPose().position.x + dx - length,
+                target.getPose().position.y + dy, h0, 0, 3000, true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // swoop to object
+        goToPos(target.getPose().position.x + dx - 0.2,
+                target.getPose().position.y + dy,
+                target.getPose().position.z + dz + 0.45, 0, 4500, true);
+        goToPos(target.getPose().position.x + dx,
+                target.getPose().position.y + dy,
+                target.getPose().position.z + dz + 0.28, 0, time, false);
+        gripper.setAngleSym(grip_angle);
+        std::this_thread::sleep_for(std::chrono::milliseconds(350));
 
-  // swoop away from object
-  goToPos(target.getPose().position.x + dx + length,
-          target.getPose().position.y + dy, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // swoop away from object
+        goToPos(target.getPose().position.x + dx + length,
+                target.getPose().position.y + dy, h0, 0, 3000, true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 // only for demo
 void Quad::release(Item &target, Gripper &gripper, float length, float h0,
                    int time)
 {
-  // start position
-  goToPos(target.getPose().position.x + length,
-          target.getPose().position.y, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  // swoop to object
-  goToPos(target.getPose().position.x,
-          target.getPose().position.y,
-          target.getPose().position.z + 0.50, 0, 2500, false);
-  gripper.setAngleSym(45);
-  std::this_thread::sleep_for(std::chrono::milliseconds(350));
-  gripper.setAngleSym(0);
-  // swoop away from object
-  goToPos(target.getPose().position.x - length,
-          target.getPose().position.y, h0, 0, 3000, true);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // start position
+        goToPos(target.getPose().position.x + length,
+                target.getPose().position.y, h0, 0, 3000, true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // swoop to object
+        goToPos(target.getPose().position.x,
+                target.getPose().position.y,
+                target.getPose().position.z + 0.50, 0, 2500, false);
+        gripper.setAngleSym(45);
+        std::this_thread::sleep_for(std::chrono::milliseconds(350));
+        gripper.setAngleSym(0);
+        // swoop away from object
+        goToPos(target.getPose().position.x - length,
+                target.getPose().position.y, h0, 0, 3000, true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 // only for demo
@@ -85,24 +85,49 @@ void Quad::release(Item &target, Gripper &gripper, float length, float h0,
 void Quad::quickSwoop(Item &target, Gripper &gripper, float length, float dx,
                       float dy, float dz, float h0, int time, int grip_angle)
 {
-  // attack pose
-  gripper.setAngleAsym(110, grip_angle);
+        // attack pose
+        gripper.setAngleAsym(110, grip_angle);
 
-  // go to start position
-  goToPos(target.getPose().position.x + dx - length,
-          target.getPose().position.y + dy, h0, 0, 4500, false);
-  // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // go to start position
+        goToPos(target.getPose().position.x + dx - length,
+                target.getPose().position.y + dy, h0, 0, 4500, false);
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-  // swoop to object
-  goToPos(target.getPose().position.x + dx,
-          target.getPose().position.y + dy,
-          target.getPose().position.z + dz + 0.21, 0, 4500, true);
-  // close gripper
-  gripper.setAngleSym(grip_angle);
-  std::this_thread::sleep_for(std::chrono::milliseconds(time));
+        // swoop to object
+        goToPos(target.getPose().position.x + dx,
+                target.getPose().position.y + dy,
+                target.getPose().position.z + dz + 0.21, 0, 4500, true);
+        // close gripper
+        gripper.setAngleSym(grip_angle);
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
 
-  // swoop away from object
-  goToPos(target.getPose().position.x + dx + length,
-          target.getPose().position.y + dy, h0, 0, 3000, false);
-  std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        // swoop away from object
+        goToPos(target.getPose().position.x + dx + length,
+                target.getPose().position.y + dy, h0, 0, 3000, false);
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+}
+
+void Quad::quickSwoop(std::vector<float> target_vec, Gripper &gripper, float length, float dx,
+                      float dy, float dz, float h0, int time, int grip_angle)
+{
+        // attack pose
+        gripper.setAngleAsym(110, grip_angle);
+
+        // go to start position
+        goToPos(target_vec.at(0) + dx - length,
+                target_vec.at(1) + dy, h0, 0, 4500, false);
+        // std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        // swoop to object
+        goToPos(target_vec.at(0) + dx,
+                target_vec.at(1) + dy,
+                target_vec.at(2) + dz + 0.21, 0, 4500, true);
+        // close gripper
+        gripper.setAngleSym(grip_angle);
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
+
+        // swoop away from object
+        goToPos(target_vec.at(0) + dx + length,
+                target_vec.at(1) + dy, h0, 0, 3000, false);
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
 }

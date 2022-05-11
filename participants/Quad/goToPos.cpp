@@ -5,7 +5,8 @@
 
 inline bool checkReachedPos1D(const float &actual_pos,
                               const float &reference_pos,
-                              const float &threshold) {
+                              const float &threshold)
+{
   return std::abs(reference_pos - actual_pos) <= threshold;
 }
 
@@ -13,7 +14,8 @@ bool checkReachedPos3D(const float &x_actual, const float &x_ref,
                        const float &x_thresh, const float &y_actual,
                        const float &y_ref, const float &y_thresh,
                        const float &z_actual, const float &z_ref,
-                       const float &z_thresh) {
+                       const float &z_thresh)
+{
   bool x_reach_flag = checkReachedPos1D(x_actual, x_ref, x_thresh);
   bool y_reach_flag = checkReachedPos1D(y_actual, y_ref, y_thresh);
   bool z_reach_flag = checkReachedPos1D(z_actual, z_ref, z_thresh);
@@ -24,7 +26,8 @@ bool checkReachedPos3D(const float &x_actual, const float &x_ref,
 /* Member functions */
 
 bool Quad::sendPosCmd(const float x_ref, const float y_ref, const float z_ref,
-                      const float yaw) {
+                      const float yaw)
+{
   // TODO feasibility checks
   // int X_std::MIN, X_std::MAX, Y_std::MIN, Y_std::MAX, Z_std::MIN, Z_std::MAX;
 
@@ -41,7 +44,8 @@ bool Quad::sendPosCmd(const float x_ref, const float y_ref, const float z_ref,
   const float y = (y_ref > 0) ? y_ref : -y_ref;
   const float z = (z_ref > 0) ? z_ref : -z_ref;
 
-  if (x < 0.001 && y < 0.001 && z < 0.001) {
+  if (x < 0.001 && y < 0.001 && z < 0.001)
+  {
     consoleError("Position command not feasible (0).");
     return false;
   }
@@ -62,7 +66,8 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const float &yaw_ref, const float &x_thresh,
                    const float &y_thresh, const float &z_thresh,
                    const int &delay_time, const float &max_time,
-                   const bool &reached_pos_flag) {
+                   const bool &reached_pos_flag)
+{
   consoleDebug("Going to position: [" + std::to_string(x_ref) + ", " +
                std::to_string(y_ref) + ", " + std::to_string(z_ref) + ", " +
                std::to_string(yaw_ref) + "] during max " +
@@ -73,17 +78,21 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
   // resulting bool
   bool result = false;
 
-  for (float t = 0; t < max_time; t += delay_time) {
+  for (float t = 0; t < max_time; t += delay_time)
+  {
     // get start time
     loop_timer = std::chrono::steady_clock::now();
     // check mocap TODO
-    if (!checkMocapData()) {
+    if (!checkMocapData())
+    {
       // state_ = State::hover;
     }
     // check external message
     // check if subscriber is connected, otherwise skip
-    if (ui_sub_->listener->matched()) {
-      switch (ui_cmd_.command) {
+    if (ui_sub_->listener->matched())
+    {
+      switch (ui_cmd_.command)
+      {
       // skip on status
       case User_cmd::ui_null:
         break;
@@ -109,25 +118,30 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     }
 
     // check if interface is matched
-    while (!px4_action_pub_->listener.matched()) {
+    while (!px4_action_pub_->listener.matched())
+    {
       consoleError("Connection to PX4 interface lost. Reconnecting...");
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     // check flag
     // TODO move out to (reusable) separate function
-    switch (state_) {
+    switch (state_)
+    {
     case State::land:
       consoleWarning("Flag interruption: Land in stand.");
       // check if a stand is registered
-      if (stand_ != nullptr) {
+      if (stand_ != nullptr)
+      {
         // change state to airborne
         state_ = State::airborne;
         // call land
         land(*stand_);
         // exit programm
         exit(0);
-      } else {
+      }
+      else
+      {
         consoleError("No stand registered. Activate hover mode.");
         state_ = State::airborne;
         hover();
@@ -153,12 +167,16 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                           y_ref, y_thresh, pose_.position.z, z_ref, z_thresh);
 
     // return if position is reached and return is desired
-    if (result && reached_pos_flag) {
-      if (console_state_ == 0) {
+    if (result && reached_pos_flag)
+    {
+      if (console_state_ == 0)
+      {
         consoleDebug("Position reached before time limit.");
       }
       return result;
-    } else {
+    }
+    else
+    {
       // TODO send pos cmd
       sendPosCmd(x_ref, y_ref, z_ref, yaw_ref);
       // send new pos_cmd if position hasn't been reached
@@ -175,9 +193,12 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
     std::this_thread::sleep_until(loop_timer);
   }
 
-  if (result) {
+  if (result)
+  {
     consoleDebug("Position reached after time limit.");
-  } else {
+  }
+  else
+  {
     consoleDebug("Position not reached within time limit.");
   }
   return result;
@@ -185,7 +206,8 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 
 bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const float &yaw_ref, const int &delay_time,
-                   const float &max_time, const bool &reached_pos_flag) {
+                   const float &max_time, const bool &reached_pos_flag)
+{
   return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_, z_thresh_,
                  delay_time, max_time, reached_pos_flag);
 }
@@ -193,7 +215,8 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 
 bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
                    const float &yaw_ref, const float &max_time,
-                   const bool &reached_pos_flag) {
+                   const bool &reached_pos_flag)
+{
   return goToPos(x_ref, y_ref, z_ref, yaw_ref, x_thresh_, y_thresh_, z_thresh_,
                  delay_time_, max_time, reached_pos_flag);
 }
@@ -201,16 +224,27 @@ bool Quad::goToPos(const float &x_ref, const float &y_ref, const float &z_ref,
 
 bool Quad::goToPos(Item &target, const float &x_offset, const float &y_offset,
                    const float &z_offset, const float &yaw_ref,
-                   const float &max_time, const bool &reached_pos_flag) {
+                   const float &max_time, const bool &reached_pos_flag)
+{
   return goToPos(target.getPose().position.x + x_offset,
                  target.getPose().position.y + y_offset,
                  target.getPose().position.z + z_offset, yaw_ref, x_thresh_,
                  y_thresh_, z_thresh_, delay_time_, max_time, reached_pos_flag);
 }
+
+bool Quad::goToPos(std::vector<float> ref, const float &x_offset, const float &y_offset,
+                   const float &z_offset, const float &yaw_ref,
+                   const float &max_time, const bool &reached_pos_flag)
+{
+  return goToPos(ref.at(0) + x_offset,
+                 ref.at(1) + y_offset,
+                 ref.at(2) + z_offset, yaw_ref, x_thresh_,
+                 y_thresh_, z_thresh_, delay_time_, max_time, reached_pos_flag);
+}
 // go to target object with offset, default thresh and delay
 
 ///////////////////////////////////////////////////////////////////////TEMP ->
-///will go to astar constructor
+/// will go to astar constructor
 
 // int gridSize = 15, gridSize = 15, gridSize = 15;
 int gridSize = 20;
@@ -218,7 +252,8 @@ int gridSize = 20;
 // TODO: floor might not be imported yet, test
 std::vector<int> convertPositionToGrid(std::vector<float> grid_start,
                                        std::vector<float> grid_end,
-                                       std::vector<float> point) {
+                                       std::vector<float> point)
+{
   float x_0 = grid_start[0], x_1 = grid_end[0], y_0 = grid_start[1],
         y_1 = grid_end[1], z_0 = grid_start[2], z_1 = grid_end[2];
   float step_x = (x_1 - x_0) / gridSize, step_y = (y_1 - y_0) / gridSize,
@@ -230,7 +265,8 @@ std::vector<int> convertPositionToGrid(std::vector<float> grid_start,
 
 std::vector<float> convertGridToPosition(std::vector<float> grid_start,
                                          std::vector<float> grid_end,
-                                         std::vector<int> point) {
+                                         std::vector<int> point)
+{
   float x_0 = grid_start[0], x_1 = grid_end[0], y_0 = grid_start[1],
         y_1 = grid_end[1], z_0 = grid_start[2], z_1 = grid_end[2];
   float step_x = (x_1 - x_0) / gridSize, step_y = (y_1 - y_0) / gridSize,
@@ -239,20 +275,24 @@ std::vector<float> convertGridToPosition(std::vector<float> grid_start,
           z_0 + point[2] * step_z};
 }
 
-int pointToVertex(const std::vector<int> &point) {
+int pointToVertex(const std::vector<int> &point)
+{
   return point[0] * gridSize + point[1];
 }
 
-int pointToVertex3D(const std::vector<int> &point) {
+int pointToVertex3D(const std::vector<int> &point)
+{
   return point[0] * gridSize * gridSize + point[1] * gridSize + point[2];
 }
 
-std::vector<int> vertexToPoint(int vertex) {
+std::vector<int> vertexToPoint(int vertex)
+{
   std::vector<int> result = {vertex / gridSize, vertex % gridSize};
   return result;
 }
 
-std::vector<int> vertexToPoint3D(int vertex) {
+std::vector<int> vertexToPoint3D(int vertex)
+{
   std::vector<int> result = {vertex / (gridSize * gridSize),
                              (vertex / gridSize) % gridSize, vertex % gridSize};
   return result;
@@ -260,16 +300,20 @@ std::vector<int> vertexToPoint3D(int vertex) {
 
 /// TODO assert if drone is in blocked position
 void initializeGrid(const std::vector<std::vector<int>> &points,
-                    std::vector<std::vector<int>> &grid) {
-  for (int i = 0; i < gridSize; ++i) {
+                    std::vector<std::vector<int>> &grid)
+{
+  for (int i = 0; i < gridSize; ++i)
+  {
     std::vector<int> row;
-    for (int j = 0; j < gridSize; ++j) {
+    for (int j = 0; j < gridSize; ++j)
+    {
       row.push_back(0);
     }
     grid.push_back(row);
   }
 
-  for (int i = 0, n = points.size(); i < n; ++i) {
+  for (int i = 0, n = points.size(); i < n; ++i)
+  {
     int x = points[i][0];
     int y = points[i][1];
     grid[x][y] = 1;
@@ -277,13 +321,17 @@ void initializeGrid(const std::vector<std::vector<int>> &points,
 }
 
 void initializeGrid(const std::vector<std::vector<int>> &points,
-                    std::vector<std::vector<std::vector<int>>> &grid) {
+                    std::vector<std::vector<std::vector<int>>> &grid)
+{
   // initialize grid
-  for (int i = 0; i < gridSize; ++i) {
+  for (int i = 0; i < gridSize; ++i)
+  {
     std::vector<std::vector<int>> row;
-    for (int j = 0; j < gridSize; ++j) {
+    for (int j = 0; j < gridSize; ++j)
+    {
       std::vector<int> height;
-      for (int k = 0; k < gridSize; ++k) {
+      for (int k = 0; k < gridSize; ++k)
+      {
         height.push_back(0);
       }
       row.push_back(height);
@@ -291,7 +339,8 @@ void initializeGrid(const std::vector<std::vector<int>> &points,
     grid.push_back(row);
   }
 
-  for (int i = 0, n = points.size(); i < n; ++i) {
+  for (int i = 0, n = points.size(); i < n; ++i)
+  {
     int x = points[i][0], y = points[i][1], z = points[i][2];
     grid[x][y][z] = 1;
   }
@@ -301,10 +350,12 @@ void initializeGrid(const std::vector<std::vector<int>> &points,
 
 // go to position with a_star pathplanning
 void Quad::goToPosAstar(std::vector<float> start_coords,
-                        std::vector<float> end_coords, Obstacle obstacle) {
+                        std::vector<float> end_coords, Obstacle obstacle)
+{
   // put
   std::vector<std::vector<float>> obs_coords;
-  for (int i = 0; i < obstacle.getMarkers().length; i++) {
+  for (int i = 0; i < obstacle.getMarkers().length; i++)
+  {
     std::vector<float> coord{obstacle.getMarkers().marker_x[i],
                              obstacle.getMarkers().marker_y[i],
                              obstacle.getMarkers().marker_z[i]};
@@ -315,9 +366,11 @@ void Quad::goToPosAstar(std::vector<float> start_coords,
   }
 
   std::vector<float> min_values, max_values;
-  for (int j = 0; j < 3; ++j) {
+  for (int j = 0; j < 3; ++j)
+  {
     float min_value = INT_MAX, max_value = INT_MIN;
-    for (int i = 0, n = obs_coords.size(); i < n; ++i) {
+    for (int i = 0, n = obs_coords.size(); i < n; ++i)
+    {
       min_value = std::min(min_value, obs_coords[i][j]);
       max_value = std::max(max_value, obs_coords[i][j]);
     }
@@ -329,11 +382,14 @@ void Quad::goToPosAstar(std::vector<float> start_coords,
 
   std::vector<std::vector<float>> constraints;
   float i = min_values[0];
-  while (i <= max_values[0]) {
+  while (i <= max_values[0])
+  {
     float j = min_values[1];
-    while (j <= max_values[1]) {
+    while (j <= max_values[1])
+    {
       float k = min_values[2];
-      while (k <= max_values[2]) {
+      while (k <= max_values[2])
+      {
         constraints.push_back({i, j, k});
         std::cout << "constraint: " << i << " " << j << " " << k << std::endl;
         k += std::max((max_values[2] - min_values[2]) / (2 * gridSize), 0.001f);
@@ -367,18 +423,22 @@ void Quad::goToPosAstar(std::vector<float> start_coords,
       convertPositionToGrid(grid_start, grid_end, end_coords);
 
   std::vector<std::vector<int>> coords;
-  for (int i = 0, n = constraints.size(); i < n; ++i) {
+  for (int i = 0, n = constraints.size(); i < n; ++i)
+  {
     // std::cout << convertPositionToGrid(grid_start, grid_end, constraints[i])
     // << std::endl;
     coords.push_back(
         convertPositionToGrid(grid_start, grid_end, constraints[i]));
   }
 
-  for (int i = 0; i < gridSize; i++) {
+  for (int i = 0; i < gridSize; i++)
+  {
     std::vector<std::vector<int>> tmp2D;
-    for (int j = 0; j < gridSize; j++) {
+    for (int j = 0; j < gridSize; j++)
+    {
       std::vector<int> tmp1D;
-      for (int k = 0; k < gridSize; k++) {
+      for (int k = 0; k < gridSize; k++)
+      {
         tmp1D.push_back(0);
       }
       tmp2D.push_back(tmp1D);
@@ -404,7 +464,8 @@ void Quad::goToPosAstar(std::vector<float> start_coords,
   //     return;
   //   }
   std::vector<int> prev = vertexToPoint3D(vertices_astar[0]);
-  for (int i = 0, n = vertices_astar.size(); i < n; ++i) {
+  for (int i = 0, n = vertices_astar.size(); i < n; ++i)
+  {
     std::cout << "sending a pos cmd \n";
     std::vector<int> point_grid = vertexToPoint3D(vertices_astar[i]);
     // if (abs(point_grid[0] - prev[0]) + abs(point_grid[1] - prev[1]) +
@@ -435,7 +496,8 @@ const float z_0 = 0.5;
 // std::string g_log;
 
 void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end,
-                              std::vector<std::vector<int>> coords) {
+                              std::vector<std::vector<int>> coords)
+{
 
   //   std::string log;
 
@@ -451,11 +513,14 @@ void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end,
   //   Gripper gripper("Gripper", &g_log, dp, "grip_cmd",GripperType::grip_rot);
 
   std::vector<std::vector<std::vector<int>>> grid;
-  for (int i = 0; i < gridSize; i++) {
+  for (int i = 0; i < gridSize; i++)
+  {
     std::vector<std::vector<int>> tmp2D;
-    for (int j = 0; j < gridSize; j++) {
+    for (int j = 0; j < gridSize; j++)
+    {
       std::vector<int> tmp1D;
-      for (int k = 0; k < gridSize; k++) {
+      for (int k = 0; k < gridSize; k++)
+      {
         tmp1D.push_back(0);
       }
       tmp2D.push_back(tmp1D);
@@ -468,7 +533,8 @@ void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end,
   std::vector<int> vertices_astar =
       solver.astarPath(pointToVertex3D(start), pointToVertex3D(end));
 
-  for (int i = 0, n = vertices_astar.size(); i < n; ++i) {
+  for (int i = 0, n = vertices_astar.size(); i < n; ++i)
+  {
     std::vector<int> point = vertexToPoint3D(vertices_astar[i]);
     std::cout << "===================" << std::endl;
     std::cout << "x: " << x_0 + point[0] * stepSize << std::endl;
