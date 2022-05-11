@@ -541,8 +541,7 @@ void Quad::goToPosAstarStatic(std::vector<int> start, std::vector<int> end,
     std::cout << "y: " << y_0 + point[1] * stepSize << std::endl;
     std::cout << "z: " << z_0 + point[2] * stepSize << std::endl;
     // TODO
-    // goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 +
-    // point[2] * stepSize, 0,
-    //              3000, true);
+    goToPos(x_0 + point[0] * stepSize, y_0 + point[1] * stepSize, z_0 + point[2] * stepSize, 0,
+            3000, true);
   }
 }

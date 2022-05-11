@@ -278,3 +278,9 @@ bool checkReachedPos3D(const float &x_actual, const float &x_ref,
                        const float &y_ref, const float &y_thresh,
                        const float &z_actual, const float &z_ref,
                        const float &z_thresh);
+
+////////////////TEMP ARMAN FUNCITONDS
+
+std::vector<int> convertPositionToGrid(std::vector<float> grid_start,
+                                       std::vector<float> grid_end,
+                                       std::vector<float> point);
