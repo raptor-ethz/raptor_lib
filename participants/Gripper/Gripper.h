@@ -33,6 +33,7 @@ public:
   void setAngleSym(int angle);
 
   void setAngleAsym(int front_angle, int back_angle);
+  void setAngleRotLin(int front_angle, int back_angle, int mid_angle);
 
   void triggerGripper();
   void stopTriggerGripper();

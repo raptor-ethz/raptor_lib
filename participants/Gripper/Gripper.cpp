@@ -98,3 +98,16 @@ int Gripper::getSensorBackLeft() { return grip_sensor_msg_.force_back_left; }
 int Gripper::getSensorBackRight() { return grip_sensor_msg_.force_back_right; }
 int Gripper::getSensorFrontLeft() { return grip_sensor_msg_.force_front_left; }
 int Gripper::getSensorFrontRight() { return grip_sensor_msg_.force_front_right; }
+
+void Gripper::setAngleRotLin(int front_angle, int back_angle, int mid_angle)
+{
+  // check argument feasability
+  // TODO change to feedback
+  grip_action_cmd_.servo_1_deg = front_angle;
+  grip_action_cmd_.servo_2_deg = back_angle;
+  grip_action_cmd_.servo_3_deg = mid_angle;
+  grip_action_cmd_.trigger_gripper = false;
+  grip_action_pub_->publish(grip_action_cmd_);
+
+  consoleDebug("Setting asymmetric angle: [" + std::to_string(front_angle) + ", " + std::to_string(mid_angle) + ", " + std::to_string(back_angle) + "]");
+}

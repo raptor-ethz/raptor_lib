@@ -1,6 +1,7 @@
 #include "Quad.h"
 
-Status Quad::getStatus() {
+Status Quad::getStatus()
+{
   // send status request
   px4_action_cmd_.action = Action_cmd::act_status;
   px4_action_pub_->publish(px4_action_cmd_);
@@ -9,7 +10,8 @@ Status Quad::getStatus() {
 
   Status result;
   // check if feedback was received
-  if (px4_feedback_.feedback != FeedbackType::fb_status) {
+  if (px4_feedback_.feedback != FeedbackType::fb_status)
+  {
     return result;
   }
   result.feedback = true;
@@ -19,7 +21,8 @@ Status Quad::getStatus() {
   return result;
 }
 
-bool Quad::initializeInterfacePub() {
+bool Quad::initializeInterfacePub()
+{
   consoleInformation("Initializing interface publisher");
 
   // define max tries
@@ -29,9 +32,11 @@ bool Quad::initializeInterfacePub() {
   // exit loop if both matched
   for (int i = 1; !px4_action_pub_->listener.matched() ||
                   !position_pub_->listener.matched();
-       ++i) {
+       ++i)
+  {
     // return error after the n-th try
-    if (i == n) {
+    if (i == n)
+    {
       consoleError(
           "Initialization fialed: Failed to match interface publisher.");
       return false;
@@ -48,16 +53,19 @@ bool Quad::initializeInterfacePub() {
   return true;
 }
 
-bool Quad::takeOff() {
+bool Quad::takeOff()
+{
   // initialize mocap subscriber
-  if (!initializeMocapSub()) {
+  if (!initializeMocapSub())
+  {
     consoleError(
         "Takeoff denied: Initialization of motion capture subscriber failed.");
     return false;
   }
 
   // initialize interface publisher
-  if (!initializeInterfacePub()) {
+  if (!initializeInterfacePub())
+  {
     consoleError(
         "Takeoff denied: Initialization of interface publisher failed.");
     return false;
@@ -67,33 +75,40 @@ bool Quad::takeOff() {
   // check status for max n times (3 seconds each)
   // define max tries
   const int n = 5;
-  for (int i = 1;; ++i) {
+  for (int i = 1;; ++i)
+  {
     Status status = getStatus();
     // return if no feedback was received
-    if (!status.feedback) {
+    if (!status.feedback)
+    {
       consoleError(
           "Takeoff denied: No feedback from interface (check px4 connection).");
       return false;
     }
     // check if local position is available
-    if (!status.local_position) {
+    if (!status.local_position)
+    {
       consoleError("Takeoff denied: No local position available (check "
                    "mocap_px4_publisher).");
       return false;
     }
     // check battery level
-    if (status.battery < 55) {
+    if (status.battery < 55)
+    {
       consoleError("Takeoff denied: Battery too low (" +
                    std::to_string(status.battery) + "%).");
       return false;
     }
-    if (status.battery < 60) {
+    if (status.battery < 60)
+    {
       consoleWarning("Battery low: Charge soon!");
     }
     // check killed
-    if (!status.armable) {
+    if (!status.armable)
+    {
       // return error after the n-th try
-      if (i == n) {
+      if (i == n)
+      {
         consoleError("Takeoff denied: Participant is killed.");
         return false;
       }
@@ -123,13 +138,15 @@ bool Quad::takeOff() {
   px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
   // check if feedback was received
-  if (px4_feedback_.feedback != FeedbackType::fb_arm) {
+  if (px4_feedback_.feedback != FeedbackType::fb_arm)
+  {
     consoleError(
         "Takeoff denied: Arming failed (received no feedback from interface).");
     return false;
   }
   // check arming result
-  if (px4_feedback_.result != ResultType::res_success) {
+  if (px4_feedback_.result != ResultType::res_success)
+  {
     consoleError("Takeoff denied: Arming failed (px4 error).");
     return false;
   }
@@ -149,27 +166,31 @@ bool Quad::takeOff() {
   px4_feedback_sub_->listener->wait_for_data_for_ms(2000);
 
   // check if feedback was received
-  if (px4_feedback_.feedback != FeedbackType::fb_takeoff) {
+  if (px4_feedback_.feedback != FeedbackType::fb_takeoff)
+  {
     consoleError("Takeoff failed: Received no feedback from interface.");
     // TODO ask for land command
     return false;
   }
   // check takeoff result
-  if (px4_feedback_.result != ResultType::res_success) {
+  if (px4_feedback_.result != ResultType::res_success)
+  {
     consoleError("Takeoff failed: PX4 error.");
     // TODO ask for land command
     return false;
   }
 
   // wait during take-off sequence
-  std::this_thread::sleep_for(std::chrono::milliseconds(12000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(8000));
 
   // check height (and wait) TODO
-  if (pose_.position.z < 1) {
+  if (pose_.position.z < 1)
+  {
     consoleError("Takeoff failed: Insufficient height reached.");
   }
   // wait until at least 1m height was reached
-  for (int i = 1; pose_.position.z < 1; ++i) {
+  for (int i = 1; pose_.position.z < 1; ++i)
+  {
     consoleWarning("Insufficient height for offboard (" +
                    std::to_string(pose_.position.z) + "). Retry in 3 seconds");
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -205,7 +226,8 @@ bool Quad::takeOff() {
   return true;
 }
 
-void Quad::land(Item &stand) {
+void Quad::land(Item &stand)
+{
   consoleInformation("Commencing landing sequence.");
   consoleDebug("Going back to stand.");
   goToPos(stand.getPose().position.x, stand.getPose().position.y,
@@ -231,7 +253,8 @@ void Quad::land(Item &stand) {
   while (!checkReachedPos3D(pose_.position.x, stand.getPose().position.x, 0.08,
                             pose_.position.y, stand.getPose().position.y, 0.08,
                             pose_.position.z, stand.getPose().position.z,
-                            0.3)) {
+                            0.3))
+  {
     consoleWarning("Offset to stand is too big for landing.");
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
